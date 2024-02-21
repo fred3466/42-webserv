@@ -57,6 +57,9 @@ HttpConnector::HttpConnector(std::string ipStr, int port) {
 
 	int on = 1;
 	struct sockaddr_in sockaddrStruct;
+
+	connectorListener = NULL;
+
 //protocol ip==0 (/etc/protocols)
 	if ((_soListen = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		harl.error("Creating socket, bye !");
@@ -176,30 +179,31 @@ void HttpConnector::_listen(int _soListen, netStruct ns) {
 		/***********************************************************/
 		current_size = nfds;
 		for (i = 0; i < current_size; i++) {
-			struct pollfd curentPollFd = fds[i];
+			struct pollfd *curentPollFd = &fds[i];
 			/*********************************************************/
 			/* Loop through to find the descriptors that returned    */
 			/* POLLIN and determine whether it's the listening       */
 			/* or the active connection.                             */
 			/*********************************************************/
-			if (curentPollFd.revents == 0)
+			if (curentPollFd->revents == 0)
 				continue;
 
 			/*********************************************************/
 			/* If revents is not POLLIN, it's an unexpected result,  */
 			/* log and end the server.                               */
 			/*********************************************************/
-			if (curentPollFd.revents != POLLIN) {
-				harl.error("  Error! revents = %d", curentPollFd.revents);
+			if (curentPollFd->revents != POLLIN) {
+				harl.error(" %d Error! revents = %d", curentPollFd->fd,
+						curentPollFd->revents);
 //				end_server = 1;
 //				break;
 
 			}
-			if (curentPollFd.fd == _soListen) {
+			if (curentPollFd->fd == _soListen) {
 				/*******************************************************/
 				/* Listening descriptor is readable.                   */
 				/*******************************************************/
-				harl.debug("  Listening socket is readable");
+				harl.debug("++++ %d  Listening socket is readable", _soListen);
 
 				/*******************************************************/
 				/* Accept all incoming connections that are            */
@@ -215,7 +219,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns) {
 			/*********************************************************/
 
 			else {
-				harl.debug("  Descriptor %d is readable", curentPollFd.fd);
+				harl.debug("**** %d Descriptor is readable", curentPollFd->fd);
 				close_conn = 0;
 				/*******************************************************/
 				/* Receive all incoming data on this socket            */
@@ -309,7 +313,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* Add the new incoming connection to the            */
 		/* pollfd structure                                  */
 		/*****************************************************/
-		harl.debug("  New incoming connection - %d", new_sd);
+		harl.debug("---- %d  New incoming connection", new_sd);
 		fds[nfds].fd = new_sd;
 		fds[nfds].events = POLLIN;
 		nfds++;
@@ -323,7 +327,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 	} while (new_sd != -1);
 }
 
-bool HttpConnector::_onDataReceiving(struct pollfd &curentPollFd,
+bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		int &close_conn) {
 	char buffer[450];
 	bool compress_array = 0;
@@ -338,16 +342,18 @@ bool HttpConnector::_onDataReceiving(struct pollfd &curentPollFd,
 		/* failure occurs, we will close the                 */
 		/* connection.                                       */
 		/*****************************************************/
-		int rc = recv(curentPollFd.fd, buffer, sizeof(buffer), 0);
+		int rc = recv(curentPollFd->fd, buffer, sizeof(buffer), 0);
 		if (rc < 0) {
 			if (errno != EWOULDBLOCK) {
-				harl.error("  recv() failed [%s]", strerror(errno));
+				harl.error(" %d recv() failed [%s]", curentPollFd->fd,
+						strerror(errno));
 				close_conn = 1;
 			}
 			close_conn = 1;
 			break;
 		} else if (rc == 0) {
-			harl.error("  Connection closed [%s]", strerror(errno));
+			harl.error(" %d  Connection closed [%s]", curentPollFd->fd,
+					strerror(errno));
 			close_conn = 1;
 			break;
 		} else {
@@ -355,7 +361,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd &curentPollFd,
 			/* Data was received                                 */
 			/*****************************************************/
 			int len = rc;
-			harl.debug("  %d bytes received", len);
+			harl.debug(" %d  %d bytes received", curentPollFd->fd, len);
 			//					std::cout << buffer << std::endl;
 			//					/*****************************************************/
 			//					/* Echo the data back to the client                  */
@@ -381,11 +387,11 @@ bool HttpConnector::_onDataReceiving(struct pollfd &curentPollFd,
 	/* descriptor.                                         */
 	/*******************************************************/
 	if (close_conn) {
-		harl.debug("Fermeture de %i", curentPollFd.fd);
-		close(curentPollFd.fd);
-		curentPollFd.fd = -1;
+		harl.debug("---- %i Fermeture \n", curentPollFd->fd);
+		close(curentPollFd->fd);
+		curentPollFd->fd = -1;
 		compress_array = 1;
-		_allSockets.remove(curentPollFd.fd);
+		_allSockets.remove(curentPollFd->fd);
 	}
 	return compress_array;
 }
