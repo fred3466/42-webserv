@@ -43,7 +43,7 @@ private:
 
 	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
 			int &end_server, int &nfds);
-	bool _onDataReceiving(struct pollfd &curentPollFd, int &close_conn);
+	bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
 	void _listen(int _soListen, netStruct ns);
 public:
 	HttpConnector();
