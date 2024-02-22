@@ -1,15 +1,19 @@
 #include "Harl.h"
 #include <ctime>
-Harl::Harl() {
+Harl::Harl()
+{
 }
 
-Harl::~Harl() {
+Harl::~Harl()
+{
 }
 
-void Harl::debug(std::string msg, ...) {
+void Harl::debug(std::string msg, ...)
+{
 	char formatedChars[2000];
 	va_list args;
-	if (HARL_LEVEL >= 3) {
+	if (HARL_LEVEL >= 3)
+	{
 		va_start(args, msg);
 		int nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
 		va_end(args);
@@ -17,10 +21,12 @@ void Harl::debug(std::string msg, ...) {
 	}
 }
 
-void Harl::info(std::string msg, ...) {
+void Harl::info(std::string msg, ...)
+{
 	char formatedChars[2000];
 	va_list args;
-	if (HARL_LEVEL >= 2) {
+	if (HARL_LEVEL >= 2)
+	{
 		va_start(args, msg);
 		int nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
 		va_end(args);
@@ -28,10 +34,12 @@ void Harl::info(std::string msg, ...) {
 	}
 }
 
-void Harl::warning(std::string msg, ...) {
+void Harl::warning(std::string msg, ...)
+{
 	char formatedChars[2000];
 	va_list args;
-	if (HARL_LEVEL >= 1) {
+	if (HARL_LEVEL >= 1)
+	{
 		va_start(args, msg);
 		int nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
 		va_end(args);
@@ -39,10 +47,12 @@ void Harl::warning(std::string msg, ...) {
 	}
 }
 
-void Harl::error(std::string msg, ...) {
+void Harl::error(std::string msg, ...)
+{
 	char formatedChars[2000];
 	va_list args;
-	if (HARL_LEVEL >= 0) {
+	if (HARL_LEVEL >= 0)
+	{
 		va_start(args, msg);
 		int nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
 		va_end(args);
@@ -50,7 +60,8 @@ void Harl::error(std::string msg, ...) {
 	}
 }
 
-void Harl::_write(std::string level, std::string msg) {
+void Harl::_write(std::string level, std::string msg)
+{
 	char buf[100];
 	time_t rawtime;
 //	va_list args;

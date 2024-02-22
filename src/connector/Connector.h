@@ -1,7 +1,8 @@
 #pragma once
 #include "ConnectorEventPublisher.h"
 
-class Connector /*: public ConnectorEventPublisher*/{
+class Connector /*: public ConnectorEventPublisher*/
+{
 private:
 protected:
 //	Connector(const Connector &other);

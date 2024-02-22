@@ -1,6 +1,7 @@
 #pragma once
 
-class ResponseFactory {
+class ResponseFactory
+{
 public:
 	ResponseFactory();
 	~ResponseFactory();

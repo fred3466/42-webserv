@@ -4,7 +4,8 @@
 #include "../response/Response.h"
 #include "ConnectorEvent.h"
 
-class ConnectorListener {
+class ConnectorListener
+{
 private:
 //	ConnectorListener(const ConnectorListener &other);
 //	ConnectorListener& operator=(const ConnectorListener &other);

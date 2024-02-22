@@ -8,11 +8,13 @@
 #include "HttpServer.h"
 
 HttpServer::HttpServer() :
-		harl() {
+		harl(), connector()
+{
 
 }
 
-HttpServer::~HttpServer() {
+HttpServer::~HttpServer()
+{
 }
 
 //bool HttpServer::operator==(const ConnectorListener &o) {
@@ -20,14 +22,17 @@ HttpServer::~HttpServer() {
 //	return this->_soListen ==  o._soListen;
 ////	return 0;
 //}
-void shutFd(int fd) {
-	if (fd >= 0) {
+void shutFd(int fd)
+{
+	if (fd >= 0)
+	{
 		shutdown(fd, SHUT_RDWR);
 		close(fd);
 		fd = -1;
 	}
 }
-void HttpServer::init(std::string ipStr, int port) {
+void HttpServer::init(std::string ipStr, int port)
+{
 	netStruct ns;
 	connector = ConnectorFactory().build(ipStr, port);
 	connector->registerIt(this);
@@ -35,10 +40,12 @@ void HttpServer::init(std::string ipStr, int port) {
 	connector->doListen();
 }
 
-void HttpServer::onIncomming(ConnectorEvent e) {
+void HttpServer::onIncomming(ConnectorEvent e)
+{
 
 }
-void HttpServer::onDataReceiving(ConnectorEvent e) {
+void HttpServer::onDataReceiving(ConnectorEvent e)
+{
 //	int len = rc;
 //	harl.debug("  %d bytes received", len);
 	std::cout << e.getTemp();

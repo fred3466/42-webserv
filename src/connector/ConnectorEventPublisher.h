@@ -1,7 +1,8 @@
 #pragma once
 #include "ConnectorListener.h"
 
-class ConnectorEventPublisher {
+class ConnectorEventPublisher
+{
 private:
 	ConnectorEventPublisher();
 	~ConnectorEventPublisher();

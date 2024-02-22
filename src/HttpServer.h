@@ -24,7 +24,8 @@
 
 #define BUF_SIZE 1024
 
-class HttpServer: public ConnectorListener {
+class HttpServer: public ConnectorListener
+{
 private:
 //	std::list<Connector> consListenersList;
 

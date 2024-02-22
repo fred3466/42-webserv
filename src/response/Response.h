@@ -1,6 +1,7 @@
 #pragma once
 
-class Response {
+class Response
+{
 public:
 	Response();
 	~Response();

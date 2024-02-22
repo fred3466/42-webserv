@@ -3,7 +3,8 @@
 #include "../request/Request.h"
 #include "../response/Response.h"
 
-class ConnectorEvent {
+class ConnectorEvent
+{
 private:
 	Request req;
 	Response resp;

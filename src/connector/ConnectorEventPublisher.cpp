@@ -7,23 +7,27 @@
 
 #include "ConnectorEventPublisher.h"
 
-ConnectorEventPublisher::ConnectorEventPublisher() {
+ConnectorEventPublisher::ConnectorEventPublisher()
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-ConnectorEventPublisher::~ConnectorEventPublisher() {
+ConnectorEventPublisher::~ConnectorEventPublisher()
+{
 	// TODO Auto-generated destructor stub
 }
 
 ConnectorEventPublisher::ConnectorEventPublisher(
-		const ConnectorEventPublisher &other) {
+		const ConnectorEventPublisher &other)
+{
 	// TODO Auto-generated constructor stub
 
 }
 
 ConnectorEventPublisher& ConnectorEventPublisher::operator=(
-		const ConnectorEventPublisher &other) {
+		const ConnectorEventPublisher &other)
+{
 	// TODO Auto-generated method stub
 
 }

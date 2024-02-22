@@ -7,21 +7,25 @@
 
 #include "ResponseFactory.h"
 
-ResponseFactory::ResponseFactory() {
+ResponseFactory::ResponseFactory()
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-ResponseFactory::~ResponseFactory() {
+ResponseFactory::~ResponseFactory()
+{
 	// TODO Auto-generated destructor stub
 }
 
-ResponseFactory::ResponseFactory(const ResponseFactory &other) {
+ResponseFactory::ResponseFactory(const ResponseFactory &other)
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-ResponseFactory& ResponseFactory::operator=(const ResponseFactory &other) {
+ResponseFactory& ResponseFactory::operator=(const ResponseFactory &other)
+{
 	// TODO Auto-generated method stub
 
 }

@@ -1,11 +1,13 @@
 #include "Request.h"
 
-Request::Request() {
+Request::Request()
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-Request::~Request() {
+Request::~Request()
+{
 	// TODO Auto-generated destructor stub
 }
 

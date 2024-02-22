@@ -7,12 +7,14 @@
 
 #include "Response.h"
 
-Response::Response() {
+Response::Response()
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-Response::~Response() {
+Response::~Response()
+{
 	// TODO Auto-generated destructor stub
 }
 

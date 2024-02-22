@@ -1,6 +1,7 @@
 #include "HttpServer.h"
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 	HttpServer server;
 	server.init("127.0.0.1", 8080);
 

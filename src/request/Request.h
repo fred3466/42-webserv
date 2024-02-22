@@ -1,6 +1,7 @@
 #pragma once
 
-class Request {
+class Request
+{
 private:
 
 public:

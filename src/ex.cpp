@@ -21,7 +21,8 @@
 #define TRUE             1
 #define FALSE            0
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	int len, rc, on = 1;
 	int listen_sd = -1, new_sd = -1;
 	int desc_ready, end_server = FALSE, compress_array = FALSE;
@@ -37,7 +38,8 @@ int main(int argc, char *argv[]) {
 	/* connections on                                            */
 	/*************************************************************/
 	listen_sd = socket(AF_INET, SOCK_STREAM, 0);
-	if (listen_sd < 0) {
+	if (listen_sd < 0)
+	{
 		perror("socket() failed");
 		exit(-1);
 	}
@@ -47,7 +49,8 @@ int main(int argc, char *argv[]) {
 	/*************************************************************/
 	rc = setsockopt(listen_sd, SOL_SOCKET, SO_REUSEADDR, (char*) &on,
 			sizeof(on));
-	if (rc < 0) {
+	if (rc < 0)
+	{
 		perror("setsockopt() failed");
 		close(listen_sd);
 		exit(-1);
@@ -59,7 +62,8 @@ int main(int argc, char *argv[]) {
 	/* they will inherit that state from the listening socket.   */
 	/*************************************************************/
 	rc = ioctl(listen_sd, FIONBIO, (char*) &on);
-	if (rc < 0) {
+	if (rc < 0)
+	{
 		perror("ioctl() failed");
 		close(listen_sd);
 		exit(-1);
@@ -73,7 +77,8 @@ int main(int argc, char *argv[]) {
 	memcpy(&addr.sin6_addr, &in6addr_any, sizeof(in6addr_any));
 	addr.sin6_port = htons(SERVER_PORT);
 	rc = bind(listen_sd, (struct sockaddr*) &addr, sizeof(addr));
-	if (rc < 0) {
+	if (rc < 0)
+	{
 		perror("bind() failed");
 		close(listen_sd);
 		exit(-1);
@@ -83,7 +88,8 @@ int main(int argc, char *argv[]) {
 	/* Set the listen back log                                   */
 	/*************************************************************/
 	rc = listen(listen_sd, 32);
-	if (rc < 0) {
+	if (rc < 0)
+	{
 		perror("listen() failed");
 		close(listen_sd);
 		exit(-1);
@@ -110,7 +116,8 @@ int main(int argc, char *argv[]) {
 	/* Loop waiting for incoming connects or for incoming data   */
 	/* on any of the connected sockets.                          */
 	/*************************************************************/
-	do {
+	do
+	{
 		/***********************************************************/
 		/* Call poll() and wait 3 minutes for it to complete.      */
 		/***********************************************************/
@@ -120,7 +127,8 @@ int main(int argc, char *argv[]) {
 		/***********************************************************/
 		/* Check to see if the poll call failed.                   */
 		/***********************************************************/
-		if (rc < 0) {
+		if (rc < 0)
+		{
 			perror("  poll() failed");
 			break;
 		}
@@ -128,7 +136,8 @@ int main(int argc, char *argv[]) {
 		/***********************************************************/
 		/* Check to see if the 3 minute time out expired.          */
 		/***********************************************************/
-		if (rc == 0) {
+		if (rc == 0)
+		{
 			printf("  poll() timed out.  End program.\n");
 			break;
 		}
@@ -138,7 +147,8 @@ int main(int argc, char *argv[]) {
 		/* determine which ones they are.                          */
 		/***********************************************************/
 		current_size = nfds;
-		for (i = 0; i < current_size; i++) {
+		for (i = 0; i < current_size; i++)
+		{
 			/*********************************************************/
 			/* Loop through to find the descriptors that returned    */
 			/* POLLIN and determine whether it's the listening       */
@@ -151,13 +161,15 @@ int main(int argc, char *argv[]) {
 			/* If revents is not POLLIN, it's an unexpected result,  */
 			/* log and end the server.                               */
 			/*********************************************************/
-			if (fds[i].revents != POLLIN) {
+			if (fds[i].revents != POLLIN)
+			{
 				printf("  Error! revents = %d\n", fds[i].revents);
 				end_server = TRUE;
 				break;
 
 			}
-			if (fds[i].fd == listen_sd) {
+			if (fds[i].fd == listen_sd)
+			{
 				/*******************************************************/
 				/* Listening descriptor is readable.                   */
 				/*******************************************************/
@@ -168,7 +180,8 @@ int main(int argc, char *argv[]) {
 				/* queued up on the listening socket before we         */
 				/* loop back and call poll again.                      */
 				/*******************************************************/
-				do {
+				do
+				{
 					/*****************************************************/
 					/* Accept each incoming connection. If               */
 					/* accept fails with EWOULDBLOCK, then we            */
@@ -177,8 +190,10 @@ int main(int argc, char *argv[]) {
 					/* server.                                           */
 					/*****************************************************/
 					new_sd = accept(listen_sd, NULL, NULL);
-					if (new_sd < 0) {
-						if (errno != EWOULDBLOCK) {
+					if (new_sd < 0)
+					{
+						if (errno != EWOULDBLOCK)
+						{
 							perror("  accept() failed");
 							end_server = TRUE;
 						}
@@ -206,7 +221,8 @@ int main(int argc, char *argv[]) {
 			/* existing connection must be readable                  */
 			/*********************************************************/
 
-			else {
+			else
+			{
 				printf("  Descriptor %d is readable\n", fds[i].fd);
 				close_conn = FALSE;
 				/*******************************************************/
@@ -214,7 +230,8 @@ int main(int argc, char *argv[]) {
 				/* before we loop back and call poll again.            */
 				/*******************************************************/
 
-				do {
+				do
+				{
 					/*****************************************************/
 					/* Receive data on this connection until the         */
 					/* recv fails with EWOULDBLOCK. If any other         */
@@ -222,8 +239,10 @@ int main(int argc, char *argv[]) {
 					/* connection.                                       */
 					/*****************************************************/
 					rc = recv(fds[i].fd, buffer, sizeof(buffer), 0);
-					if (rc < 0) {
-						if (errno != EWOULDBLOCK) {
+					if (rc < 0)
+					{
+						if (errno != EWOULDBLOCK)
+						{
 							perror("  recv() failed");
 							close_conn = TRUE;
 						}
@@ -234,7 +253,8 @@ int main(int argc, char *argv[]) {
 					/* Check to see if the connection has been           */
 					/* closed by the client                              */
 					/*****************************************************/
-					if (rc == 0) {
+					if (rc == 0)
+					{
 						printf("  Connection closed\n");
 						close_conn = TRUE;
 						break;
@@ -253,7 +273,8 @@ int main(int argc, char *argv[]) {
 					/* Echo the data back to the client                  */
 					/*****************************************************/
 					rc = send(fds[i].fd, buffer, len, 0);
-					if (rc < 0) {
+					if (rc < 0)
+					{
 						perror("  send() failed");
 						close_conn = TRUE;
 						break;
@@ -267,7 +288,8 @@ int main(int argc, char *argv[]) {
 				/* clean up process includes removing the              */
 				/* descriptor.                                         */
 				/*******************************************************/
-				if (close_conn) {
+				if (close_conn)
+				{
 					close(fds[i].fd);
 					fds[i].fd = -1;
 					compress_array = TRUE;
@@ -283,11 +305,15 @@ int main(int argc, char *argv[]) {
 		/* events and revents fields because the events will always*/
 		/* be POLLIN in this case, and revents is output.          */
 		/***********************************************************/
-		if (compress_array) {
+		if (compress_array)
+		{
 			compress_array = FALSE;
-			for (i = 0; i < nfds; i++) {
-				if (fds[i].fd == -1) {
-					for (j = i; j < nfds; j++) {
+			for (i = 0; i < nfds; i++)
+			{
+				if (fds[i].fd == -1)
+				{
+					for (j = i; j < nfds; j++)
+					{
 						fds[j].fd = fds[j + 1].fd;
 					}
 					i--;
@@ -301,7 +327,8 @@ int main(int argc, char *argv[]) {
 	/*************************************************************/
 	/* Clean up all of the sockets that are open                 */
 	/*************************************************************/
-	for (i = 0; i < nfds; i++) {
+	for (i = 0; i < nfds; i++)
+	{
 		if (fds[i].fd >= 0)
 			close(fds[i].fd);
 	}
