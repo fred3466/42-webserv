@@ -20,7 +20,7 @@ ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) :
 //	return *this;
 //}
 
-ConnectorEvent::ConnectorEvent(Request req, Response resp)
+ConnectorEvent::ConnectorEvent(Request *req, Response *resp)
 {
 	this->req = req;
 	this->resp = resp;

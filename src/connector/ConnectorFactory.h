@@ -6,8 +6,8 @@
 class ConnectorFactory
 {
 private:
-	ConnectorFactory(const ConnectorFactory &o);
-	ConnectorFactory& operator=(const ConnectorFactory &o);
+//	ConnectorFactory(const ConnectorFactory &o);
+//	ConnectorFactory& operator=(const ConnectorFactory &o);
 public:
 	ConnectorFactory();
 	~ConnectorFactory();

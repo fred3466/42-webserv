@@ -6,14 +6,14 @@
 class ConnectorEvent
 {
 private:
-	Request req;
-	Response resp;
+	Request *req;
+	Response *resp;
 	std::string temp;
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);
 //	ConnectorEvent& operator=(const ConnectorEvent &other);
-	ConnectorEvent(Request req, Response resp);
+	ConnectorEvent(Request *req, Response *resp);
 	ConnectorEvent(std::string temp);
 	~ConnectorEvent();
 	std::string getTemp();

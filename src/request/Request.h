@@ -1,16 +1,17 @@
 #pragma once
+#include "string"
 
 class Request
 {
 private:
 
 public:
-	Request();
-	~Request();
+//	Request();
+	virtual ~Request();
 //	Request(Request const &o);
 //	Request& operator=(Request const &o);
 
-	std::string getValue(std::string paramName);
-	void addParam(std::string paramName, std::string paramValue);
+	virtual std::string getValue(std::string paramName)=0;
+	virtual void addParam(std::string paramName, std::string paramValue)=0;
 };
 

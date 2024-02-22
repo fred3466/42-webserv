@@ -18,3 +18,7 @@ RequestFactory::~RequestFactory()
 	// TODO Auto-generated destructor stub
 }
 
+Request* RequestFactory::build(std::string rawContent)
+{
+	return NULL;
+}
