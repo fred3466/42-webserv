@@ -46,9 +46,18 @@ void HttpServer::onIncomming(ConnectorEvent e)
 }
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
-//	int len = rc;
-//	harl.debug("  %d bytes received", len);
-	std::cout << e.getTemp();
+//	std::cout << e.getTemp();
+	std::string rawRequest = e.getTemp();
+	Request *req = RequestFactory().build(&rawRequest);
+//	req->dump();
+
+//	Validator *validator = ValidatorFactory().build(req);
+//	validator->validate(req);
+
+	Processor *processor = ProcessorFactory().build(req);
+	Response *resp = processor->process(req);
+
+	//Send Response
 
 //	rc = send(curentPollFd.fd, buffer, len, 0);
 //	if (rc < 0) {

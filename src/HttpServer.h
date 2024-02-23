@@ -21,6 +21,10 @@
 #include "Harl.h"
 #include "connector/Connector.h"
 #include "connector/ConnectorFactory.h"
+#include "request/Request.h"
+#include "request/RequestFactory.h"
+#include "processor/Processor.h"
+#include "processor/ProcessorFactory.h"
 
 #define BUF_SIZE 1024
 

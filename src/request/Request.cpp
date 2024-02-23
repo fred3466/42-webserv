@@ -1,15 +1,21 @@
 #include "Request.h"
 
-//Request::Request()
-//{
-//	// TODO Auto-generated constructor stub
-//
-//}
+Request::Request()
+{
+	// TODO Auto-generated constructor stub
+
+}
 
 Request::~Request()
 {
 	// TODO Auto-generated destructor stub
 }
+
+//Request::Request(std::string *rawContent)
+//{
+//	// TODO Auto-generated constructor stub
+//
+//}
 
 //Request::Request(Request const &o) {
 //	*this = o;
