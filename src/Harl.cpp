@@ -1,5 +1,8 @@
 #include "Harl.h"
 #include <ctime>
+
+#include "config.h"
+
 Harl::Harl()
 {
 }

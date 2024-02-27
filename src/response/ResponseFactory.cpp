@@ -17,16 +17,19 @@ ResponseFactory::~ResponseFactory()
 {
 	// TODO Auto-generated destructor stub
 }
-
-ResponseFactory::ResponseFactory(const ResponseFactory &other)
+//
+//ResponseFactory::ResponseFactory(const ResponseFactory &other)
+//{
+//	// TODO Auto-generated constructor stub
+//
+//}
+//
+//ResponseFactory& ResponseFactory::operator=(const ResponseFactory &other)
+//{
+//	// TODO Auto-generated method stub
+//
+//}
+Response* ResponseFactory::build()
 {
-	// TODO Auto-generated constructor stub
-
+	return new ResponseHttp();
 }
-
-ResponseFactory& ResponseFactory::operator=(const ResponseFactory &other)
-{
-	// TODO Auto-generated method stub
-
-}
-

@@ -17,5 +17,7 @@ public:
 	virtual std::string getUri()=0;
 	virtual std::string getMethod()=0;
 	virtual void dump()=0;
+	virtual void setFdClient(int fd)=0;
+	virtual int getFdClient()=0;
 };
 

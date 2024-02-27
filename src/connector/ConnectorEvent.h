@@ -9,6 +9,7 @@ private:
 	Request *req;
 	Response *resp;
 	std::string temp;
+	int fdClient;
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);
@@ -17,5 +18,7 @@ public:
 	ConnectorEvent(std::string temp);
 	~ConnectorEvent();
 	std::string getTemp();
+	void setFdClient(int fd);
+	int getFdClient();
 };
 

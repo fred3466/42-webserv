@@ -1,7 +1,7 @@
 #pragma once
 #include "Request.h"
 #include <string>
-//#include "RequestHttp.h"
+#include "RequestHttp.h"
 
 class RequestFactory
 {

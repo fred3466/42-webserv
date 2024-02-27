@@ -35,3 +35,13 @@ std::string ConnectorEvent::getTemp()
 {
 	return temp;
 }
+
+int ConnectorEvent::getFdClient()
+{
+	return fdClient;
+}
+
+void ConnectorEvent::setFdClient(int fd)
+{
+	fdClient = fd;
+}

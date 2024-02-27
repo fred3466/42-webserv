@@ -359,6 +359,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* connection                                        */
 		/*****************************************************/
 		ConnectorEvent e("Accepting");
+		e.setFdClient(new_sd);
 		publishAccepting(e);
 	} while (new_sd != -1);
 }
@@ -416,6 +417,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 //			}
 			std::string cont = std::string(buffer);
 			ConnectorEvent e(cont);
+			e.setFdClient(curentPollFd->fd);
 			publishDataReceiving(e);
 //			close_conn = 1;
 //			break;

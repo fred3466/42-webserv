@@ -20,6 +20,6 @@ RequestFactory::~RequestFactory()
 
 Request* RequestFactory::build(std::string *rawContent)
 {
-//	return new RequestHttp(rawContent);
-	return NULL;
+	RequestHttp *req = new RequestHttp(rawContent);
+	return req;
 }

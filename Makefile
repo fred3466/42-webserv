@@ -12,11 +12,18 @@ SRCS = \
 	request/Request.cpp \
 	request/RequestHttp.cpp \
 	request/RequestFactory.cpp \
-	response/Response.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
  	processor/Processor.cpp \
     HttpServer.cpp \
+    config.h \
+    config/Config.cpp \
+    config/ConfigFactory.cpp \
+	response/Response.cpp \
+	response/ResponseHttp.cpp \
+    response/ResponseFactory.cpp \
+    util/FileUtil.cpp \
+    util/FileUtilFactory.cpp \
 	main.cpp 
 	
 OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)

@@ -25,8 +25,8 @@
 #include "request/RequestFactory.h"
 #include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
-
-#define BUF_SIZE 1024
+#include "config/Config.h"
+#include "config/ConfigFactory.h"
 
 class HttpServer: public ConnectorListener
 {
@@ -34,7 +34,7 @@ private:
 //	std::list<Connector> consListenersList;
 
 	Connector *connector;
-
+	Config *config;
 	Harl harl;
 	std::map<int, int> _clients;
 
