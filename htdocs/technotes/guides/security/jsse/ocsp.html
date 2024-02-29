@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" xml:lang=
+"en-US">
+<head>
+<title>Client-Driven OCSP and OCSP Stapling</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+
+<h1><a name="client-driven-ocsp-and-ocsp-stapling">Client-Driven OCSP and OCSP Stapling</a></h1>
+
+<p>The following topics are covered:</p>
+<ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#client-driven-ocsp-and-certificate-revocation">Client-Driven OCSP and Certificate Revocation</a>
+    <ul>
+      <li><a href="#tls-handshake-with-client-driven-ocsp">TLS Handshake with Client-Driven OCSP</a></li>
+      <li><a href="#setting-up-a-java-client-to-use-client-driven-ocsp">Setting up a Java Client to use Client-Driven OCSP</a></li>
+    </ul>
+  </li>
+  <li><a href="#ocsp-stapling-and-certificate-revocation">OCSP Stapling and Certificate Revocation</a>
+    <ul>
+      <li><a href="#tls-handshake-with-ocsp-stapling">TLS Handshake with OCSP Stapling</a>
+      <li><a href="#status-request-versus-multiple-status-request">Status Request Versus Multiple Status Request</a></li>
+      <li><a href="#the-ocsp-request-and-response">The OCSP Request and Response</a></li>
+      <li><a href="#setting-up-a-java-client-to-use-ocsp-stapling">Setting up a Java Client to use OCSP Stapling</a></li>
+      <li><a href="#setting-up-a-java-server-to-use-ocsp-stapling">Setting Up a Java Server to Use OCSP Stapling</a></li>
+    </ul>
+  </li>
+  <li><a href="#ocsp-stapling-configuration-properties">OCSP Stapling Configuration Properties</a>
+    <ul>
+      <li><a href="#server-side-properties">Server-Side Properties</a></li>
+      <li><a href="#client-side-settings">Client-Side Settings</a></li>
+    </ul>
+  </li>
+  <li><a href="#ocsp-pki">OCSP Support for PKI</a>
+    <ul>
+      <li><a href="#maximum-allowable-clock-skew">Maximum Allowable Clock Skew</a></li>
+    </ul>
+  </li>
+</ul>
+    
+  
+
+<h2><a name="introduction">Introduction</a></h2>
+
+<p>Use the Online Certificate Status Protocol (OCSP), available since JDK 8u261,
+to determine the X.509 certificate revocation status during the Transport
+Layer Security (TLS) handshake.</p>
+
+<p>X.509 certificates used in TLS can be revoked by
+the issuing Certificate Authority (CA) if there is reason to
+believe that a certificate is compromised. You can check the
+revocation status of certificates during the TLS handshake by
+using one of the following approaches.</p>
+
+<ul>
+
+<li><p><strong>Certificate Revocation List (CRL)</strong>: A
+CRL is a simple list of revoked certificates. The application
+receiving a certificate gets the CRL from a CRL server and checks
+if the certificate received is on the list. There are two
+disadvantages to using CRLs that mean a certificate could be
+revoked:</p>
+<ul>
+<li><p>CRLs can become very large so there can be a substantial
+increase in network traffic.</p></li>
+<li><p>Many CRLs are created with longer validity periods, which
+increases the possibility of a certificate being revoked within
+that validity period and not showing up until the next CRL
+refresh.</p></li>
+</ul>
+
+<p>See <a href=
+"../certpath/CertPathProgGuide.html#StorageClasses">
+Certificate/CRL Storage Classes</a> in <a href=
+"../certpath/CertPathProgGuide.html">Java PKI Programmer's Guide</a>.</p>
+
+</li>
+
+<li>
+<p><strong>Client-driven OCSP</strong>: In
+client-driven OCSP, the client uses OCSP to contact an OCSP
+responder to check the certificate's revocation status. The
+amount of data required is usually less than that of a CRL, and
+the OCSP responder is likely to be more up-to-date with the
+revocation status than a CRL. Each client connecting to a server
+requires an OCSP response for each certificate being checked. If
+the server is a popular one, and many of the clients are using
+client-driven OCSP, these OCSP requests can have a negative
+effect on the performance of the OCSP responder.</p>
+</li>
+<li>
+<p><strong>OCSP stapling</strong>: OCSP stapling enables
+the server, rather than the client, to make the request to the
+OCSP responder. The server staples the OCSP response to the
+certificate and returns it to the client during the TLS
+handshake. This approach enables the presenter of the
+certificate, rather than the issuing CA, to bear the resource
+cost of providing OCSP responses. It also enables the server to
+cache the OCSP responses and supply them to all clients. This
+significantly reduces the load on the OCSP responder because the
+response can be cached and periodically refreshed by the server
+rather than by each client.</p>
+</li>
+</ul>
+
+<h2><a name="client-driven-ocsp-and-certificate-revocation">Client-Driven OCSP and Certificate Revocation</a></h2>
+
+
+<p>Client-driven Online Certificate Status Protocol (OCSP)
+enables the client to check the certificate revocation status by
+connecting to an OCSP responder during the Transport Layer
+Security (TLS) handshake.</p>
+
+<p>The client-driven OCSP request occurs during the TLS handshake
+just after the client receives the certificate from the server
+and validates it.</p>
+
+<h3><a name="tls-handshake-with-client-driven-ocsp">TLS Handshake with Client-Driven OCSP</a></h3>
+
+<p>Client-driven OCSP is used during the TLS handshake between
+the client and the server to check the server certificate
+revocation status. After the client receives the certificate, it
+performs certificate validation. If the validation is successful,
+then the client verifies that the certificate was not revoked by
+the issuer. This is done by sending an OCSP request to an OCSP
+responder. After receiving the OCSP response, the client checks
+this response before completing the TLS handshake.</p>
+
+<p>The following figure illustrates how client-driven OCSP fits into the TLS handshake:</p>
+
+<p>TLS Handshake with Client-Driven OCSP</p>
+<img src="images/client-driven-ocsp.png" alt="TLS Handshake with Client-Driven OCSP"/>
+
+<p>This figure illustrates the following sequence:</p>
+
+<ol>
+<li>
+<p>The client sends a ClientHello message to the server.</p>
+</li>
+<li>
+<p>The server receives this message and processes it.</p>
+</li>
+<li>
+<p>The server sends a ServerHello message, followed by additional ServerHello messages, followed by a ServerHello done message to the client.</p>
+</li>
+<li>
+<p>The client validates the server certificate. The client sends an OCSP request to the OCSP responder for this certificate.</p>
+</li>
+<li>
+<p>The OCSP responder receives the request, then returns an OCSP response to the client.</p>
+</li>
+<li>
+<p>The client checks the OCSP response to determine if the certificate has been revoked.</p>
+</li>
+<li>
+<p>The client and server complete the TLS handshake (this takes multiple additional messages).</p>
+</li>
+</ol>
+
+<p>Usually the client finds the OCSP responder's URL by looking
+in the Authority Information Access (AIA) extension of the
+certificate, but it can be set to a static URL through the use of
+a system property.</p>
+
+<h3><a name="setting-up-a-java-client-to-use-client-driven-ocsp">Setting up a Java Client to use Client-Driven OCSP</a></h3>
+
+<p>Client-driven OCSP is enabled by enabling revocation checking
+and enabling OCSP.</p>
+
+<p>To configure a Java client to use client-driven
+OCSP, the Java client must already be set up to connect to a
+server using TLS.</p>
+
+<ol>
+  <li>Enable revocation checking. You can do this in two different ways.
+    <ul>
+      <li>Set the system property <code>com.sun.net.ssl.checkRevocation</code> to <code>true</code>.</li>
+      <li>Use the <code>setRevocationEnabled</code> method on <code>PKIXParameters</code>.</li>
+    </ul>
+  </li>
+  <li>Enable client-driven OCSP:
+
+   <p>Set the Security Property <code>ocsp.enable</code> to <code>true</code>.</p>
+
+   </li>
+</ol>
+
+<p>Both steps are necessary. The <code>ocsp.enable</code> setting has no effect unless revocation checking is enabled.</p>
+
+<h2><a name="ocsp-stapling-and-certificate-revocation">OCSP Stapling and Certificate Revocation</a></h2>
+
+<p>Online Certificate Status Protocol (OCSP) stapling enables the
+presenter of a certificate, rather than the issuing Certificate
+Authority (CA), to bear the resource cost of providing the OCSP
+responses that contain the certificate's revocation
+status.</p>
+
+<h3><a name="tls-handshake-with-ocsp-stapling">TLS Handshake with OCSP Stapling</a></h3>
+
+<p>OCSP stapling is used during the Transport Layer Security
+(TLS) handshake between the client and the server to check the
+server certificate revocation status. The server makes the OCSP
+request to the OCSP responder and staples the OCSP responses to
+the certificates returned to the client. By having the server
+make the request to the OCSP responder, the responses can be
+cached, and then used multiple times for many clients.</p>
+
+<p>The TLS handshake begins with the TLS ClientHello message. When OCSP stapling is used, this message is sent to the server with the status_request extension that indicates that the server should perform an OCSP request. After processing the ClientHello message, the server sends an OCSP request to the appropriate OCSP responder for each certificate. When the server receives the OCSP responses from the OCSP responders, it sends a ServerHello message with its status_request extension, indicating that OCSP responses will be provided in the TLS handshake. The server will then present the server certificate chain, followed by a message that consists of one or more OCSP responses for those certificates. The client receiving the certificates with stapled OCSP responses validates each certificate, and then checks the OCSP responses before continuing with the handshake.</p>
+
+<p>If, from the client's perspective, the stapled OCSP response from the server for a certificate is missing, the client will attempt to
+use client-driven OCSP or Certificate Revocation Lists (CRLs) to
+get revocation information if the following are true:</p>
+
+
+<ul><li>
+<p>The <code>RevocationEnabled</code> flag is set to <code>true</code> through the <code>PKIXParameters.setRecovcationEnabled</code> method.</p>
+</li>
+<li>
+<p>OCSP checking is enabled by setting the <code>ocsp.enable</code> Security Property to <code>true</code>.</p>
+</li>
+</ul>
+
+<p>The following figure illustrates how client-driven OCSP fits into the TLS handshake:</p>
+
+<p>TLS Handshake with OCSP Stapling</p>
+<img src="images/ocsp-stapling.png" alt="TLS Handshake with Client-Driven OCSP"/>
+
+<p>This figure illustrates the following sequence:</p>
+
+<ol>
+<li>
+<p>The client sends a ClientHello message with a status request extension to the server.</p>
+</li>
+<li>
+<p>The server receives this message and processes it.</p>
+</li>
+<li>
+<p>The server sends an OCSP request to the OCSP responder for this certificate.</p>
+</li>
+<li>
+<p>The OCSP responder receives the request, then returns an OCSP response to the server.</p>
+</li>
+<li>
+<p>The server sends a ServerHello message with a status request extension to the client.</p>
+</li>
+<li>
+<p>The server sends a certificate message to the client.</p>
+</li>
+<li>
+<p>The server sends a certificate status message to the client.</p>
+</li>
+<li>
+<p>The server sends additional ServerHello messages, followed by a ServerHello done messages to the client.</p>
+</li>
+<li>
+<p>The client validates the server certificate</p>
+</li>
+<li>
+<p>The client checks the OCSP response in the certificate status message to determine if the certificate has been revoked.</p>
+</li>
+<li>
+<p>The client and server complete the TLS handshake (this takes multiple additional messages).</p>
+</li>
+</ol>
+
+
+
+<p>OCSP checking works in conjunction with CRLs during revocation
+checking. See <a href="#ocsp-pki">OCSP Support for PKI</a>.</p>
+
+<h3><a name="status-request-versus-multiple-status-request">Status Request Versus Multiple Status Request</a></h3>
+
+<p>The OCSP stapling feature implements the TLS Certificate
+Status Request extension (section 8 of <a href=
+"https://datatracker.ietf.org/doc/html/rfc6066">RFC 6066</a>) and the Multiple Certificate Status
+Request Extension (<a href="https://datatracker.ietf.org/doc/html/rfc6961">RFC 6961</a>).</p>
+
+<p>The TLS Certificate Status Request extension requests
+revocation information for only the server certificate in the
+certificate chain while the Multiple Certificate Status Request
+Extension requests revocation information for all certificates in
+the certificate chain. In the case where only the server
+certificate's revocation information is sent to the client, other
+certificates in the chain may be verified using the Certificate
+Revocation Lists (CRLs) or client-driven OCSP (but the client
+will need to be set up to do this).</p>
+
+<p>Although TLS allows the server to also request the
+client's certificate, there is no provision in OCSP
+stapling that enables the client to contact the appropriate OCSP
+responder and staple the response to the certificate sent to the
+server.</p>
+
+<h3><a name="the-ocsp-request-and-response">The OCSP Request and Response</a></h3>
+
+<p>OCSP request and response messages are usually sent over
+unencrypted HTTP. The response is signed by the CA.</p>
+<p>If necessary, the stapled responses can be obtained in the
+client code by calling the <code>getStatusResponses</code> method on the <code>ExtendedSSLSession</code> object. The method signature
+is:</p>
+
+<pre class="codeblock">public List&lt;byte[]&gt; getStatusResponses();</pre>
+
+<p>The OCSP response is encoded using the Distinguished Encoding
+Rules (DER) in a format described by the ASN.1 found in <a href=
+"https://datatracker.ietf.org/doc/html/rfc6960">RFC 6960</a>.</p>
+
+
+<h3><a name="setting-up-a-java-client-to-use-ocsp-stapling">Setting up a Java Client to Use OCSP Stapling</a></h3>
+
+<p>Online Certificate Status Protocol (OCSP) stapling is enabled
+on the client side by setting the system property <code>jdk.tls.client.enableStatusRequestExtension</code> to
+<code>false</code> (its default value).</p>
+
+<p>To configure a Java client to make use of the OCSP
+response stapled to the certificate returned by a server, the
+Java client must already be set up to connect to a server using
+TLS, and the server must be set up to staple an OCSP response to
+the certificate it returns part of the TLS handshake.</p>
+
+<ol>
+<li>Enable OCSP stapling on the client:
+
+<p>If necessary, set the system property <code>jdk.tls.client.enableStatusRequestExtension</code> to
+<code>true</code>.</p>
+
+</li>
+<li>Enable revocation checking. You can do this in two different ways.
+<ul>
+<li>Set the system property <code>com.sun.net.ssl.checkRevocation</code> to <code>true</code>. You can do this from the command line or in
+the code.</li>
+<li>Use the <code>setRevocationEnabled</code>
+method on the <code>PKIXParameters</code> class.</li>
+</ul>
+
+<p>For the client to include the stapled responses received from
+the server in the certificate validation, revocation checking
+must be set to <code>true</code>. If revocation
+checking is not set to <code>true</code>, then the
+connection will be allowed to proceed regardless of the presence
+or status of the revocation information</p>
+
+</li>
+</ol>
+
+<h3><a name="setting-up-a-java-server-to-use-ocsp-stapling">Setting Up a Java Server to Use OCSP Stapling</a></h3>
+
+<p>Online Certificate Status Protocol (OCSP) stapling is enabled
+on the server by setting the system property <code>jdk.tls.server.enableStatusRequestExtension</code> to
+<code>true</code>. (It is set to <code>false</code> by default.)</p>
+
+<p>The following steps can be used to configure a
+Java server to connect to an OCSP responder and staple the OCSP
+response to the certificate to be returned to the client. The
+Java server must already be set up to respond to clients using
+TLS.</p>
+
+
+<ol>
+<li>Enable OCSP stapling on the
+server:
+
+<p>Set the system property <code>jdk.tls.server.enableStatusRequestExtension</code> to
+<code>true</code>.</p>
+
+</li>
+<li><strong>Optional:</strong> Set other
+properties as required. See the next section, "OCSP Stapling Configuration Properties," for a list of the
+valid properties.</li>
+</ol>
+
+
+<h2><a name="ocsp-stapling-configuration-properties">OCSP Stapling Configuration Properties</a></h2>
+
+<p>This topic lists the effects of setting various properties
+when using the Online Certificate Status Protocol (OCSP). It
+shows the properties used in both client-driven OCSP and OCSP
+stapling.</p>
+
+<h3><a name="server-side-properties">Server-Side Properties</a></h3>
+
+<p>Most of the properties are read at <code>SSLContext</code> instantiation time. This means that if
+you set a property, you must obtain a new <code>SSLContext</code> object so that an <code>SSLSocket</code> or <code>SSLEngine</code> object you obtain from that
+<code>SSLContext</code> object will reflect the
+property setting. The one exception is the <code>jdk.tls.stapling.responseTimeout</code> property. That
+property is evaluated when the <code>ServerHandshaker</code> object is created (essentially
+at the same time that an <code>SSLSocket</code> or
+<code>SSLEngine</code> object gets created).</p>
+
+<table border="1" cellspacing="0" summary="Server-side OCSP stapling properties">
+<thead>
+<tr>
+<th id="h1">Property (available since JDK 8u261)</th>
+<th id="h2">Description</th>
+<th id="h3">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h1"><code>jdk.tls.server.enableStatusRequestExtension</code></td>
+<td headers="h2">Enables the server-side support for OCSP
+stapling.</td>
+<td headers="h3"><code>false</code></td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.responseTimeout</code></td>
+<td headers="h2">
+<p>Controls the maximum amount of time the server will use to
+obtain OCSP responses, whether from the cache or by contacting an
+OCSP responder.</p>
+<p>The responses that are already received will be sent in a
+<code>CertificateStatus</code> message, if
+applicable based on the type of stapling being done.</p>
+</td>
+<td headers="h3">5000 (integer value in milliseconds)</td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.cacheSize</code></td>
+<td headers="h2">
+<p>Controls the maximum cache size in entries.</p>
+<p>If the cache is full and a new response needs to be cached,
+then the least recently used cache entry will be replaced with
+the new one. A value of zero or less for this property means that
+the cache will have no upper bound on the number of responses it
+can contain.</p>
+</td>
+<td headers="h3">256 objects</td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.cacheLifetime</code></td>
+<td headers="h2">
+<p>Controls the maximum life of a cached response.</p>
+<p>It is possible for responses to have shorter lifetimes than
+the value set with this property if the response has a
+nextUpdate field that expires sooner
+than the cache lifetime. A value of zero or less for this
+property disables the cache lifetime. If an object has no
+nextUpdate value and cache lifetimes
+are disabled, then the response will not be cached.</p>
+</td>
+<td headers="h3">3600 seconds (1 hour)</td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.responderURI</code></td>
+<td headers="h2">
+<p>Enables the administrator to set a default URI in the event
+that certificates used for TLS do not have the Authority Info
+Access (AIA) extension.</p>
+<p>It will not override the Authority Info Access extension value
+unless the <code>jdk.tls.stapling.responderOverride</code> property is
+set.</p>
+</td>
+<td headers="h3">Not set</td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.responderOverride</code></td>
+<td headers="h2">
+<p>Enables a URI provided through the <code>jdk.tls.stapling.responderURI</code> property to
+override any AIA extension value.</p>
+</td>
+<td headers="h3"><code>false</code></td>
+</tr>
+<tr>
+<td headers="h1"><code>jdk.tls.stapling.ignoreExtensions</code></td>
+<td headers="h2">
+<p>Disables the forwarding of OCSP extensions specified in
+the <code>status_request</code> or <code>status_request_v2</code> TLS extensions.</p>
+</td>
+<td headers="h3"><code>false</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3><a name="client-side-settings">Client-Side Settings</a></h3>
+
+<table border="1" cellspacing="0" summary="Client-side settings used in OCSP stapling">
+<thead>
+<tr>
+<th id="h101">
+PKIXBuilderParameters</th>
+<th id="h102">
+checkRevocation Property</th>
+<th id="h103">
+PKIXRevocationChecker</th>
+<th id="h104">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h101">Default</td>
+<td headers="h102">Default</td>
+<td headers="h103">Default</td>
+<td headers="h104">Revocation checking is disabled.</td>
+</tr>
+<tr>
+<td headers="h101">Default</td>
+<td headers="h102"><code>true</code></td>
+<td headers="h103">Default</td>
+<td headers="h104">Revocation checking is enabled.<sup><a href="#footnote1">1</a></sup></td>
+</tr>
+<tr>
+<td headers="h101">Instantiated</td>
+<td headers="h102">Default</td>
+<td headers="h103">Default</td>
+<td headers="h104">Revocation checking is enabled.<sup><a href="#footnote1">1</a></sup></td>
+</tr>
+<tr>
+<td headers="h101">Instantiated</td>
+<td headers="h102">Default</td>
+<td headers="h103">Instantiated, added to <code>PKIXBuilderParameters</code> object.</td>
+<td headers="h104">Revocation checking is enabled.<sup><a href="#footnote1">1</a></sup> It will also
+behave according to the <code>PKIXRevocationChecker</code> settings.</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- class="inftblhruleinformal" -->
+<p><sup><a name="footnote1">1</a></sup>Note that client-side OCSP fallback will occur only if
+the <code>ocsp.enable</code> Security Property is
+set to <code>true</code>.</p>
+
+<p>Developers have some flexibility in how to handle the
+responses provided through OCSP stapling. OCSP stapling makes no
+changes to the current methodologies involved in certificate path
+checking and revocation checking. This means that it is possible
+to have both client and server assert the <code>status_request</code> extensions, obtain OCSP responses
+through the <code>CertificateStatus</code> message, and provide user
+flexibility in how to react to revocation information, or the
+lack thereof.</p>
+<p>If no <code>PKIXBuilderParameters</code> is
+provided by the caller, then revocation checking is disabled. If
+the caller creates a <code>PKIXBuilderParameters</code> object and uses
+the <code>setRevocationEnabled</code> method to
+enable revocation checking, then stapled OCSP responses will be
+evaluated. This is also the case if the <code>com.sun.net.ssl.checkRevocation</code> property is set
+to <code>true</code>.</p>
+
+<h2><a name="ocsp-pki">OCSP Support for PKI</a></h2>
+
+<p>Client-side support for the On-Line Certificate Status
+Protocol (OCSP) as defined in RFC 2560 is supported.</p>
+OCSP checking is controlled by the following
+five Security Properties:
+
+
+<table border="1" cellspacing="0" summary="Security Properties that control OCSP checking">
+<thead>
+<tr>
+<th id="h201">Property Name</th>
+<th id="h202">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h201"><code>ocsp.enable</code></td>
+<td headers="h202">This property's value is either <code>true</code> or
+<code>false</code>. If <code>true</code>, OCSP checking is enabled when doing certificate
+revocation checking; if <code>false</code> or not set, OCSP checking is
+disabled.</td>
+</tr>
+<tr>
+<td headers="h201"><code>ocsp.responderURL</code></td>
+<td headers="h202">This property's value is a URL that
+identifies the location of the OCSP responder. Here is an example:
+<pre>ocsp.responderURL=http://ocsp.example.net:80</pre>
+<p>By default, the location of the OCSP responder is determined
+implicitly from the certificate being validated. The property is
+used when the Authority Information Access extension (defined in
+RFC 5280) is absent from the certificate or when it requires
+overriding.</p>
+</td>
+</tr>
+<tr>
+<td headers="h201"><code>ocsp.responderCertSubjectName</code></td>
+<td headers="h202">This property's value is the subject
+name of the OCSP responder's certificate. Here is an example:
+<pre>ocsp.responderCertSubjectName="CN=OCSP Responder, O=XYZ Corp"</pre>
+<p>By default, the certificate of the OCSP responder is that of
+the issuer of the certificate being validated. This property
+identifies the certificate of the OCSP responder when the default
+does not apply. Its value is a string distinguished name (defined
+in RFC 2253) which identifies a certificate in the set of
+certificates supplied during cert path validation. In cases where
+the subject name alone is not sufficient to uniquely identify the
+certificate, then both the <code>ocsp.responderCertIssuerName</code> and <code>ocsp.responderCertSerialNumber</code> properties must be
+used instead. When this property is set, then those two
+properties are ignored.</p>
+</td>
+</tr>
+<tr>
+<td headers="h201"><code>ocsp.responderCertIssuerName</code></td>
+<td headers="h202">This property's value is the issuer
+name of the OCSP responder's certificate . Here is an example:
+<pre>ocsp.responderCertIssuerName="CN=Enterprise CA, O=XYZ Corp"</pre>
+<p>By default, the certificate of the OCSP responder is that of
+the issuer of the certificate being validated. This property
+identifies the certificate of the OCSP responder when the default
+does not apply. Its value is a string distinguished name (defined
+in RFC 2253) which identifies a certificate in the set of
+certificates supplied during cert path validation. When this
+property is set then the <code>ocsp.responderCertSerialNumber</code> property must also
+be set. Note that this property is ignored when the <code>ocsp.responderCertSubjectName</code> property has been
+set.</p>
+</td>
+</tr>
+<tr>
+<td headers="h201"><code>ocsp.responderCertSerialNumber</code></td>
+<td headers="h202">This property's value is the serial
+number of the OCSP responder's certificate Here is an example:
+<pre>ocsp.responderCertSerialNumber=2A:FF:00</pre>
+<p>By default, the certificate of the OCSP responder is that of
+the issuer of the certificate being validated. This property
+identifies the certificate of the OCSP responder when the default
+does not apply. Its value is a string of hexadecimal digits
+(colon or space separators may be present) which identifies a
+certificate in the set of certificates supplied during cert path
+validation. When this property is set then the <code>ocsp.responderCertIssuerName</code> property must also
+be set. Note that this property is ignored when the <code>ocsp.responderCertSubjectName</code> property has been
+set.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- class="inftblhruleinformal" -->
+<p>These properties may be set either statically in the Java
+runtime's
+<code>&lt;java_home&gt;/conf/security/java.security</code> file,
+or dynamically using the <code>java.security.Security.setProperty()</code> method.</p>
+<p>By default, OCSP checking is not enabled. It is enabled by
+setting the <code>ocsp.enable</code> property to
+<code>true</code>. Use of the remaining
+properties is optional. Note that enabling OCSP checking only has
+an effect if revocation checking has also been enabled.
+Revocation checking is enabled via the <code>PKIXParameters.setRevocationEnabled()</code>
+method.</p>
+<p>OCSP checking works in conjunction with Certificate Revocation
+Lists (CRLs) during revocation checking. Below is a summary of
+the interaction of OCSP and CRLs. Failover to CRLs occurs only if
+an OCSP problem is encountered. Failover does not occur if the
+OCSP responder confirms either that the certificate has been
+revoked or that it has not been revoked.</p>
+
+
+<table border="1" cellspacing="0" summary="Summary of the interaction of OCSP and CRLs">
+<thead>
+<tr>
+<th id="h301">PKIXParameters RevocationEnabled (default <code>true</code>)</th>
+<th id="h302"><code>ocsp.enable</code>
+(default <code>false</code>)</th>
+<th id="h303">Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h301"><code>true</code></td>
+<td headers="h302"><code>true</code></td>
+<td headers="h303">Revocation checking using OCSP,
+failover to using CRLs</td>
+</tr>
+<tr>
+<td headers="h301"><code>true</code></td>
+<td headers="h302"><code>false</code></td>
+<td headers="h303">Revocation checking using CRLs
+only</td>
+</tr>
+<tr>
+<td headers="h301"><code>false</code></td>
+<td headers="h302"><code>true</code></td>
+<td headers="h303">No revocation checking</td>
+</tr>
+<tr>
+<td headers="h301"><code>false</code></td>
+<td headers="h302"><code>false</code></td>
+<td headers="h303">No revocation checking</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- class="inftblhruleinformal" -->
+<!-- class="section" -->
+
+<h3><a name="maximum-allowable-clock-skew">Maximum Allowable Clock Skew</a></h3>
+
+<p>You might encounter connection failures during revocation
+checking because the network is slow or the system clock is off
+by some amount. Set the maximum allowable clock skew (the time
+difference between response time and local time), in seconds,
+used for revocation checks with the system property <code>com.sun.security.ocsp.clockskew</code>. If the property
+has not been set, or if its value is negative, it's set to the
+default value of 900 seconds (15 minutes).</p>
+
+
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

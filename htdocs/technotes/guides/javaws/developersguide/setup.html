@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" xml:lang=
+"en-US">
+<head>
+<title>Setting Up the Web Server</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<p><small><a href="contents.html">&lt; Contents</a></small></p>
+<h1>Setting Up the Web Server</h1>
+
+<a name="intro" id="intro"/>
+
+<p>Applications can be deployed from any standard web server. Java Web Start 
+leverages existing internet technology, such as the HTTP protocol and web 
+servers, so existing infrastructure for deploying HTML-based content can be 
+reused to deploy Java Technology-based applications using Java Web Start.</p>
+<p>To deploy your application to client machines, ensure that all files that 
+contain your application are accessible through a web server. This typically 
+requires copying one or more JAR files and a JNLP file into the web server's 
+directories. Enabling the website to support Java Web Start is similar to 
+deploying HTML-based content. In addition, to use Java Web Start, the web server 
+must be configured to support the <code >application/x-java-jnlp-file</code> 
+MIME type.</p>
+
+<p><strong>Step 1: Configure the web server to use the Java Web Start MIME type.</strong></p>
+
+<p>Many web servers come with the Java Web Start MIME type configured by default. If your web server does not, configure it so that all files with the <code>.jnlp</code> file extension are set to the <code>application/x-java-jnlp-file</code> MIME type.</p>
+
+<p>Most web browsers use the MIME type returned with the contents from the web server to determine how to handle the particular content. The server must return the <code>application/x-java-jnlp-file</code> MIME type for JNLP files in order for Java Web Start to be invoked.</p>
+
+<p>Each web server has a specific way in which to add MIME types. For example, for the Apache web server, you add the following line to the <code>.mime.types</code> configuration file:</p>
+
+<p><code>application/x-java-jnlp-file JNLP</code></p>
+
+<p>Check the documentation for the specifics of your web server.</p>
+
+<p><strong>Step 2: Create a JNLP file for the application.</strong></p>
+
+<p>The easiest way to create this file is to modify an existing JNLP file with your requirements. A simple JNLP file is shown in the following example:</p>
+
+<pre class="codeblock">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;jnlp spec="8.0+"
+  codebase="http://example.com/demos/helloworld" 
+  href="HelloWorld.jnlp"&gt;
+  &lt;information&gt;
+    &lt;title&gt;HelloWorld&lt;/title&gt;
+    &lt;description&gt;HelloWorld demo application&lt;/description&gt;
+  &lt;/information&gt;
+
+  &lt;resources&gt;
+    &lt;j2se version="1.8+"/&gt;
+    &lt;jar href="HelloWorld.jar" size="47013" download="eager" /&gt;
+  &lt;/resources&gt;
+
+  &lt;application-desc main-class="HelloWorld"/&gt;
+&lt;/jnlp&gt;
+</pre>
+
+<p>The syntax and format for the JNLP file is described in <a href="syntax.html">JNLP File Syntax</a>.</p>
+
+<p><strong>Step 3: Make the application accessible on the web server.</strong></p>
+
+<p>Ensure that your application's JAR files and the JNLP file are accessible at the URLs listed in the JNLP file.</p>
+
+<p><strong>Step 4: Create the web page that launches the application.</strong></p>
+
+<p>Create the web page and include one of the following options for starting a Java Web Start application:</p>
+<ul>
+<li>
+<p>Use a link to the JNLP file, as shown in the following examples:</p>
+<pre class="codeblock">&lt;a href="/some/path/HelloWorld.jnlp"&gt;Launch HelloWorld demo&lt;/a&gt;
+
+&lt;a href="https://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp"&gt;Launch DynamicTree demo&lt;/a&gt;
+
+&lt;a href="http://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp"&gt;Launch DynamicTree demo&lt;/a&gt;
+</pre></li>
+<li>
+<p>Use JavaScript, as shown in the following example:</p>
+<pre class="codeblock">&lt;script src="https://www.java.com/js/deployJava.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    var url = "https://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp";
+    deployJava.createWebStartLaunchButton(url, '1.6.0');
+&lt;/script&gt;
+</pre></li>
+<li>
+<p>Use a link with the <code>jnlp:</code> schema, as shown in the following example:</p>
+<pre class="codeblock">&lt;a href="jnlp:https://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp"&gt;Launch DynamicTree demo&lt;/a&gt;
+</pre></li>
+<li>
+<p>Copy the JavaScript code from the HTML file generated by the Java Packager tool. See <a href="../../deploy/packager.html">The Java Packager Tool</a> in <em>Java Platform, Standard Edition Deployment Guide</em>.</p>
+</li>
+</ul>
+
+<h2><a name="installing-jws-protocol-handler">Installing the Java Web Start Protocol Handler</a></h2>
+
+<p>Java Web Start includes a protocol handler to handle the custom URI schemes
+<code>jnlp:</code> and <code>jnlps:</code>. Use these schemes as a direct way to
+start Java Web Start applications.</p>
+
+<p>The protocol handler is automatically installed on Windows and macOS systems.
+It must be manually installed on Linux systems.</p>
+
+<a name="chrome"/>
+<h3>Installing the Protocol Handler for Chrome</h3>
+
+<p>If you use the Chrome browser on Linux, manually install the protocol handler
+that enables you to start Java Web Start applications using the
+<code>jnlp</code> or <code>jnlps</code> protocol.</p>
+
+<p>In Linux, the <code>xdg-open</code> command is used to open a file or URL in 
+the user's preferred application. To install the protocol handler, configure 
+<code>xdg-open</code> to use Java Web Start for URLs that include the 
+<code>jnlp</code> or <code>jnlps</code> protocol:</p>
+
+<ol>
+<li><p>Use a text editor to create a file named <code>javaws.desktop</code> in the 
+<code>~/.local/share/applications</code> directory.</p></li>
+<li><p>Include the statements shown in the following example.</p>
+
+<pre class="codeblock">[Desktop Entry] 
+Encoding=UTF-8 
+Name=Java(TM) Web Launcher 
+Exec=<em>jre-home</em>/bin/javaws %U 
+Terminal=false 
+Type=Application 
+MimeType=x-scheme-handler/jnlp;x-scheme-handler/jnlps</pre>
+
+</li>
+<li><p>Save the file.</p></li>
+<li><p>Run the following commands:</p>
+
+<pre>xdg-mime default javaws.desktop x-scheme-handler/jnlp 
+xdg-mime default javaws.desktop x-scheme-handler/jnlps</pre>
+</li>
+
+</ol>
+
+<p>After installing the protocol handler, Java Web Start is used to launch 
+applications when the URL contains the <code>jnlp</code> or <code>jnlps</code> 
+protocol. For example, the following URL starts the Dynamic Tree sample from the 
+Java Tutorials:</p>
+
+<pre class="codeblock">jnlps://docs.oracle.com/javase/tutorialJWS/samples/deployment/dynamictree_webstartJWSProject/dynamictree_webstart.jnlp</pre>
+
+<a name="firefox"/>
+<h3>Installing the Protocol Handler in Firefox</h3>
+
+<p>If you use the Firefox browser on Linux, manually install the protocol 
+handler that enables you to start Java Web Start applications using the 
+<code>jnlp</code> or <code>jnlps</code> protocol.</p>
+
+<p>To install the protocol handler, add properties to the Firefox configuration:</p>
+
+
+<ol>
+<li><p>In the address bar in Firefox, enter <code>about:config</code>.</p>
+<p>If you see a page with a warning about voiding your warranty, click
+<strong>I'll be careful, I promise!</strong> to continue to the configuration page.</p>
+</li>
+
+<li><p>Add a Boolean property.</p>
+
+<ol>
+<li>Right-click on the page and select <strong>New</strong>, and then select <strong>Boolean</strong>.</li>
+<li>In the <strong>New Boolean Value</strong> window, enter the name 
+<code>network.protocol-handler.expose.jnlp</code> and click <strong>OK</strong>.</li>
+<li>Select <strong>false</strong> for the value and click <strong>OK</strong>.</li>
+</ol>
+
+<p>The property is added to the configuration.</p>
+
+</li>
+<li>Repeat the previous step to add the property <code>network.protocol-handler.expose.jnlps</code> 
+with the value <strong>false</strong>.</li>
+
+</ol>
+
+<p>When you enter a URL or click a link that uses the <code>jnlp</code> or
+<code>jnlps</code> protocol, you are prompted to choose the application to use 
+to open the file. Select <strong>Java Web Start Launcher</strong> or browse to the
+<code>javaws.exe</code> file in <code><em>jre-home</em>/bin</code>.</p>
+
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

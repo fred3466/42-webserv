@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<head>
+<meta content="text/html; charset=us-ascii" http-equiv="Content-Type"/>
+<meta content="text/css" http-equiv="Content-Style-Type"/>
+<meta content="text/javascript" http-equiv="Content-Script-Type"/>
+<title>The jmap Utility</title>
+<meta content="Oracle DARB XHTML Converter (Mode = document) - Merged Version 1033" name="generator"/>
+<meta content="This guide helps you to troubleshoot issues that might occur with Java Client applications created on the Java Platform, Standard Edition (Java SE) and Java HotSpot VM." name="description"/>
+<meta content="2014-12-22T14:9:28Z" name="date"/>
+<meta content="noarchive" name="robots"/>
+<meta content="Java Platform, Standard Edition Troubleshooting Guide, Release 8" name="doctitle"/>
+<meta content="Release 8" name="relnum"/>
+<meta content="E54483-02" name="partnum"/>
+<meta content="JSTGD" name="docid"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<b>Java Platform, Standard Edition Troubleshooting Guide</b><br/>
+
+<a href="toc.html">
+                Contents</a>&nbsp;&nbsp;&nbsp;<a href="tooldescr013.html">
+                Previous</a>&nbsp;&nbsp;&nbsp;<a href="tooldescr015.html">
+                Next</a><hr/><a id="BABGAFEG" name="BABGAFEG"/>
+<div id="JSTGD200">
+<h1><span>2.14</span> The jmap Utility</h1>
+<p>The <code dir="ltr">jmap</code> command-line utility prints memory-related statistics for a running VM or core file.</p>
+<p>The utility can also use the <code dir="ltr">jsadebugd</code> daemon to query a process or core file on a remote machine. <i>Note:</i> The output takes longer to print in this case.</p>
+<p>The release of JDK 8 introduced Java Mission Control, Java Flight Recorder, and <code dir="ltr">jcmd</code> utility for diagnosing problems with JVM and Java applications. It is suggested to use the latest utility, <code dir="ltr">jcmd</code> instead of the previous <code dir="ltr">jmap</code> utility for enhanced diagnostics and reduced performance overhead.</p>
+<p>If <code dir="ltr">jmap</code> is used with a process or core file without any command-line options, then it prints the list of shared objects loaded (the output is similar to the <code dir="ltr">pmap</code> utility on Oracle Solaris operating system). For more specific information, you can use the options <code dir="ltr">-heap</code>, <code dir="ltr">-histo</code>, or <code dir="ltr">-permstat</code>. These options are described in the subsections that follow.</p>
+<p>In addition, the JDK 7 release introduced the <code dir="ltr">-dump:format=b,file=</code><span>filename</span> option, which causes <code dir="ltr">jmap</code> to dump the Java heap in binary HPROF format to a specified file. This file can then be analyzed with the <code dir="ltr">jhat</code> tool.</p>
+<p>If the <code dir="ltr">jmap</code> <span>pid</span> command does not respond because of a hung process, then the <code dir="ltr">-F</code> option can be used (on Oracle Solaris and Linux operating systems only) to force the use of the Serviceability Agent.</p>
+<p>For more details on the <code dir="ltr">jmap</code> utility, see the <a href="../../tools/unix/jmap.html"><code dir="ltr">jmap</code> command man page</a>.</p>
+<p>The following sections describe <code dir="ltr">jmap</code> command usage and troubleshooting techniques with examples that print memory-related statistics for a running VM or a core file.</p>
+<ul>
+<li>
+<p><a href="#BABJDAJB">Heap Configuration and Usage</a></p>
+</li>
+<li>
+<p><a href="#BABJIIHH">Heap Histogram</a></p>
+</li>
+<li>
+<p><a href="#class_loader_statistics">Class Loader Statistics</a></p></li>
+</ul>
+<a id="BABJDAJB" name="BABJDAJB"/>
+<div id="JSTGD201">
+<h2><span>2.14.1</span> Heap Configuration and Usage</h2>
+<p>The <code dir="ltr">-heap</code> option is used to obtain the following Java heap information:</p>
+<ul>
+<li>
+<p>Information specific to the garbage collection (GC) algorithm, including the name of the GC algorithm (for example, parallel GC) and algorithm-specific details (such as number of threads for parallel GC).</p>
+</li>
+<li>
+<p>Heap configuration that might have been specified as command-line options or selected by the VM based on the machine configuration.</p>
+</li>
+<li>
+<p>Heap usage summary: For each generation (area of the heap), the tool prints the total heap capacity, in-use memory, and available free memory. If a generation is organized as a collection of spaces (for example, the new generation), then a space specific memory size summary is included.</p>
+</li>
+</ul>
+<p><a href="#BABJIIIH">Example 2-22</a> shows output from the <code dir="ltr">jmap -heap</code> command.</p>
+<div id="JSTGD202"><a id="BABJIIIH" name="BABJIIIH"/>
+<p>Example 2-22 Java Heap Information from jmap -heap Command</p>
+<pre dir="ltr" xml:space="preserve">
+$ <code dir="ltr"><span>jmap -heap 29620</span></code>
+Attaching to process ID 29620, please wait...
+Debugger attached successfully.
+Client compiler detected.
+JVM version is 1.6.0-rc-b100
+
+using thread-local object allocation.
+Mark Sweep Compact GC
+
+Heap Configuration:
+   MinHeapFreeRatio = 40
+   MaxHeapFreeRatio = 70
+   MaxHeapSize      = 67108864 (64.0MB)
+   NewSize          = 2228224 (2.125MB)
+   MaxNewSize       = 4294901760 (4095.9375MB)
+   OldSize          = 4194304 (4.0MB)
+   NewRatio         = 8
+   SurvivorRatio    = 8
+   PermSize         = 12582912 (12.0MB)
+   MaxPermSize      = 67108864 (64.0MB)
+
+Heap Usage:
+New Generation (Eden + 1 Survivor Space):
+   capacity = 2031616 (1.9375MB)
+   used     = 70984 (0.06769561767578125MB)
+   free     = 1960632 (1.8698043823242188MB)
+   3.4939673639112905% used
+Eden Space:
+   capacity = 1835008 (1.75MB)
+   used     = 36152 (0.03447723388671875MB)
+   free     = 1798856 (1.7155227661132812MB)
+   1.9701276506696428% used
+From Space:
+   capacity = 196608 (0.1875MB)
+   used     = 34832 (0.0332183837890625MB)
+   free     = 161776 (0.1542816162109375MB)
+   17.716471354166668% used
+To Space:
+   capacity = 196608 (0.1875MB)
+   used     = 0 (0.0MB)
+   free     = 196608 (0.1875MB)
+   0.0% used
+tenured generation:
+   capacity = 15966208 (15.2265625MB)
+   used     = 9577760 (9.134063720703125MB)
+   free     = 6388448 (6.092498779296875MB)
+   59.98769400974859% used
+Perm Generation:
+   capacity = 12582912 (12.0MB)
+   used     = 1469408 (1.401336669921875MB)
+   free     = 11113504 (10.598663330078125MB)
+   11.677805582682291% used
+</pre></div>
+</div>
+
+<a id="BABJIIHH" name="BABJIIHH"/>
+<div id="JSTGD203">
+<h2><span>2.14.2</span> Heap Histogram</h2>
+<p>The <code dir="ltr">jmap</code> command with the <code dir="ltr">-histo</code> option can be used to obtain a class specific histogram of the heap. Depending on the parameter specified, the <code dir="ltr">jmap -histo</code> command can print out the heap histogram for a running process or a core file.</p>
+<p>When the command is executed on a running process, the tool prints the number of objects, memory size in bytes, and fully qualified class name for each class. Internal classes in the Java HotSpot VM are enclosed in angle brackets. The histogram is useful in understanding how the heap is used. To get the size of an object, you must divide the total size by the count of that object type.</p>
+<p><a href="#BABDJAGJ">Example 2-23</a> shows output from the <code dir="ltr">jmap -histo</code> command when it is executed on a process with PID number 29620.</p>
+<div id="JSTGD204"><a id="BABDJAGJ" name="BABDJAGJ"/>
+<p>Example 2-23 Class Specific Histogram of Java Heap for a Process</p>
+<pre dir="ltr" xml:space="preserve">
+$ <code dir="ltr"><span>jmap -histo 29620</span></code>
+num   #instances    #bytes  class name
+--------------------------------------
+  1:      1414     6013016  [I
+  2:       793      482888  [B
+  3:      2502      334928  &lt;constMethodKlass&gt;
+  4:       280      274976  &lt;instanceKlassKlass&gt;
+  5:       324      227152  [D
+  6:      2502      200896  &lt;methodKlass&gt;
+  7:      2094      187496  [C
+  8:       280      172248  &lt;constantPoolKlass&gt;
+  9:      3767      139000  [Ljava.lang.Object;
+ 10:       260      122416  &lt;constantPoolCacheKlass&gt;
+ 11:      3304      112864  &lt;symbolKlass&gt;
+ 12:       160       72960  java2d.Tools$3
+ 13:       192       61440  &lt;objArrayKlassKlass&gt;
+ 14:       219       55640  [F
+ 15:      2114       50736  java.lang.String
+ 16:      2079       49896  java.util.HashMap$Entry
+ 17:       528       48344  [S
+ 18:      1940       46560  java.util.Hashtable$Entry
+ 19:       481       46176  java.lang.Class
+ 20:        92       43424  javax.swing.plaf.metal.MetalScrollButton
+... more lines removed here to reduce output...
+1118:         1           8  java.util.Hashtable$EmptyIterator
+1119:         1           8  sun.java2d.pipe.SolidTextRenderer
+Total    61297    10152040
+</pre></div>
+
+<p>When the <code dir="ltr">jmap -histo</code> command is executed on a core file, the tool prints the size, count, and class name for each class. Internal classes in the Java HotSpot VM are prefixed with an asterisk (*).</p>
+<p><a href="#BABFEDHC">Example 2-24</a> shows output of the <code dir="ltr">jmap -histo</code> command when it is executed on a core file.</p>
+<div id="JSTGD205"><a id="BABFEDHC" name="BABFEDHC"/>
+<p>Example 2-24 Histogram of Java Heap for a Core File</p>
+<pre dir="ltr" xml:space="preserve">
+$ jmap -histo /usr/bin/java core
+Attaching to core core from executable /usr/bin/java, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 1.6.0-rc-b100
+Iterating over heap. This may take a while...
+Heap traversal took 8.902 seconds.
+
+Object Histogram:
+
+Size    Count    Class description
+-------------------------------------------------------
+4151816    2941    int[]
+2997816    26403    * ConstMethodKlass
+2118728    26403    * MethodKlass
+1613184    39750    * SymbolKlass
+1268896    2011    * ConstantPoolKlass
+1097040    2011    * InstanceKlassKlass
+882048    1906    * ConstantPoolCacheKlass
+758424    7572    char[]
+733776    2518    byte[]
+252240    3260    short[]
+214944    2239    java.lang.Class
+177448    3341    * System ObjArray
+176832    7368    java.lang.String
+137792    3756    java.lang.Object[]
+121744    74    long[]
+72960    160    java2d.Tools$3
+63680    199    * ObjArrayKlassKlass
+53264    158    float[]
+... more lines removed here to reduce output...
+</pre></div>
+</div>
+<div>
+<a name="class_loader_statistics"/>
+<h2><span>2.14.3</span> Class Loader Statistics</h2>
+
+   <p>Use the <code>jmap</code> command with the <code>-clstats</code> option to print class loader statistics for the Java heap.
+   </p>
+   <p>The <code>jmap</code> command connects to a running process using the process ID and prints detailed information about classes loaded in the Metaspace:
+   </p>
+   
+<ul>
+    <li><b>class_loader</b>: The address of the class loader object at the snapshot when the utility was run</li>
+    
+    <li><b>classes</b>: The number of classes loaded</li>
+    
+    <li><b>bytes</b>: The approximate number of bytes consumed by metadata for all classes loaded by this class loader</li>
+    
+    <li><b>parent_loader</b>: The address of the parent class loader (if any)</li>
+
+    <li><b>alive?</b>: A live or dead indication of whether the loader object will be garbage collected in the future</li>
+    
+    <li><b>type</b>: The class name of this class loader</li>
+</ul>
+   <p>The following example shows the output from the <code>jmap -clstats</code> command when it is executed on a process with PID number 16624. 
+   </p><pre>$ jmap -clstats 16624
+Attaching to process ID 16624, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.211-b12
+finding class loader instances ..done.
+computing per loader stat ..done.
+please wait.. computing liveness.liveness analysis may be inaccurate ...
+class_loader    classes bytes   parent_loader   alive?  type
+
+&lt;bootstrap>     982     1845411   null          live    &lt;internal>
+0x000000076f5081e0      1948    3133806   null          dead    sun/misc/Launcher$ExtClassLoader@0x00000007c000fc80
+0x000000076e13d3d0      1       1481      null          dead    sun/reflect/DelegatingClassLoader@0x00000007c000a028
+0x000000076ca9e100      0       0       0x000000076f510178      dead    java/util/ResourceBundle$RBClassLoader@0x00000007c01ade48
+0x000000076f510178      38      94160   0x000000076f5081e0      dead    sun/misc/Launcher$AppClassLoader@0x00000007c000f8d8
+
+total = 5       2969    5074858     N/A         alive=1, dead=4     N/A</pre>
+</div>
+</div>
+<a href="toc.html">
+                Contents</a>&nbsp;&nbsp;&nbsp;<a href="tooldescr013.html">
+                Previous</a>&nbsp;&nbsp;&nbsp;<a href="tooldescr015.html">
+                Next</a><hr/>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

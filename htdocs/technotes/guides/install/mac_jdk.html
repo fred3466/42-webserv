@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
+<head>
+<meta content="text/html; charset=us-ascii" http-equiv="Content-Type"/>
+<meta content="text/css" http-equiv="Content-Style-Type"/>
+<meta content="text/javascript" http-equiv="Content-Script-Type"/>
+<title>JDK 8 Installation for macOS</title>
+<meta content="Oracle DARB XHTML Converter (Mode = document) - Merged Version 1075" name="generator"/>
+<meta content="This page describes how to install and uninstall JDK 8 for macOS computers." name="description"/>
+<meta content="2016-01-06T16:14:50Z" name="date"/>
+<meta content="noarchive" name="robots"/>
+<meta content="Java Platform, Standard Edition Installation Guide for OpenJDK on Solaris, Linux, macOS, and Windows, Release 8u71" name="doctitle"/>
+<meta content="Release 8u71" name="relnum"/>
+<meta content="E50307-05" name="partnum"/>
+<meta content="no_value_supplied" name="docid"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<b>Java Platform, Standard Edition Installation Guide</b><br/>
+
+<a href="toc.html">
+                Contents</a>&nbsp;&nbsp;&nbsp;<a href="linux_plugin.html">
+                Previous</a>&nbsp;&nbsp;&nbsp;<a href="mac_jre.html">
+                Next</a><hr/>
+
+<a id="CHDBADCG" name="CHDBADCG"/>
+
+<!-- ******************************************************************* -->
+
+           <h1>10 Installation of the JDK on macOS</h1>
+
+         
+            
+               <p>The JDK supports both Intel-based (x64) and Apple Silicon (AArch64) Mac
+        computers. </p>
+               
+                  <p>This topic includes the following sections:</p>
+                  <ul>
+                     <li><a href="#system-requirements">System Requirements for Installing the JDK on macOS</a>
+                     </li>
+                     <li><a href="#notation">JDK Installation Instruction Notation for macOS</a>                        
+                     </li>
+                     <li><a href="#default">Determining the Default JDK Version on macOS</a>
+                     </li>
+                     <li><a href="#install">Installing the JDK on macOS</a>
+                     </li>
+                     <li><a href="#uninstall">Uninstalling the JDK on macOS</a>
+                     </li>
+                     <li><a href="#faq">Installation FAQ for macOS</a>
+                     </li>
+                  </ul>
+               
+               <!-- class="section" -->
+            
+            
+            <h2><a name="system-requirements">System Requirements for Installing the JDK on macOS</a></h2>
+               
+            <p>For supported processors and browsers, see <a href="https://www.oracle.com/java/technologies/javase/products-doc-jdk8-jre8-certconfig.html">Oracle JDK 8 and JRE 8 Certified System Configurations</a>.</p>
+
+            <p><strong>Note</strong>: Installing the JDK also installs the JRE. The one exception is that the system will not replace the current JRE with a lower version. To install a lower version of the JRE, first uninstall the current version as described in <a href="mac_jre.html#A1096890">"Uninstalling the JRE"</a>.</p>            
+                  
+                  <!-- class="section" -->
+               
+            
+            <h2><a name="notation">JDK Installation Instruction Notation for macOS</a></h2>
+               
+            <p>JDK installers now support only one version of any Java feature release. You can't install multiple versions of the same feature release.</p>
+                  
+                     
+            <p>For example, you can't install JDK 8u381 and JDK 8u371 simultaneously. If you attempt to install JDK 8u381 after JDK 8u371 is installed, the installer uninstalls JDK 8u371 and installs JDK 8u381.</p> 
+                        
+            <p><strong>Note</strong>: If you install an older version of a JDK when the newer version of the same feature family already exists, an error is displayed, prompting you to uninstall a newer JDK version if an older version has to be installed.</p> 
+                        
+            <p>The JDK is installed in <code>/Library/Java/JavaVirtualMachines/jdk-1.8.jdk</code> regardless of the update version. For example, JDK 8u381 is installed in this directory.</p>
+                    
+            <p>The file name of the installer is either <code>jdk-1.8_macos-<em>arch</em>_bin.dmg</code> or <code>jdk-1.8_macos-<em>arch</em>_bin.tar.gz</code>, where <code><em>arch</em></code> is <code>x64</code> for macmacOS64 systems or <code>aarch64</code> for macOS aarch64 (64-bit ARM) systems.</p>
+                    
+                  
+                     
+            
+            <h2><a name="default">Determining the Default JDK Version on macOS</a></h2>
+               
+            <p>When starting a Java application through the command line, the system uses the default JDK. There can be multiple JDKs installed on the macOS system:</p>
+                  
+                  
+                  
+            <p>You can determine which version of the JDK is the default by entering <code>java -version</code> in a Terminal window. If the installed version is 20 Interim 0, Update 0, and Patch 0, then you see a string that includes the text <code>1-8</code>. For example:</p>
+                  
+<pre>$ java -version
+java version "1.8.0_381"
+Java(TM) SE Runtime Environment (build 1.8.0_381-b07)
+Java HotSpot(TM) 64-Bit Server VM (build 25.381-b07, mixed mode)</pre>
+                  
+                  <p>To run a different version of Java, either specify the full path, or use the <code>java_home</code> tool. For example:</p>
+                   
+                  <p><code>$ /usr/libexec/java_home -v 8 --exec javac -version</code></p>
+                  
+                  <!-- class="section" -->
+               
+            
+             <h2><a name="install">Installing the JDK on macOS</a></h2>
+             
+             <p>When you install the Java Development Kit (JDK), the associated Java Runtime Environment (JRE) is installed at the same time.</p>
+               
+                  <p>To install the JDK on macOS:</p>
+                  
+                  
+                  <ol>
+                     <li>Download the required JDK <code>.dmg</code> or <code>.tar.gz</code> file from <a href="https://www.oracle.com/java/technologies/downloads/">Java Downloads</a>: 
+                           
+                           <ul>
+                              <li>macmacOS64 systems: <code>jdk-1.8_macos-x64_bin.dmg</code> OR
+                                    <code>jdk-1.8_macos-x64_bin.tar.gz</code></li>
+                              <li>macOS aarch64 (64-bit ARM) systems: <code>jdk-1.8_macos-aarch64_bin.dmg</code>
+                            OR
+                            <code>jdk-1.8_macos-aarch64_bin.tar.gz</code></li>
+                           </ul>
+                           
+                           <p>Click Accept License Agreement.</p>
+                           
+                        
+                     </li>
+                     
+                     <li>From either the browser <strong>Downloads</strong> window or from the file browser, double-click the <code>.dmg</code> file to start it. A <strong>Finder</strong> window appears that contains an icon of an open box and the name of the <code>.pkg</code> file.</li>
+                     
+                     <li>Double-click the <code>JDK 1.8.pkg</code> icon to start the installation application. The installation application displays the <strong>Introduction</strong> window.</li>
+                     
+                     <li>Click <strong>Continue</strong>. The <strong>Installation Type</strong> window appears.</li>
+                     <li>Click <strong>Install</strong>. A window appears that displays the message: <code>Installer is trying to install new software. Enter your password to allow this.</code>
+                     </li>
+                     <li>Enter the Administrator user name and password and click <strong>Install Software</strong>. The software is installed and a confirmation window is displayed.
+                     
+                     </li>
+                  </ol>
+                  
+                  <p>After the software is installed, you can delete the <code>.dmg</code>  or
+                <code>.tar.gz</code> file if you want to save disk space.</p> 
+                  
+                  <!-- class="section" -->
+               
+            
+            <h2><a name="uninstall">Uninstalling the JDK on macOS</a></h2>
+               
+                  
+                  <p>To uninstall the JDK on macOS, you must have Administrator privileges.</p> 
+                     
+                        <p><strong>Note</strong>: Do not attempt to uninstall Java by removing the Java tools from <code>/usr/bin</code>. This directory is part of the system software and any changes will be reset by Apple the next time that you perform an update of the OS.</p>
+                     
+                  
+               
+                  <ol>
+                     <li>Go to <code>/Library/Java/JavaVirtualMachines</code>.</li>
+                     <li>Remove the directory where the JDK is installed by running the <code>rm</code> command as a root user or by using the <code>sudo</code> tool:
+                     <p><code>$ rm -rf jdk-1.8.jdk</code></p>
+                        
+                     </li>
+                  </ol>
+               
+            
+            <h2><a name="faq">Installation FAQ for macOS</a></h2>
+               
+                  
+                     <p>This topic provides answers for the following frequently asked questions about installing JDK on macOS computers. </p>
+                  
+                
+                  
+                     <p><strong>1. How do I find out which version of Java is the system default?</strong></p>
+                     
+                     <p>When you run a Java application from the command line, it uses the default JDK. If you do not develop Java applications, then you do not need to worry about this. See <a href="#default">Determining the Default JDK Version on macOS</a>. 
+                     </p>
+                  
+                  <!-- class="section" -->
+                  
+                     <p><strong>2. How do I uninstall Java?</strong></p>
+                     <p>See <a href="#uninstall">Uninstalling the JDK on macOS</a>. 
+                     </p>
+                  
+                  <!-- class="section" -->
+                  
+                     <p><strong>3. After installing Java for macOS 2012-006, can I continue to use Apple's Java 6 alongside the macOS JDK for Java 8?</strong>
+                     </p>
+                     
+                     <p>If you want to continue to develop with Java 6 using the command line, then you can modify the startup script for your favorite command environment. For bash, use this:</p>
+                     
+                     <p><code>$ export JAVA_HOME=`/usr/libexec/java_home -v 20`</code></p>
+                     
+                     <p>Some applications use <code>/usr/bin/java</code> to call Java. After installing Java for macOS 2012-006, <code>/usr/bin/java</code> will find the newest JDK installed, and will use that for all of the Java-related command-line tools in <code>/usr/bin</code>. You may need to modify those applications to find Java 6, or contact the developer for a newer version of the application.
+                     </p>
+                  
+                  
+                     <p><strong>4. What happened to the Java Preferences app in Application Utilities?</strong></p>
+                     
+                     <p>The Java Preferences app was part of the Apple Java installation and is not used by Oracle Java. Therefore, macOS releases from Apple that do not include Apple Java will not include Java Preferences.</p>
+                  
+                  <!-- class="section" -->
+               
+            
+         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ************************************************************************ -->
+
+
+
+
+
+
+<a href="toc.html">
+                Contents</a>&nbsp;&nbsp;&nbsp;<a href="linux_plugin.html">
+                Previous</a>&nbsp;&nbsp;&nbsp;<a href="mac_jre.html">
+                Next</a><hr/>
+
+
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

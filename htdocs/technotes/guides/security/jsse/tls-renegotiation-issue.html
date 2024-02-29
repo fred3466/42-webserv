@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-us">
+<head>
+<title>Transport Layer Security (TLS) Renegotiation Issue</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+
+<h1><a name="tlsRenegotiation" id="tlsRenegotiation">Transport
+Layer Security (TLS) Renegotiation Issue</a></h1>
+
+<ul>
+<li><a href="#phased">Phased Approach to Fixing This Issue</a></li>
+<li><a href="#descPhase2">Description of the Phase 2 Fix</a></li>
+<li><a href="#workarounds">Workarounds and Alternatives to SSL/TLS
+Renegotiation</a></li>
+<li><a href="#implDetails">Implementation Details</a></li>
+<li><a href="#descPhase1">Description of the Phase 1 Fix</a></li>
+<li><a href="#allowUnsafeCert">Allow Unsafe Server Certificate
+Change in SSL/TLS renegotiations</a></li>
+</ul>
+
+
+<p>In the fall of 2009, a flaw was discovered in the SSL/TLS
+protocols. A fix to the protocol was developed by the IETF TLS
+Working Group, and current versions of the JDK contain this fix.
+This section describes the situation in much more detail, along
+with interoperability issues when communicating with older
+implementations that do not contain this protocol fix.</p>
+<p>The vulnerability allowed for man-in-the-middle (MITM) attacks
+where chosen plain text could be injected as a prefix to a TLS
+connection. This vulnerability did not allow an attacker to decrypt
+or modify the intercepted network communication once the client and
+server have successfully negotiated a session between
+themselves.</p>
+<p>Additional information is available at <a href=
+"https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2009-3555">CVE-2009-3555</a>
+(posted on Mitre's <a href=
+"https://cve.mitre.org/index.html">Common
+Vulnerabilities and Exposures List</a>, 2009).</p>
+<!-- ******************************** -->
+<h2><a name="phased" id="phased">Phased Approach to Fixing This
+Issue</a></h2>
+<p>The fix for this issue was handled in two phases:</p>
+<ul>
+<li>
+<p>Phase 1: Until a protocol fix could be developed, an interim fix
+that disabled SSL/TLS renegotiations by default was made available
+in the <a href=
+"https://www.oracle.com/security-alerts/javacpumar2010.html">
+March 30, 2010 Java SE and Java for Business Critical Patch
+Update</a>.</p>
+</li>
+<li>
+<p>Phase 2: The <a href="https://www.ietf.org/">IETF</a> issued
+<a href="https://www.ietf.org/rfc/rfc5746.txt">RFC 5746</a>, which
+addresses the renegotiation protocol flaw. The following table
+lists the JDK and JRE releases that include the fix which
+implements RFC 5746 and supports secure renegotiation.</p>
+<table border="1" cellspacing="0" summary=
+"Releases that include the fix which implements RFC 5746 and supports secure renegotiation">
+<caption><a name="T7" id="T7">JDK and JRE Releases With
+Fixes to the TLS Renegotiation Issue</a></caption>
+<thead>
+<tr>
+<th id="h1">JDK Family</th>
+<th id="h2">Vulnerable Releases</th>
+<th id="h3">Phase 1 Fix (Disable Renegotiations)</th>
+<th id="h4">Phase 2 Fix (RFC 5746)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h1">JDK and JRE 6</td>
+<td headers="h2">Update 18 and earlier</td>
+<td headers="h3">Updates 19 through 21</td>
+<td headers="h4">Update 22</td>
+</tr>
+<tr>
+<td headers="h1">JDK and JRE 5.0</td>
+<td headers="h2">Update 23 and earlier</td>
+<td headers="h3">Updates 24 through 25</td>
+<td headers="h4">Update 26</td>
+</tr>
+<tr>
+<td headers="h1">JDK and JRE 1.4.2</td>
+<td headers="h2">Update 25 and earlier</td>
+<td headers="h3">Updates 26 through 27</td>
+<td headers="h4">Update 28</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<hr />
+<p><strong>Note:</strong> Applications that do not require
+renegotiations are not affected by the Phase 2 default
+configuration. However applications that require renegotiations
+(for example, web servers that initially allow for anonymous client
+browsing, but later require SSL/TLS authenticated clients):</p>
+<ul>
+<li>Are not affected if the peer is also compliant with RFC
+5746</li>
+<li>Are affected if the peer has not been upgraded to RFC 5746 (see
+next section for details)</li>
+</ul>
+<hr />
+<!-- ******************************** -->
+<a name="descPhase2" id="descPhase2"></a>
+<h2>Description of the Phase 2 Fix</h2>
+<p>The SunJSSE implementation reenables renegotiations by default
+for connections to peers compliant with RFC 5746. That is, both the
+client and server <strong>must support RFC 5746</strong> in order
+to securely renegotiate. SunJSSE provides some interoperability
+modes for connections with peers that have not been upgraded, but
+users are <strong>strongly encouraged to update both their client
+and server implementations as soon as possible</strong>.</p>
+<p>With the Phase 2 fix, SunJSSE has three renegotiation
+interoperability modes. Each mode fully supports the RFC 5746
+secure renegotiation, but has these added semantics when
+communicating with a peer that has not been upgraded:</p>
+<ul>
+<li>
+<p><b>Strict mode</b>: Requires both client and server be upgraded
+to RFC 5746 and to send the proper RFC 5746 messages. If not, the
+initial (or subsequent) handshaking will fail and the connection
+will be terminated.</p>
+</li>
+<li>
+<p><b>Interoperable mode (default)</b>: Use of the proper RFC 5746
+messages is optional; however, legacy (original SSL/TLS
+specifications) renegotiations are disabled if the proper messages
+are not used. Initial legacy connections are still allowed, but
+legacy renegotiations are disabled. This is the best mix of
+security and interoperability, and is the default setting.</p>
+</li>
+<li>
+<p><b>Insecure mode</b>: Permits full legacy renegotiation. Most
+interoperable with legacy peers but vulnerable to the original MITM
+attack.</p>
+</li>
+</ul>
+<p>The three mode distinctions only affect a connection with a peer
+that has not been upgraded. Ideally, strict (full RFC 5746) mode
+should be used for all clients and servers; however, it will take
+some time for all deployed SSL/TLS implementations to support RFC
+5746, because the interoperable mode is the current default.</p>
+<p>The following table contains interoperability information
+about the modes for various cases in which the client and/or server
+are either updated to support RFC 5746 or not.</p>
+<table border="1" cellspacing="0" summary="Interoperability information">
+<caption><a name="T8" id="T8">Interoperability Information</a></caption>
+<thead>
+<tr>
+<th id="h101">Client</th>
+<th id="h102">Server</th>
+<th id="h103">Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h101">Updated</td>
+<td headers="h102">Updated</td>
+<td headers="h103">
+<p>Secure renegotiation in all modes.</p>
+</td>
+</tr>
+<tr>
+<td headers="h101"><a name="FN21Back" id="FN21Back">Legacy</a> <a class="footnote"
+href="#FN21">Footnote 1</a></td>
+<td headers="h102">Updated</td>
+<td headers="h103">
+<ul>
+<li><b>Strict</b><br />
+If clients do not send the proper RFC 5746 messages, then initial
+connections will immediately be terminated by the server
+(<code>SSLHandshakeException</code> or
+<code>handshake_failure</code>).</li>
+<li><a name="FN2223Back" id="FN2223Back"><b>Interoperable</b><br />
+Initial connections from legacy clients are allowed (missing RFC
+5746 messages), but renegotiations will not be allowed by the
+server.</a> <a class="footnote" href="#FN22">Footnote 2</a>
+<a class="footnote" href="#FN23">Footnote 3</a></li>
+<li><b>Insecure</b><br />
+Connections and renegotiations with legacy clients are allowed, but
+are vulnerable to the original MITM attack.</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td headers="h101">Updated</td>
+<td headers="h102">Legacy <a class="footnote" href="#FN21">Footnote 1</a></td>
+<td headers="h103">
+<ul>
+<li><b>Strict</b><br />
+If the server does not respond with the proper RFC 5746 messages,
+then the client will immediately terminate the connection
+(<code>SSLHandshakeException</code> or
+<code>handshake_failure</code>).</li>
+<li><b>Interoperable</b><br />
+Initial connections from legacy servers are allowed (missing RFC
+5746 messages), but renegotiations will not be allowed by the
+server. <a class="footnote" href="#FN22">Footnote 2</a> <a class=
+"footnote" href="#FN23">Footnote 3</a></li>
+<li><b>Insecure</b><br />
+Connections and renegotiations with legacy servers are allowed, but
+are vulnerable to the original MITM attack.</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td headers="h101">Legacy <a class="footnote" href="#FN21">Footnote 1</a></td>
+<td headers="h102">Legacy <a class="footnote" href="#FN21">Footnote 1</a></td>
+<td headers="h103">Existing SSL/TLS behavior, vulnerable to the MITM attack.</td>
+</tr>
+</tbody>
+</table>
+<p><a class="footnote" name="FN21" id="FN21" href=
+"#FN21Back">Footnote 1</a> <small>"Legacy" means the original
+SSL/TLS specifications (that is, <em>not</em> RFC
+5746).</small></p>
+<p><a class="footnote" name="FN22" id="FN22" href=
+"#FN2223Back">Footnote 2</a> <small>SunJSSE Phase 1 implementations
+reject renegotiations unless specifically reenabled. If
+renegotiations are reenabled, then they will be treated as "Legacy"
+by the peer that is compliant with RFC 5746, because they do not
+send the proper RFC 5746 messages.</small></p>
+<p><a class="footnote" name="FN23" id="FN23" href=
+"#FN2223Back">Footnote 3</a> <small>In SSL/TLS, renegotiations can
+be initiated by either side. Like the Phase 1 fix, applications
+communicating with a peer that has not been upgraded in
+Interoperable mode and that attempt to initiate renegotiation (via
+<code>SSLSocket.startHandshake()</code> or
+<code>SSLEngine.beginHandshake()</code>) will receive an
+<code>SSLHandshakeException</code> (<code>IOException</code>) and
+the connection will be shut down (<code>handshake_failure</code>).
+Applications that receive a renegotiation request from a peer that
+has not been upgraded will respond according to the type of
+connection in place:</small></p>
+<ul>
+<li><small><b>TLSv1</b><br />
+A warning alert message of type <code>no_renegotiation(100)</code>
+will be sent to the peer and the connection will remain open. Older
+versions of SunJSSE will shut down the connection when a
+<code>no_renegotiation</code> alert is received.</small></li>
+<li><small><b>SSLv3</b><br />
+The application will receive an <code>SSLHandshakeException</code>,
+and the connection will be closed (<code>handshake_failure</code>).
+The <code>no_renegotiation</code> alert is not defined in the SSLv3
+specification.</small></li>
+</ul>
+<p>The following system properties are used to set the mode:</p>
+<ul>
+<li><code>sun.security.ssl.allowUnsafeRenegotiation</code>
+(introduced in Phase 1) controls whether legacy (unsafe)
+renegotiations are permitted.</li>
+<li><code>sun.security.ssl.allowLegacyHelloMessages</code>
+(introduced in Phase 2) allows the peer to perform the handshake
+process without requiring the proper RFC 5746 messages.</li>
+</ul>
+<table border="1" cellspacing="0" summary=
+"System properties to set interoperability modes">
+<caption><a name="T9" id="T9">Values of the System
+Properties for Setting the Interoperability Mode</a></caption>
+<thead>
+<tr>
+<th id="h201">Mode</th>
+<th id="h202"><code>allowLegacyHelloMessages</code></th>
+<th id="h203"><code>allowUnsafeRenegotiation</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td headers="h201">Strict</td>
+<td headers="h202">false</td>
+<td headers="h203">false</td>
+</tr>
+<tr>
+<td headers="h201">Interoperable (default)</td>
+<td headers="h202">true</td>
+<td headers="h203">false</td>
+</tr>
+<tr>
+<td headers="h201">Insecure</td>
+<td headers="h202">true</td>
+<td headers="h203">true</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Caution:</strong> Do not reenable the insecure SSL/TLS
+renegotiation, as this would reestablish the vulnerability.</p>
+<hr />
+<p>For information about how to configure a specific mode by
+setting a system property, see <a href="JSSERefGuide.html#how-to-specify-a-java-lang-system-property">How to Specify a java.lang.System Property</a>. 
+<!-- ******************************** --></p>
+<h2><a name="workarounds" id="workarounds">Workarounds and
+Alternatives to SSL/TLS Renegotiation</a></h2>
+<p>All peers should be updated to RFC 5746-compliant implementation
+as soon as possible. Even with this RFC 5746 fix, communications
+with peers that have not been upgraded will be affected if a
+renegotiation is necessary. Here are a few suggested options:</p>
+<ul>
+<li>
+<p><b>Restructure the peer to not require renegotiation.</b></p>
+<p>Renegotiations are typically used by web servers that initially
+allow for anonymous client browsing but later require SSL/TLS
+authenticated clients, or that may initially allow weak cipher
+suites but later need stronger ones. The alternative is to require
+client authentication or strong cipher suites during the
+<em>initial</em> negotiation. There are a couple of options for
+doing so:</p>
+<ul>
+<li>
+<p>If an application has a browse mode until a certain point is
+reached and a renegotiation is required, then you can restructure
+the server to eliminate the browse mode and require all initial
+connections be strong.</p>
+</li>
+<li>
+<p>Break the server into two entities, with the browse mode
+occurring on one entity, and using a second entity for the more
+secure mode. When the renegotiation point is reached, transfer any
+relevant information between the servers.</p>
+</li>
+</ul>
+<p>Both of these options require a fair amount of work, but will
+not reopen the original security flaw.</p>
+</li>
+<li>
+<p><b>Set renegotiation interoperability mode to "insecure" using
+the system properties.</b></p>
+<p>See the <a href="#descPhase2">Description of the Phase 2 Fix</a>
+for information and warnings.</p>
+</li>
+</ul>
+<!-- ******************************** -->
+<h2><a name="implDetails" id="implDetails">Implementation
+Details</a></h2>
+<p>RFC 5746 defines two new data structures, which are mentioned
+here for advanced users:</p>
+<ul>
+<li>A pseudo-cipher suite called the Signaling Cipher Suite Value
+(SCSV), "TLS_EMPTY_RENEGOTIATION_INFO_SCSV"</li>
+<li>A TLS extension called the Renegotiation Info (RI).</li>
+</ul>
+<p>Either of these can be used to signal that an implementation is
+RFC 5746-compliant and can perform secure renegotiations. For more
+relevant technical discussions, see the <a href=
+"https://mailarchive.ietf.org/arch/browse/tls/">IETF
+email discussion</a> from November 2009 to February 2010.</p>
+<p>RFC 5746 enables clients to send either an SCSV or RI in the
+first <code>ClientHello</code>. For maximum interoperability,
+SunJSSE uses the SCSV by default, as a few TLS/SSL servers do not
+handle unknown extensions correctly. The presence of the SCSV in
+the enabled cipher suites
+(<code>SSLSocket.setEnabledCipherSuites()</code> or
+<code>SSLEngine.setEnabledCipherSuites()</code>) determines whether
+the SCSV is sent in the initial <code>ClientHello</code>, or if an
+RI should be sent instead.</p>
+<p>SSLv2 does not support SSL/TLS extensions. If the
+<code>SSLv2Hello</code> protocol is enabled, then the SCSV is sent
+in the initial <code>ClientHello</code>.</p>
+<!-- ******************************** -->
+<h2><a name="descPhase1" id="descPhase1">Description of the Phase 1
+fix</a></h2>
+<p>As previously mentioned, the Phase 1 Fix was to disable
+renegotiations by default until a fix compliant with RFC 5746 could
+be developed. Renegotiations could be reenabled by setting the
+<code>sun.security.ssl.allowUnsafeRenegotiation</code> system
+property. The Phase 2 fix uses the same
+<code>sun.security.ssl.allowUnsafeRenegotiation</code> system
+property, but also requires it to use RFC 5746 messages.</p>
+<p>All applications should upgrade to the Phase 2 RFC 5746 fix as
+soon as possible.</p>
+<h2><a name="allowUnsafeCert" id="allowUnsafeCert">Allow Unsafe
+Server Certificate Change in SSL/TLS renegotiations</a></h2>
+<p>Server certificate change in an SSL/TLS renegotiation may be
+unsafe:</p>
+<ol>
+<li>if endpoint identification is not enabled in an SSL/TLS
+handshaking; and</li>
+<li>if the previous handshake is a session-resumption abbreviated
+initial handshake; and</li>
+<li>if the identities represented by both certificates can be
+regarded as the same.</li>
+</ol>
+<p>Two certificates can be considered to represent the same
+identity:</p>
+<ol>
+<li>If the subject alternative names of IP address are present in
+both certificates, they should be identical; otherwise,</li>
+<li>if the subject alternative names of DNS name are present in
+both certificates, they should be identical; otherwise,</li>
+<li>if the subject fields are present in both certificates, the
+certificate subjects and issuers should be identical.</li>
+</ol>
+<p>Starting with JDK 8u25, unsafe server certificate change in
+SSL/TLS renegotiations is not allowed by default. The new system
+property <code>jdk.tls.allowUnsafeServerCertChange</code>, can be
+used to define whether unsafe server certificate change in an
+SSL/TLS renegotiation should be restricted or not.</p>
+<p>The default value of this system property is
+<code>"false"</code>.</p>
+<hr/>
+<p><strong>Caution:</strong> DO NOT set the system property to
+<code>"true"</code> unless it is really necessary, as this would
+re-establish the unsafe server certificate change
+vulnerability.</p>
+<hr/>
+
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

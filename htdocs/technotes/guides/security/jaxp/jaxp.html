@@ -1,0 +1,1796 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang=
+"en-us">
+<head>
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<meta content=
+"The JDK and Java XML APIs have been improved over the years with various measures and tools that can help prevent applications from being exploited by XML-related attacks. This guide shows you how to use the secure processing features of Java API for XML Processing (JAXP) to safeguard your applications and systems." />
+<meta content=
+"The JDK and Java XML APIs have been improved over the years with various measures and tools that can help prevent applications from being exploited by XML-related attacks. This guide shows you how to use the secure processing features of Java API for XML Processing (JAXP) to safeguard your applications and systems." />
+<title>Java API for XML Processing (JAXP) Security Guide</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<h1><a name="java-api-for-xml-processing-security-guide" id=
+"java-api-for-xml-processing-security-guide"></a>Java API for XML
+Processing (JAXP) Security Guide</h1>
+<p>The JDK and Java XML APIs have been improved over the years
+with various measures and tools that can help prevent
+applications from being exploited by XML-related attacks. This
+guide shows you how to use the secure processing features of Java
+API for XML Processing (JAXP) to safeguard your applications and
+systems.</p>
+<h2>Topics</h2>
+
+<ul>
+  <li><a href="#potential-attacks-during-xml-processing">Potential Attacks During XML Processing</a>
+    <ul>
+      <li><a href="#xml-external-entity-injection-attack">XML External Entity Injection Attack</a>
+        <ul>
+          <li><a href="#external-resources-supported-by-xml-schema-and-xslt-standards">External Resources Supported by XML, Schema, and XSLT Standards</a></li>
+        </ul>
+      </li>
+      <li><a href="#exponential-entity-expansion-attack">Exponential Entity Expansion Attack</a></li>
+    </ul>
+  </li>
+  <li><a href="#feature-for-secure-processing">Feature for Secure Processing (FSP)</a>
+    <ul>
+      <li><a href="#jaxp-properties-for-processing-limits">JAXP Properties for Processing Limits</a>
+        <ul>
+          <li><a href="#elementAttributeLimit">elementAttributeLimit</a></li>
+          <li><a href="#entityExpansionLimit">entityExpansionLimit</a></li>
+          <li><a href="#entityReplacementLimit">entityReplacementLimit</a></li>
+          <li><a href="#maxElementDepth">maxElementDepth</a></li>
+          <li><a href="#maxGeneralEntitySizeLimit">maxGeneralEntitySizeLimit</a></li>
+          <li><a href="#maxOccurLimit">maxOccurLimit</a></li>
+          <li><a href="#maxParameterEntitySizeLimit">maxParameterEntitySizeLimit</a></li>
+          <li><a href="#maxXMLNameLimit">maxXMLNameLimit</a></li>
+          <li><a href="#totalEntitySizeLimit">totalEntitySizeLimit</a></li>
+          <li><a href="#xpathExprGrpLimit">xpathExprGrpLimit</a></li>
+          <li><a href="#xpathExprOpLimit">xpathExprOpLimit</a></li>
+          <li><a href="#xpathTotalOpLimit">xpathTotalOpLimit</a></li>
+          <li><a href="#legacy-system-properties">Legacy System Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#jaxp-properties-for-external-access-restrictions">JAXP Properties for External Access Restrictions</a>
+        <ul>
+          <li><a href="#ACCESS_EXTERNAL_DTD">ACCESS_EXTERNAL_DTD</a></li>
+          <li><a href="#ACCESS_EXTERNAL_SCHEMA">ACCESS_EXTERNAL_SCHEMA</a></li>
+          <li><a href="#ACCESS_EXTERNAL_STYLESHEET">ACCESS_EXTERNAL_STYLESHEET</a></li>
+          <li><a href="#values-of-external-access-restrictions-jaxp-properties">Values of External Access Restrictions JAXP Properties</a></li>
+        </ul>
+      </li>
+      <li><a href="#scope-and-order">Scope and Order</a>
+        <ul>
+          <li><a href="#scope-of-setting-feature-for-secure-processing">Scope of Setting Feature for Secure Processing</a></li>
+          <li><a href="#scope-and-order-of-setting-jaxp-properties">Scope and Order of Setting JAXP Properties</a></li>
+          <li><a href="#scope-of-setting-external-access-restrictions">Scope of Setting External Access Restrictions</a></li>
+        </ul>
+      </li>
+      <li><a href="#relationship-with-security-manager">Relationship with Security Manager</a></li>
+      <li><a href="#when-to-use-processing-limits">When to Use Processing Limits</a>
+        <ul>
+          <li><a href="#memory-setting-and-limits">Memory Setting and Limits</a></li>
+          <li><a href="#estimating-the-limits-using-the-getEntityCountInfo-property">Estimating the Limits Using the getEntityCountInfo Property</a></li>
+        </ul>
+      </li>
+      <li><a href="#when-to-use-external-access-restrictions">When to Use External Access Restrictions</a></li>
+      <li><a href="#using-jaxp-properties">Using JAXP Properties</a>
+        <ul>
+          <li><a href="#setting-properties-through-jaxp-factories">Setting Properties Through JAXP Factories</a></li>
+          <li><a href="#using-system-properties">Using System Properties</a></li>
+          <li><a href="#using-the-jaxp-properties-file">Using the jaxp.properties File</a></li>
+        </ul>
+      </li>
+      <li><a href="#handling-errors-from-jaxp-properties">Handling Errors from JAXP Properties</a></li>
+      <li><a href="#streaming-api-for-xml-and-jaxp-properties">Streaming API for XML and JAXP Properties</a>
+        <ul>
+          <li><a href="#stax-and-processing-limits">StAX and Processing Limits</a></li>
+          <li><a href="#stax-and-external-access-restrictions">StAX and External Access Restrictions</a></li>
+        </ul>
+      </li>
+      <li><a href="#extension-functions">Extension Functions</a>
+        <ul>
+          <li><a href="#enableExtensionFunctions">enableExtensionFunctions</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#disabling-dtd-processing">Disabling DTD Processing</a>
+    <ul>
+      <li><a href="#disabling-dtd-processing-for-sax-and-dom-parsers">Disabling DTD Processing for SAX and DOM Parsers</a></li>
+      <li><a href="#disabling-dtd-processing-for-stax-processors">Disabling DTD Processing for StAX Parsers</a></li>
+    </ul>
+   </li>
+   <li><a href="#using-java-xml-resolvers">Using Java XML Resolvers</a>
+     <ul>
+       <li><a href="#entity-resolvers-for-sax-and-dom">Entity Resolvers for SAX and DOM</a></li>
+       <li><a href="#xmlresolver-for-stax">XMLResolver for StAX</a></li>
+       <li><a href="#uriresolver-for-transform">URIResolver for javax.xml.transform</a></li>
+       <li><a href="#lsresource-resolver-for-validation">LSResourceResolver for javax.xml.validation</a></li>
+     </ul>
+   </li>
+   <li><a href="#third-party-parsers">Third-Party Parsers</a>
+     <ul>
+       <li><a href="#overrideDefaultParser">overrideDefaultParser</a></li>
+       <li><a href="#example-of-using-a-third-party-parser">Example of Using a Third-Party Parser</a></li>
+     </ul>
+   </li>
+   <li><a href="#general-recommendations-for-jaxp-security">General Recommendations for JAXP Security</a></li>
+   <li><a href="#appendix-a">Appendix A: Glossary of Java API for XML Processing Terms and Definitions</a></li>
+   <li><a href="#appendix-b">Appendix B: Java and JDK XML Features and Properties Naming Convention</a></li>
+</ul>
+
+<h2><a name="potential-attacks-during-xml-processing" id=
+"potential-attacks-during-xml-processing">Potential Attacks
+During XML Processing</a></h2>
+<p>XML processing can expose applications to certain
+vulnerabilities. Among the most prominent and well-known attacks
+are the XML External Entity (XXE) injection attack and the
+exponential entity expansion attack, also know as the XML bomb or
+billion laughs attack. These attacks can potentially cause
+serious damage to a system by denying its services or worse, lead
+to the loss of sensitive data.</p>
+<p>You should evaluate your applications' requirements and
+operating environment to assess the level of potential threat,
+for example, whether or to what extent the applications are
+exposed to untrusted XML sources.</p>
+<h3><a name="xml-external-entity-injection-attack" id=
+"xml-external-entity-injection-attack">XML External Entity
+Injection Attack</a></h3>
+<p>The XML, XML Schema, and XSLT standards define a number of
+structures that enable the embedding of external content in XML
+documents through system identifiers that reference external
+resources. In general, XML processors resolve and retrieve almost
+all of these external resources; see <a href=
+"#external-resources-supported-by-xml-schema-and-xslt-standards">External
+Resources Supported by XML, Schema, and XSLT Standards</a> for a
+list of constructs that support the inclusion of external
+resources. In addition, some constructs enable the execution of
+applications through external functions. XML External Entity
+(XXE) injection attacks exploit XML processors that have not been
+secured by restricting the external resources that it may
+resolve, retrieve, or execute. This can result in disclosing
+sensitive data such as passwords or enabling arbitrary execution
+of code.</p>
+<h4><a name=
+"external-resources-supported-by-xml-schema-and-xslt-standards"
+id=
+"external-resources-supported-by-xml-schema-and-xslt-standards">External
+Resources Supported by XML, Schema, and XSLT Standards</a></h4>
+<p>XML, Schema, and XSLT standards support the following
+constructs that require external resources. The default behavior
+of the JDK XML processors is to make a connection and fetch the
+external resources as specified.</p>
+<ul>
+<li>
+<p>External DTD: references an external Document Type Definition
+(DTD), for example:</p>
+<pre>
+&lt;!DOCTYPE root_element SYSTEM "url"&gt;
+</pre></li>
+<li>
+<p>External Entity Reference: Refers to external data, the
+following is the syntax:</p>
+<pre>
+&lt;!ENTITY <code>name</code> SYSTEM "<code>url</code>"&gt;
+</pre></li>
+<li>
+<p>General entity reference, for example:</p>
+<pre>
+&lt;?xml version="1.0" standalone="no" ?&gt;
+&lt;!DOCTYPE doc [&lt;!ENTITY otherFile SYSTEM "otherFile.xml"&gt;]&gt;
+&lt;doc&gt;
+    &lt;a&gt;
+        &lt;b&gt;&amp;otherFile;&lt;/b&gt;
+    &lt;/a&gt;
+&lt;/doc&gt;
+</pre></li>
+<li>
+<p>External Parameter Entities: The following is the syntax:</p>
+<pre>
+&lt;!ENTITY % <code>name</code> SYSTEM <code>uri</code>&gt;
+</pre>
+<p>The following is an example:</p>
+<pre>
+&lt;?xml version="1.0" standalone="no"?&gt;
+    &lt;!DOCTYPE doc [
+      &lt;!ENTITY % ent1 SYSTEM "http://www.example.com/student.dtd"&gt;
+      %ent1;
+    ]&gt;
+</pre></li>
+<li>XInclude: Includes an external infoset in an XML document,
+for example:
+<pre>
+&lt;Book xmlns:xi="http://www.w3.org/2001/XInclude"&gt;
+    &lt;xi:include href=toc.xml"/&gt;
+    &lt;xi:include href=part1.xml"/&gt;
+    &lt;xi:include href=part2.xml"/&gt;
+    &lt;xi:include href=index.xml"/&gt;
+&lt;/Book&gt;
+</pre></li>
+<li>
+<p>References to XML Schema components using the
+<code>schemaLocation</code> attribute and <code>import</code> and
+<code>include</code> elements, for example:</p>
+<pre>
+&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
+    &lt;xs:include schemaLocation="http://www.example.com/schema/schema1.xsd"/&gt;
+    &lt;!-- ... --&gt;
+&lt;/xs:schema&gt;
+</pre></li>
+<li>Combining style sheets using import or include elements, the
+following is the syntax:
+<pre>
+&lt;xsl:include href="<code>include</code>.xsl"/&gt;
+</pre></li>
+<li><code>xml-stylesheet</code> processing instruction: Used to
+include a stylesheet in an XML document, for example:
+<pre>
+&lt;?xml-stylesheet href="include.xsl" type="text/xsl"?&gt;
+</pre></li>
+<li>XSLT <code>document()</code> function: Used to access nodes
+in an external XML document, for example:
+<pre>
+&lt;xsl:variable select="document('DocumentFunc2.xml')"/&gt;
+</pre></li>
+</ul>
+<h3><a name="exponential-entity-expansion-attack" id=
+"exponential-entity-expansion-attack">Exponential Entity
+Expansion Attack</a></h3>
+<p>The exponential entity expansion attack, also know as the XML
+bomb or billion laughs attack, is a denial-of-service attack that
+involves XML parsers. The basic exploit is to have several layers
+of nested entities, each referring to a number of entities of the
+next layer. The following is a sample SOAP document that contains
+deeply nested entity references:</p>
+<pre>
+&lt;?xml version="1.0" encoding ="UTF-8"?&gt;
+&lt;!DOCTYPE bbb[
+    &lt;!ENTITY x100 "bbb"&gt;
+    &lt;!ENTITY  x99 "&amp;x100;&amp;x100;"&gt;
+    &lt;!ENTITY  x98 "&amp;x99;&amp;x99;"&gt;
+    ...
+    &lt;!ENTITY   x2 "&amp;x3;&amp;x3;"&gt;
+    &lt;!ENTITY   x1 "&amp;x2;&amp;x2;"&gt;
+]&gt;
+&lt;SOAP-ENV:Envelope xmlns:SOAP-ENV=...&gt;
+    &lt;SOAP-ENV:Body&gt;
+        &lt;ns1:aaa xmlns:ns1="urn:aaa" SOAP-ENV:encodingStyle="..."&gt;
+            &lt;foobar xsi:type="xsd:string"&gt;&amp;x1;&lt;/foobar&gt;
+        &lt;/ns1:aaa&gt;
+    &lt;/SOAP-ENV:Body&gt;
+&lt;/SOAP-ENV:Envelope&gt;
+</pre>
+<p>When an XML parser encounters such a document, it will attempt
+to resolve the entity declaration by expanding the references.
+Because the references are nested, the expansion becomes
+exponential by the number of entities each refers to. Such a
+process can lead the XML parser to consume 100% of CPU time and a
+large amount of memory, and eventually the system runs out of
+memory.</p>
+
+<h2><a name="feature-for-secure-processing" id=
+"feature-for-secure-processing">Feature for Secure Processing
+(FSP)</a></h2>
+
+<p>Feature for Secure Processing (FSP), which is defined as <a href=
+"../../../../api/javax/xml/XMLConstants.html#FEATURE_SECURE_PROCESSING">
+<code>javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING</code></a>, is the central mechanism to help safeguard XML processing. It instructs XML processors, such as parsers and transformers, to try and process XML securely.</p>
+
+<p>By default, the JDK turns on FSP for DOM and SAX parsers and XML schema validators, which sets a number of processing limits on the processors. Conversely, by default, the JDK turns off FSP for transformers and XPath, which enables extension functions for XSLT and XPath.</p>
+
+<p>Turn on and off FSP by calling the setFeature method on factories and setting <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> to either <code>true</code> or <code>false</code>. For example, the following code snippet turns on FSP for SAX parsers that are created by the factory <code>spf</code> by setting <code>XMLConstants.FEATURE_SECURE_PROCESSING</code> to <code>true</code>:</p>
+
+<pre>    SAXParserFactory spf = SAXParserFactory.newInstance();
+    spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);</pre>
+    
+<p>While FSP can be turned on and off through factories, it is always on when a Java Security Manager is present and cannot be turned off. The Java XML processors therefore will enforce limits and restrictions when a Java Security Manager is present. You can however adjust individual properties depending on the specific needs of your applications. There are two types of JAXP properties:</p>
+
+<ul>
+  <li>Processing limits: Helps to guard against excessive memory consumption from XML processing.</li>
+  <li>External access restrictions: Controls the fetching of external resources.</li>
+</ul>
+
+<p>The following sections describe these two types of JAXP properties.</p>
+
+<h3><a name="jaxp-properties-for-processing-limits" id=
+"jaxp-properties-for-processing-limits">JAXP Properties for
+Processing Limits</a></h3>
+<p>XML processing can sometimes be a memory intensive operation.
+Applications, especially those that accept XML, XSD and XSL from
+untrusted sources, should take steps to guard against excessive
+memory consumption by using JAXP properties for processing
+limits.</p>
+
+<p>Evaluate your application's requirements and operating
+environment to determine the acceptable processing limits for
+your system configurations and set these limits accordingly. For
+example, use size-related limits to prevent malformed XML sources
+from consuming large amounts of memory. Use
+<code>EntityExpansionLimit</code> to enable an application to control
+memory consumption under an acceptable level.</p>
+
+<p>The JDK XML parsers observe processing limits by default. Both
+DOM and SAX parsers have Feature for Secure Processing (FSP)
+turned on by default and therefore turn on the limits. The StAX
+parser also observes processing limits by default even though it
+doesn't support FSP.</p>
+
+<p>The JDK XML processors enable you to adjust processing limits individually in three ways:</p>
+<ul>
+  <li>Through standard XML APIs</li>
+  <li>By using System properties</li>
+  <li>In the <code>jaxp.properties</code> file</li>
+</ul>
+
+<p>See <a href="#using-jaxp-properties">Using JAXP Properties</a> and <a href="#scope-and-order">Scope and Order</a>.</p>
+
+<p>The following table describes the JAXP properties for
+processing limits supported in the JDK.</p>
+
+
+<table title="JAXP Processing Limit Properties" summary="JAXP Processing Limit Properties"
+   frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+   border="1">
+   <thead>
+      <tr>
+         <th id="h1" valign="bottom" align="left">Property Name</th>
+         <th id="h2" valign="bottom" align="left">System Property</th>
+         <th id="h3" valign="bottom" align="left">Description</th>
+         <th id="h4" valign="bottom" align="left">Default Value</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr>
+         <td headers="h1"><a name="elementAttributeLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/elementAttributeLimit</code></td>
+         <td headers="h2"><code>jdk.xml.elementAttributeLimit</code></td>
+         <td headers="h3">Limits the number of attributes an element can
+    have.</td>
+         <td headers="h4">10000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="entityExpansionLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit</code></td>
+         <td headers="h2"><code>jdk.xml.entityExpansionLimit</code></td>
+         <td headers="h3">Limits the number of entity expansions.</td>
+         <td headers="h4">64000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="entityReplacementLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/entityReplacementLimit</code></td>
+         <td headers="h2"><code>jdk.xml.entityReplacementLimit</code></td>
+         <td headers="h3">Limits the total number of nodes in all entity
+    references.</td>
+         <td headers="h4">3000000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="maxElementDepth"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/maxElementDepth</code></td>
+         <td headers="h2"><code>jdk.xml.maxElementDepth</code></td>
+         <td headers="h3">Limits the maximum element depth.</td>
+         <td headers="h4">0</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="maxGeneralEntitySizeLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/maxGeneralEntitySizeLimit</code></td>
+         <td headers="h2"><code>jdk.xml.maxGeneralEntitySizeLimit</code></td>
+         <td headers="h3">Limits the maximum size of any general entities.</td>
+         <td headers="h4">0</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="maxOccurLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/maxOccurLimit</code></td>
+         <td headers="h2"><code>jdk.xml.maxOccurLimit</code></td>
+         <td headers="h3">Limits the number of content model nodes that may be
+    created when building a grammar for a W3C XML Schema that contains
+        <code>maxOccurs</code> attributes with values other than
+    "unbounded".
+         </td>
+         <td headers="h4">5000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="maxParameterEntitySizeLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/maxParameterEntitySizeLimit</code></td>
+         <td headers="h2"><code>jdk.xml.maxParameterEntitySizeLimit</code></td>
+         <td headers="h3">Limits the maximum size of any parameter entities,
+    including the result of nesting multiple parameter entities.</td>
+         <td headers="h4">1000000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="maxXMLNameLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/maxXMLNameLimit</code></td>
+         <td headers="h2"><code>jdk.xml.maxXMLNameLimit</code></td>
+         <td headers="h3">Limits the maximum size of XML names, including element
+    name, attribute name and namespace prefix and URI.</td>
+         <td headers="h4">1000</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="totalEntitySizeLimit"/>
+         <code>http://www.oracle.com/xml/jaxp/properties/totalEntitySizeLimit</code></td>
+         <td headers="h2"><code>jdk.xml.totalEntitySizeLimit</code></td>
+         <td headers="h3">Limits the total size of all entities that include
+    general and parameter entities. The size is calculated as an aggregation
+    of all entities.</td>
+         <td headers="h4">5x10^7</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="xpathExprGrpLimit"/>
+         <code>jdk.xml.xpathExprGrpLimit</code></td>
+         <td headers="h2"><code>jdk.xml.xpathExprGrpLimit</code></td>
+         <td headers="h3">Limits the number of groups an XPath expression can
+    contain.</td>
+         <td headers="h4">10</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="xpathExprOpLimit"/>
+         <code>jdk.xml.xpathExprOpLimit</code></td>
+         <td headers="h2"><code>jdk.xml.xpathExprOpLimit</code></td>
+         <td headers="h3">Limits the number of operators an XPath expression can
+    contain.</td>
+         <td headers="h4">100</td>
+      </tr>
+      <tr>
+         <td headers="h1"><a name="xpathTotalOpLimit"/>
+         <code>jdk.xml.xpathTotalOpLimit</code></td>
+         <td headers="h2"><code>jdk.xml.xpathTotalOpLimit</code></td>
+         <td headers="h3">Limits the total number of XPath operators in an XSL
+    Stylesheet.</td>
+         <td headers="h4">100000</td>
+      </tr>
+   </tbody>
+</table>
+
+
+<!-- -->
+<h4><a name="legacy-system-properties" id=
+"legacy-system-properties">Legacy System Properties</a></h4>
+<p>These properties, which were introduced in JDK 5.0 and 6,
+continue to be supported for backward compatibility.</p>
+<table title=
+"Legacy System Properties Related to Processing Limits" summary=
+"Lists legacy system properties related to processing limits still supported by the JDK for backward compatibility"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h101" valign="bottom" align="left">System Property</th>
+<th id="h102" valign="bottom" align="left">Since</th>
+<th id="h103" valign="bottom" align="left">New System Property</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e776" valign="top" align="left">
+<code>entityExpansionLimit</code></td>
+<td headers="d135600e784 d135600e778" valign="top" align="left">
+1.5</td>
+<td headers="d135600e784 d135600e780" valign="top" align="left">
+<code>jdk.xml.entityExpansionLimit</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e776" valign="top" align="left">
+<code>elementAttributeLimit</code></td>
+<td headers="d135600e793 d135600e778" valign="top" align="left">
+1.5</td>
+<td headers="d135600e793 d135600e780" valign="top" align="left">
+<code>jdk.xml.elementAttributeLimit</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e776" valign="top" align="left">
+<code>maxOccurLimit</code></td>
+<td headers="d135600e802 d135600e778" valign="top" align="left">
+1.6</td>
+<td headers="d135600e802 d135600e780" valign="top" align="left">
+<code>jdk.xml.maxOccur</code></td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<!-- -->
+<h3><a name="jaxp-properties-for-external-access-restrictions"
+id="jaxp-properties-for-external-access-restrictions">JAXP
+Properties for External Access Restrictions</a></h3>
+<p>The JAXP Properties for external access restrictions, along
+with their corresponding System properties, enable you to
+regulate external connections.</p>
+<p>External access restrictions enable you to specify the type of
+external connections that can or cannot be permitted. The
+property values are a list of protocols. The JAXP processors
+check if a given external connection is permitted by matching the
+protocol with those in the list. Processors will attempt to
+establish the connection if it is on the list, or reject it if
+not. Use these JAXP properties along with custom resolvers (see
+<a href="#using-java-xml-resolvers">Using Java XML Resolvers</a>)
+to reduce the risk of external connections
+by rejecting and resolving them with local resources.</p>
+<p><strong>Note:</strong> Explicitly turning on Feature for
+Secure Processing (FSP) through the API, for example,
+<code>factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
+true)</code>, disables all external connections.</p>
+<p>The external access restrictions JAXP properties are defined
+in <code>javax.xml.XMLConstants</code> as follows:</p>
+<ul>
+<li><a href=
+"../../../../api/javax/xml/XMLConstants.html#ACCESS_EXTERNAL_DTD">
+<code>javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD</code></a></li>
+<li><a href=
+"../../../../api/javax/xml/XMLConstants.html#ACCESS_EXTERNAL_SCHEMA">
+<code>javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA</code></a></li>
+<li><a href=
+"../../../../api/javax/xml/XMLConstants.html#ACCESS_EXTERNAL_STYLESHEET">
+<code>javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET</code></a></li>
+</ul>
+<h4><a name="ACCESS_EXTERNAL_DTD" id=
+"ACCESS_EXTERNAL_DTD">ACCESS_EXTERNAL_DTD</a></h4>
+<table title="ACCESS_EXTERNAL_DTD" summary=
+"The ACCESS_EXTERNAL_DTD external access restrictions JAXP property"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h201" valign="bottom" align="left">Attribute</th>
+<th id="h202" valign="bottom" align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e873" valign="top" align="left">Name</td>
+<td headers="d135600e879 d135600e875" valign="top" align="left">
+<code>http://javax.xml.XMLConstants/property/accessExternalDTD</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e873" valign="top" align="left">
+Definition</td>
+<td headers="d135600e885 d135600e875" valign="top" align="left">
+Restricts access to external DTDs and external entity references
+to the protocols specified.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e873" valign="top" align="left">Value</td>
+<td headers="d135600e890 d135600e875" valign="top" align="left">
+See <a href=
+"#values-of-external-access-restrictions-jaxp-properties">Values
+of External Access Restrictions JAXP Properties</a></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e873" valign="top" align="left">Default
+value</td>
+<td headers="d135600e897 d135600e875" valign="top" align="left">
+all, connection permitted to all protocols</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e873" valign="top" align="left">System
+property</td>
+<td headers="d135600e902 d135600e875" valign="top" align="left">
+<code>javax.xml.accessExternalDTD</code></td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h4><a name="ACCESS_EXTERNAL_SCHEMA" id=
+"ACCESS_EXTERNAL_SCHEMA">ACCESS_EXTERNAL_SCHEMA</a></h4>
+<table title="ACCESS_EXTERNAL_SCHEMA" summary=
+"The ACCESS_EXTERNAL_SCHEMA external access restrictions JAXP property"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h301" valign="bottom" align="left">Attribute</th>
+<th id="h302" valign="bottom" align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e917" valign="top" align="left">Name</td>
+<td headers="d135600e923 d135600e919" valign="top" align="left">
+<code>http://javax.xml.XMLConstants/property/accessExternalSchema</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e917" valign="top" align="left">
+Definition</td>
+<td headers="d135600e929 d135600e919" valign="top" align="left">
+Restricts access to the protocols specified for external
+references set by the <code>schemaLocation</code> attribute,
+<code>import</code> element, and <code>include</code>
+element.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e917" valign="top" align="left">Value</td>
+<td headers="d135600e943 d135600e919" valign="top" align="left">
+See <a href=
+"#values-of-external-access-restrictions-jaxp-properties">Values
+of External Access Restrictions JAXP Properties</a></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e917" valign="top" align="left">Default
+value</td>
+<td headers="d135600e950 d135600e919" valign="top" align="left">
+all, connection permitted to all protocols.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e917" valign="top" align="left">System
+property</td>
+<td headers="d135600e955 d135600e919" valign="top" align="left">
+<code>javax.xml.accessExternalSchema</code></td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h4><a name="ACCESS_EXTERNAL_STYLESHEET" id=
+"ACCESS_EXTERNAL_STYLESHEET">ACCESS_EXTERNAL_STYLESHEET</a></h4>
+<table title="ACCESS_EXTERNAL_STYLESHEET" summary=
+"The ACCESS_EXTERNAL_STYLESHEET external access restrictions JAXP property"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h401" valign="bottom" align="left">Attribute</th>
+<th id="h402" valign="bottom" align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e970" valign="top" align="left">Name</td>
+<td headers="d135600e976 d135600e972" valign="top" align="left">
+<code>http://javax.xml.XMLConstants/property/accessExternalStylesheet</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e970" valign="top" align="left">
+Definition</td>
+<td headers="d135600e982 d135600e972" valign="top" align="left">
+Restricts access to the protocols specified for external
+references set by the <code>stylesheet</code> processing
+instruction, <code>document</code> function, and
+<code>import</code> and <code>include</code> elements.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e970" valign="top" align="left">Value</td>
+<td headers="d135600e999 d135600e972" valign="top" align="left">
+See <a href=
+"#values-of-external-access-restrictions-jaxp-properties">Values
+of External Access Restrictions JAXP Properties</a></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e970" valign="top" align="left">Default
+value</td>
+<td headers="d135600e1006 d135600e972" valign="top" align="left">
+all, connection permitted to all protocols.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e970" valign="top" align="left">System
+property</td>
+<td headers="d135600e1011 d135600e972" valign="top" align="left">
+<code>javax.xml.accessExternalStylesheet</code></td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h4><a name=
+"values-of-external-access-restrictions-jaxp-properties" id=
+"values-of-external-access-restrictions-jaxp-properties">Values
+of External Access Restrictions JAXP Properties</a></h4>
+<p>All JAXP properties for external access restrictions have
+values of the same format:</p>
+<ul>
+<li>
+<p><strong>Value</strong>: A list of protocols separated by
+comma. A protocol is the scheme portion of an URI, or in the case
+of the JAR protocol, <code>jar</code> plus the scheme portion
+separated by colon. A scheme is defined as:</p>
+<code><em>scheme</em> = <em>alpha</em> *( <em>alpha</em> |
+<em>digit</em> | "+" | "-" | "." )</code>
+<p>where <code><em>alpha</em></code> = <code>a-z</code> and
+<code>A-Z</code>.</p>
+The JAR protocol is defined as:
+<code>jar[:<em>scheme</em>]</code>
+<p>Protocols are case-insensitive. Any whitespace characters as
+defined by <code>Character.isSpaceChar</code> in the value are
+ignored. Examples of protocols are <code>file</code>,
+<code>http</code>, and <code>jar:file</code>.</p>
+</li>
+<li>
+<p><strong>Default value</strong>: The default value is
+implementation specific. For the JDK, the default value is
+<code>all</code>, which grants permissions to all protocols.</p>
+</li>
+<li>
+<p><strong>Granting all access</strong>: The keyword
+<code>all</code> grants permission to all protocols. For example,
+specifying <code>javax.xml.accessExternalDTD=all</code> in the
+<code>jaxp.properties</code> file enables a system to work as
+before with no restrictions on accessing external DTDs and entity
+references.</p>
+</li>
+<li>
+<p><strong>Denying any access</strong>: An empty string
+(<code>""</code>) means that no permission is granted to any
+protocol. For example, specifying
+<code>javax.xml.accessExternalDTD=""</code> in the
+<code>jaxp.properties</code> file instructs JAXP processors to
+deny any external connections.</p>
+</li>
+</ul>
+<!-- -->
+<h3><a name="scope-and-order" id="scope-and-order">Scope and
+Order</a></h3>
+<h4><a name="scope-of-setting-feature-for-secure-processing" id=
+"scope-of-setting-feature-for-secure-processing">Scope of Setting
+Feature for Secure Processing</a></h4>
+<p>Feature for Secure Processing (FSP) is required for XML
+processors including DOM, SAX, schema validation, XSLT, and
+XPath.</p>
+<p>When FSP is turned on, then default processing limits (see
+<a href="#jaxp-properties-for-processing-limits">JAXP Properties
+for Processing Limits</a>) are enforced. Turning off FSP does not
+change the limits.</p>
+<p>When FSP is "explicitly" turned on through the API, for
+example,
+<code>factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
+true)</code>, then external access restrictions (see <a href=
+"#jaxp-properties-for-external-access-restrictions">JAXP
+Properties for External Access Restrictions</a>) are set to the
+empty string, which means that no permission is granted to any
+protocol. Although FSP is turned on by default for DOM, SAX and
+schema validation, it is not treated as if "explicitly" turned
+on; therefore, the default value for external access restrictions
+is <code>all</code>, which means that permission is granted to
+all protocols.</p>
+<p>When a Java Security Manager is present, FSP is turned on and
+cannot be turned off.</p>
+<!-- -->
+<h4><a name="scope-and-order-of-setting-jaxp-properties" id=
+"scope-and-order-of-setting-jaxp-properties">Scope and Order of Setting JAXP Properties</a></h4>
+
+<p>In general, JAXP properties set in a smaller scope override
+those in a larger one:</p>
+<ul>
+<li>JAXP properties specified through JAXP factories or processors
+take preference over System properties, the
+<code>jaxp.properties</code> file, and FSP.</li>
+<li>System properties, when set, affect one JDK invocation only
+and override processing limit and external access restriction
+values set by default, set in the <code>jaxp.properties</code>
+file, or set by FSP.</li>
+<li>Properties specified in the <code>jaxp.properties</code> file
+affect the entire JDK and override processing limit and external
+access restriction values set by default or set by FSP.</li>
+</ul>
+<!-- -->
+<h4><a name="scope-of-setting-external-access-restrictions" id=
+"scope-of-setting-external-access-restrictions">Scope of Setting
+External Access Restrictions</a></h4>
+<p>External access restrictions have no effect on the relevant
+constructs that they attempt to restrict in the following
+situations:</p>
+<ul>
+<li>
+<p>When there is a resolver and the source returned by the
+resolver is not null: This applies to entity resolvers that may
+be set on SAX and DOM parsers, XML resolvers on StAX parsers,
+<code>LSResourceResolver</code> on <code>SchemaFactory</code>, a
+<code>Validator</code> or <code>ValidatorHandler</code>, or
+<code>URIResolver</code> on a transformer.</p>
+</li>
+<li>
+<p>When a schema is created explicitly by calling the
+<code>newSchema</code> method from
+<code>SchemaFactory</code>.</p>
+</li>
+<li>
+<p>When external resources are not required: For example, the
+following features and properties are supported by the JDK and
+may be used to instruct the processor to not load the external
+DTD or resolve external entities:</p>
+<pre>
+http://apache.org/xml/features/disallow-doctype-decl true
+http://apache.org/xml/features/nonvalidating/load-external-dtd false
+http://xml.org/sax/features/external-general-entities false
+http://xml.org/sax/features/external-parameter-entities false
+</pre></li>
+</ul>
+<!-- -->
+<h3><a name="relationship-with-security-manager" id=
+"relationship-with-security-manager">Relationship with Security
+Manager</a></h3>
+<p>JAXP properties are checked first before a connection is
+attempted, whether or not a <code>SecurityManager</code> is
+present. This means that a connection may be blocked even if it
+is granted permission by the <code>SecurityManager</code>. For
+example, if the JAXP properties are set to disallow the HTTP
+protocol, then they will effectively block any connection attempt
+even when an application has a <code>SocketPermission</code>.</p>
+<p>For the purpose of restricting connections, the
+<code>SecurityManager</code> can be viewed as being at a lower
+level. Permissions are checked after JAXP properties are
+evaluated. For example, if an application does not have a
+<code>SocketPermission</code>, then a
+<code>SecurityException</code> will be thrown even if JAXP
+properties are set to allow HTTP connections.</p>
+<p>When a <code>SecurityManager</code> is present, Feature for
+Secure Processing (FSP) is set to true. This behavior does not
+turn on any external access restrictions.</p>
+<h3><a name="when-to-use-processing-limits" id=
+"when-to-use-processing-limits">When to Use Processing
+Limits</a></h3>
+<p>When determining which processing limits to apply and what
+values to use, at the system level, consider the amount of memory
+available for applications and whether XML, XSD, or XSL sources
+from untrusted sources are accepted and processed. At the
+application level, consider whether certain constructs such as
+DTDs are used.</p>
+<h4><a name="memory-setting-and-limits" id=
+"memory-setting-and-limits">Memory Setting and Limits</a></h4>
+<p>XML processing can be very memory intensive. The amount of
+memory that should be allowed to be consumed depends on the
+requirements of the applications in a specific environment.
+Processing of malformed XML data must be prevented from consuming
+excessive memory.</p>
+<p>The default limits are generally set to allow legitimate XML
+inputs for most applications with memory usage allowed for a
+small hardware system, such as a PC. It is recommended that the
+limits are set to the smallest possible values, so that any
+malformed input can be caught before it consumes large amounts of
+memory.</p>
+<p>The limits are correlated, but not entirely redundant. You
+should set appropriate values for all of the limits: usually the
+limits should be set to a much smaller value than the
+default.</p>
+<p>For example, <code>ENTITY_EXPANSION_LIMIT</code> and
+<code>GENERAL_ENTITY_SIZE_LIMIT</code> can be set to prevent
+excessive entity references. But when the exact combination of
+the expansion and entity sizes are unknown,
+<code>TOTAL_ENTITY_SIZE_LIMIT</code> can serve as a overall
+control. Similarly, while <code>TOTAL_ENTITY_SIZE_LIMIT</code>
+controls the total size of a replacement text, if the text is a
+very large chunk of XML, <code>ENTITY_REPLACEMENT_LIMIT</code>
+sets a restriction on the total number of nodes that can appear
+in the text and prevents overloading the system.</p>
+<!-- -->
+<h4><a name=
+"estimating-the-limits-using-the-getEntityCountInfo-property" id=
+"estimating-the-limits-using-the-getEntityCountInfo-property">Estimating
+the Limits Using the getEntityCountInfo Property</a></h4>
+<p>To help you analyze what values you should set for the limits,
+a special property called
+<code>http://www.oracle.com/xml/jaxp/properties/getEntityCountInfo</code>
+is available. The following code snippet, from <a href=
+"https://docs.oracle.com/javase/tutorial/jaxp/limits/sample.html">
+Processing Limit Samples</a> in <cite>The Java Tutorials</cite>, shows an example of using the property:</p>
+<pre>
+    public static final String ORACLE_JAXP_PROPERTY_PREFIX =
+        "http://www.oracle.com/xml/jaxp/properties/";
+    // ...
+    public static final String JDK_ENTITY_COUNT_INFO = 
+        ORACLE_JAXP_PROPERTY_PREFIX + "getEntityCountInfo";
+    // ...
+    parser.setProperty(JDK_ENTITY_COUNT_INFO, "yes");
+</pre>
+<p>When you run the processing limit sample with the DTD in W3C
+MathML 3.0, it prints out the following table:</p>
+<table title=
+"Running JAXP Processing Limits Sample with DTD in W3C MatchML 3.0"
+summary=
+"Table that the JAXP processing limits sample prints when you run it with the DTD in W3C MathML 3.0"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<tbody>
+<tr valign="top" align="left">
+<th id="h501" valign="top" align="left">Property</th>
+<th id="h502" headers="d135600e1379" valign="top" align="left">Limit</th>
+<th id="h503" headers="d135600e1379" valign="top" align="left">Total
+Size</th>
+<th id="h504" headers="d135600e1379" valign="top" align="left">Size</th>
+<th id="h505" headers="d135600e1379" valign="top" align="left">Entity
+Name</th>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>ENTITY_EXPANSION_LIMIT</code></td>
+<td headers="d135600e1390" valign="top" align="left">64000</td>
+<td headers="d135600e1390" valign="top" align="left">1417</td>
+<td headers="d135600e1390" valign="top" align="left">0</td>
+<td headers="d135600e1390" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>MAX_OCCUR_NODE_LIMIT</code></td>
+<td headers="d135600e1402" valign="top" align="left">5000</td>
+<td headers="d135600e1402" valign="top" align="left">0</td>
+<td headers="d135600e1402" valign="top" align="left">0</td>
+<td headers="d135600e1402" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>ELEMENT_ATTRIBUTE_LIMIT</code></td>
+<td headers="d135600e1414" valign="top" align="left">10000</td>
+<td headers="d135600e1414" valign="top" align="left">0</td>
+<td headers="d135600e1414" valign="top" align="left">0</td>
+<td headers="d135600e1414" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>TOTAL_ENTITY_SIZE_LIMIT</code></td>
+<td headers="d135600e1426" valign="top" align="left">
+50000000</td>
+<td headers="d135600e1426" valign="top" align="left">55425</td>
+<td headers="d135600e1426" valign="top" align="left">0</td>
+<td headers="d135600e1426" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>GENERAL_ENTITY_SIZE_LIMIT</code></td>
+<td headers="d135600e1438" valign="top" align="left">0</td>
+<td headers="d135600e1438" valign="top" align="left">0</td>
+<td headers="d135600e1438" valign="top" align="left">0</td>
+<td headers="d135600e1438" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>PARAMETER_ENTITY_SIZE_LIMIT</code></td>
+<td headers="d135600e1450" valign="top" align="left">1000000</td>
+<td headers="d135600e1450" valign="top" align="left">0</td>
+<td headers="d135600e1450" valign="top" align="left">7303</td>
+<td headers="d135600e1450" valign="top" align="left">
+<code>%MultiScriptExpression</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>MAX_ELEMENT_DEPTH_LIMIT</code></td>
+<td headers="d135600e1463" valign="top" align="left">0</td>
+<td headers="d135600e1463" valign="top" align="left">2</td>
+<td headers="d135600e1463" valign="top" align="left">0</td>
+<td headers="d135600e1463" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left"><code>MAX_NAME_LIMIT</code></td>
+<td headers="d135600e1475" valign="top" align="left">1000</td>
+<td headers="d135600e1475" valign="top" align="left">13</td>
+<td headers="d135600e1475" valign="top" align="left">13</td>
+<td headers="d135600e1475" valign="top" align="left">null</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h501" valign="top" align="left">
+<code>ENTITY_REPLACEMENT_LIMIT</code></td>
+<td headers="d135600e1487" valign="top" align="left">3000000</td>
+<td headers="d135600e1487" valign="top" align="left">0</td>
+<td headers="d135600e1487" valign="top" align="left">0</td>
+<td headers="d135600e1487" valign="top" align="left">null</td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<p>In this example, the total number of entity references, or the
+entity expansion, is 1417; the default limit is 64000. The total
+size of all entities is 55425; the default limit is 50000000. The
+biggest parameter entity is <code>%MultiScriptExpression</code>
+with a length of 7303 after all references are resolved; the
+default limit is 1000000.</p>
+<p>If this is the largest file that the application is expected
+to process, it is recommended that the limits be set to smaller
+numbers. For example, 2000 for
+<code>ENTITY_EXPANSION_LIMIT</code>, 100000 for
+<code>TOTAL_ENTITY_SIZE_LIMIT</code>, and 10000 for
+<code>PARAMETER_ENTITY_SIZE_LIMIT</code>.</p>
+<!-- -->
+<h3><a name="when-to-use-external-access-restrictions" id=
+"when-to-use-external-access-restrictions">When to Use External
+Access Restrictions</a></h3>
+
+<p>The XML processors, by default, attempt to connect and read external resources that are referenced in XML sources. Note that this may potentially expose applications and systems to risks posed by external connections. It's therefore recommended that applications consider limiting external connections with external access restriction properties.</p>
+
+<p>Internal applications and systems that handle only trusted XML documents may not need these restrictions. Applications and systems that rely on the Java Security Manager to regulate external connections may also have no need for them. However, keep in mind that external access restrictions are specific to the XML processors and at the top layer of the process, which means that the processors check these restrictions before any connections are made. They may therefore serve as an additional and more direct protection against external connection risks.</p>
+
+<p>You can use external access restriction properties along with custom resolvers and catalogs (see <a href="#using-java-xml-resolvers">Using Java XML
+Resolvers</a>) to effectively manage external connections and reduce risks.</p>
+
+<p>Even in a trusted environment with trusted sources, it's recommended that you use both external access restrictions and resolvers to minimize dependencies on external sources.</p>
+
+
+<h3><a name="using-jaxp-properties" id=
+"using-jaxp-properties">Using JAXP Properties</a></h3>
+<h4><a name="setting-properties-through-jaxp-factories" id=
+"setting-properties-through-jaxp-factories">Setting Properties Through JAXP Factories</a></h4>
+
+<p>If you can modify your application's code, or you're creating
+a new application, then setting JAXP properties through JAXP
+factories or a parser is the preferred method. Set these
+properties through the following interfaces:</p>
+<pre>
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    dbf.setAttribute(<em>name</em>, <em>value</em>);
+ 
+    SAXParserFactory spf = SAXParserFactory.newInstance();
+    SAXParser parser = spf.newSAXParser();
+    parser.setProperty(<em>name</em>, <em>value</em>);
+
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(schemaLanguage);
+    schemaFactory.setProperty(<em>name</em>, <em>value</em>);
+ 
+    TransformerFactory factory = TransformerFactory.newInstance();
+    factory.setAttribute(<em>name</em>, <em>value</em>);
+ 
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+    xif.setProperty(<em>name</em>, <em>value</em>);
+
+    XPathFactory xf = XPathFactory.newInstance();
+    xf.setProperty(<em>name</em>, <em>value</em>);
+</pre>
+<p>The following is an example of setting processing limits:</p>
+<pre>
+    dbf.setAttribute("http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit", "2000");
+    dbf.setAttribute("http://www.oracle.com/xml/jaxp/properties/maxGeneralEntitySizeLimit", "100000");
+    dbf.setAttribute("http://www.oracle.com/xml/jaxp/properties/maxParameterEntitySizeLimit", "10000"); 
+    dbf.setAttribute("http://www.oracle.com/xml/jaxp/properties/maxElementDepth", "100");
+
+    factory.setAttribute("jdk.xml.xpathTotalOpLimit", "1000"); 
+    xf.setProperty("jdk.xml.xpathExprGrpLimit", "20");    
+</pre>
+<p>The following is an example of limiting a DOM parser to only
+local connections for external DTDs:</p>
+<pre>
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "file, jar:file");
+</pre>
+<p>If a parser module within the application handles untrusted
+sources, it may further restrict access. The following code
+overrides those in the <code>jaxp.properties</code> file and
+those specified by System properties and enables the XML
+processor to read local files only:</p>
+<pre>
+    DocumentBuilderFactory dbf =
+    DocumentBuilderFactory.newInstance();   
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "file");
+    // ...   
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);   
+    schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "file");   
+    schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "file");
+</pre>
+<p>As described in <a href=
+"#scope-and-order-of-setting-jaxp-properties">Scope and Order of
+Setting JAXP Properties</a>, JAXP properties specified through
+JAXP factories have the narrowest scope, affecting only the
+processors created by the factories, and therefore override any
+default settings, System properties, and those in the
+<code>jaxp.properties</code> file. By setting JAXP properties
+through JAXP factories, you can ensure that your applications
+behave the same way regardless of which JDK release you're using
+or whether JAXP properties are set through other means.</p>
+<!-- -->
+<h4><a name="using-system-properties" id=
+"using-system-properties">Using System Properties</a></h4>
+<p>System properties may be useful if you can't modify your
+application's code.</p>
+<p>To set JAXP properties for an entire JDK invocation, set their
+corresponding System properties on the command line.</p>
+<p>To set JAXP properties for only a portion of the application,
+set their corresponding System properties before the portion, and
+then clear them afterward. For example, if your application
+requires access to external DTDs and schemas, then add these
+lines to your application's initialization code block:</p>
+<pre>
+    System.setProperty("javax.xml.accessExternalDTD", "file, http");
+    System.setProperty("javax.xml.accessExternalSchema", "file, http");
+</pre>
+<p>Then, once your application is done processing XML documents
+or before it exits, clear out the properties as follows:</p>
+<pre>
+    System.clearProperty("javax.xml.accessExternalDTD");   
+    System.clearProperty("javax.xml.accessExternalSchema");
+</pre>
+<p>The following code, from <a href=
+"https://docs.oracle.com/javase/tutorial/jaxp/limits/sample.html">
+Processing Limit Samples</a> in <cite>The Java Tutorials</cite>, is another example that shows how to do this
+for the processing limit
+<code>maxGeneralEntitySizeLimit</code>:</p>
+<pre>
+public static final String SP_GENERAL_ENTITY_SIZE_LIMIT =
+    "jdk.xml.maxGeneralEntitySizeLimit";
+
+// Set limits using System property;
+// this setting will affect all processing after it's set
+System.setProperty(SP_GENERAL_ENTITY_SIZE_LIMIT, "2000");
+
+// Perform some processing here
+
+// After it is done, clear the property
+System.clearProperty(SP_GENERAL_ENTITY_SIZE_LIMIT);
+</pre>
+<p>Note that processing limit values are integers. A
+<code>NumberFormatException</code> is thrown if a processing
+limit's value is not a parsable integer; see the method
+<code>java.lang.Integer.parseInt(String)</code>.</p>
+<p>The following example allows the resolution of external
+schemas for a portion of an application:</p>
+<pre>
+// Allow resolution of external schemas
+// This setting will affect all processing after it's set
+System.setProperty("javax.xml.accessExternalSchema", "file, http");
+
+// Perform some processing here
+
+// After it's done, clear the property
+System.clearProperty("javax.xml.accessExternalSchema");
+</pre>
+<!-- -->
+<h4><a name="using-the-jaxp-properties-file" id=
+"using-the-jaxp-properties-file">Using the jaxp.properties
+File</a></h4>
+<p>If you want to specify a JAXP property that affects every JDK
+invocation, then create a configuration file named
+<code><em>&lt;java-home&gt;</em>/lib/jaxp.properties</code>
+and specify names and values of JAXP properties in it, one
+name-value pair on each line. For example, the following
+<code>jaxp.properties</code> file sets the
+<code>maxGeneralEntitySizeLimit</code> processing limit property
+to 2000 and restricts access to the file and HTTP protocols for
+external references set by the <code>stylesheet</code> processing
+instruction, <code>document</code> function, and the
+<code>import</code> and <code>include</code> elements.</p>
+<pre>
+jdk.xml.maxGeneralEntitySizeLimit=2000
+javax.xml.accessExternalStylesheet=file, http
+</pre>
+<p>If you don't want to allow any external connection by XML
+processors, you can set all access external restrictions to
+<code>file</code> only:</p>
+<pre>
+javax.xml.accessExternalDTD=file
+javax.xml.accessExternalSchema=file
+javax.xml.accessExternalStylesheet=file
+</pre>
+<p>If you want to prevent applications from accidentally reading
+external files through an XML processor, set the external access
+restrictions as follows in the <code>jaxp.properties</code> file
+as follows:</p>
+<pre>
+javax.xml.accessExternalDTD=""   
+javax.xml.accessExternalSchema=""   
+javax.xml.accessExternalStylesheet=""
+</pre>
+<p>Note:</p>
+<ul>
+<li>Use the corresponding System property in the
+<code>jaxp.properties</code> file. Processing limit System
+properties have the prefix <code>jdk.xml</code>. External access
+restriction System properties have the prefix
+<code>javax.xml</code>.</li>
+<li>Processing limit values are integers. A
+<code>NumberFormatException</code> is thrown if a processing
+limit's value is not a parsable integer; see the method
+<code>java.lang.Integer.parseInt(String)</code>.</li>
+</ul>
+<!-- -->
+<h3><a name="handling-errors-from-jaxp-properties" id=
+"handling-errors-from-jaxp-properties">Handling Errors from JAXP
+Properties</a></h3>
+<p>It is recommended that applications catch
+<code>org.xml.sax.SAXNotRecognizedException</code> when setting
+JAXP properties so that the applications will work properly on
+older releases that don't support them.</p>
+<p>For example, the following method,
+<code>isNewPropertySupported</code>, from <a href=
+"https://docs.oracle.com/javase/tutorial/jaxp/limits/sample.html">
+Processing Limit Samples</a> in <cite>The Java Tutorials</cite>, detects if the sample
+is run with a version of the JDK that supports the
+<code>JDK_GENERAL_ENTITY_SIZE_LIMIT</code> property:</p>
+<pre>
+    public boolean isNewPropertySupported() {
+        try {
+            SAXParser parser = getSAXParser(false, false, false);
+            parser.setProperty(JDK_GENERAL_ENTITY_SIZE_LIMIT, "10000");
+        } catch (ParserConfigurationException ex) {
+            fail(ex.getMessage());
+        } catch (SAXException ex) {
+            String err = ex.getMessage();
+            if (err.indexOf("Property '" + JDK_GENERAL_ENTITY_SIZE_LIMIT +
+                                           "' is not recognized.") &gt; -1) {
+                // expected before this patch
+                debugPrint("New limit properties not supported. Samples not run.");
+                return false;
+            }
+        }
+        return true;
+    }
+</pre>
+<p>When input files contain constructs that cause an
+over-the-limit exception, applications may check the error code
+to determine the nature of the failure. The following error codes
+are defined for processing limits:</p>
+<ul>
+<li><code>EntityExpansionLimit</code>: JAXP00010001</li>
+<li><code>ElementAttributeLimit</code>: JAXP00010002</li>
+<li><code>MaxEntitySizeLimit</code>: JAXP00010003</li>
+<li><code>TotalEntitySizeLimit</code>: JAXP00010004</li>
+<li><code>MaxXMLNameLimit</code>: JAXP00010005</li>
+<li><code>maxElementDepth</code>: JAXP00010006</li>
+<li><code>EntityReplacementLimit</code>: JAXP00010007</li>
+</ul>
+<p>The error code has the following format:</p>
+<pre>
+"JAXP" + <em>components (two digits)</em> + <em>error category (two digits)</em> + <em>sequence number</em>
+</pre>
+<p>The code JAXP00010001, therefore, represents the JAXP base
+parser security limit <code>EntityExpansionLimit</code>.</p>
+<p>If access to external resources is denied due to the
+restrictions set by external access restrictions, then an
+exception will be thrown with an error in the following
+format:</p>
+<pre>
+<em>[type of construct]</em>: Failed to read <em>[type of construct]</em>
+    "<em>[name of the external resource]</em>", because "<em>[type of restriction]</em>"
+    access is not allowed due to restriction set by the
+    <em>[property name]</em> property.
+</pre>
+<p>For example, suppose the following:</p>
+<ul>
+<li>
+<p>The <code>ACCESS_EXTERNAL_DTD</code> JAXP property is set as
+follows:</p>
+<pre>
+parser.setProperty(
+    "http://javax.xml.XMLConstants/property/accessExternalDTD", "file");
+</pre></li>
+<li>
+<p>Your application tries to fetch an external DTD with the HTTP
+protocol.</p>
+</li>
+<li>
+<p>The parser parsed an XML file that contains an external
+reference to
+<code>http://www.example.com/dtd/properties.dtd</code>.</p>
+</li>
+</ul>
+<p>The error message would look like the following:</p>
+<pre>
+External DTD: Failed to read external DTD
+    "http://www.example.com/dtd/properties.dtd", because "http"
+    access is not allowed due to restriction set by the
+    accessExternalDTD property.
+</pre>
+<h3><a name="streaming-api-for-xml-and-jaxp-properties" id=
+"streaming-api-for-xml-and-jaxp-properties">Streaming API for XML
+and JAXP Properties</a></h3>
+<p>Streaming API for XML (StAX), JSR 173, does not support FSP
+nor does it support external access restrictions. However, JDK's
+StAX implementation supports processing limits, and StAX in the
+context of JAXP supports external access restrictions.</p>
+
+<h4><a name="stax-and-processing-limits" id=
+"stax-and-processing-limits">StAX and Processing Limits</a></h4>
+
+<p>JDK's StAX implementation supports processing limits and their
+corresponding System properties. However, because FSP is not
+supported, you can't turn on or off processing limits for StAX by
+turning on or off FSP. Processing limits continue to behave as
+described in <a href=
+"#jaxp-properties-for-processing-limits">JAXP Properties for
+Processing Limits</a>.</p>
+
+<!-- -->
+
+<h4><a name="stax-and-external-access-restrictions" id=
+"stax-and-external-access-restrictions">StAX and External Access
+Restrictions</a></h4>
+<!-- -->
+
+<p>JDK's StAX implementation supports the JAXP properties related
+to external access restrictions. Setting them is similar to SAX
+or DOM, but through the <code>XMLInputFactory</code> class, for
+example:</p>
+
+<pre>
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+    xif.setProperty(
+        "http://javax.xml.XMLConstants/property/accessExternalDTD",
+        "file");
+</pre>
+
+<p>For compatibility, StAX properties and features take precedence over the processing limit and external access restriction properties. For example, the <code>SupportDTD</code> property, when set to <code>false</code>, causes a program to throw an exception when an input file contains a DTD before it can be parsed. Therefore, processing limits and external access restrictions on DTDs will have no effect on applications that have disabled DTDs by setting the <code>SupportDTD</code> property to <code>false</code>.</p>
+
+<!-- -->
+<h3><a name="extension-functions" id=
+"extension-functions">Extension Functions</a></h3>
+<p>Because Feature for Secure Processing (FSP) is off by default
+for <code>Transformer</code> and <code>XPath</code>, extension
+functions are allowed. For applications processing documents from
+untrusted sources, it is recommended to turn off the extension
+functions feature. There are two ways to do so:</p>
+<ul>
+<li>
+<p>By setting FSP to true, for example:</p>
+<pre>
+    TransformerFactory tf = TransformerFactory.newInstance();          
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+</pre></li>
+<li>
+<p>By setting the <code>enableExtensionFunctions</code> property
+to false:</p>
+<pre>
+    final static String ENABLE_EXTENSION_FUNCTIONS =
+        "http://www.oracle.com/xml/jaxp/properties/enableExtensionFunctions";
+    // ...
+    TransformerFactory tf = TransformerFactory.newInstance();  
+    tf.setFeature(ENABLE_EXTENSION_FUNCTIONS, false);
+</pre></li>
+</ul>
+<p>In cases where extension functions are disabled as a result of
+installing a Java Security Manager, applications may also choose
+to re-enable the extension functions feature by setting the
+property <code>enableExtensionFunctions</code> to true. The
+following table defines this property:</p>
+<h4><a name="enableExtensionFunctions" id=
+"enableExtensionFunctions">enableExtensionFunctions</a></h4>
+<table title="enableExtensionFunctions" summary=
+"The enableExtensionFunctions property" frame="hsides" rules=
+"rows" cellspacing="0" cellpadding="4" border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h601" valign="bottom" align="left">Attribute</th>
+<th id="h602" valign="bottom" align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">Name</td>
+<td headers="d135600e2031 d135600e2027" valign="top" align=
+"left">
+<code>http://www.oracle.com/xml/jaxp/properties/enableExtensionFunctions</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">
+Definition</td>
+<td headers="d135600e2037 d135600e2027" valign="top" align=
+"left">Determines whether XSLT and XPath extension functions are
+allowed.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">Value</td>
+<td headers="d135600e2042 d135600e2027" valign="top" align=
+"left">A boolean. True indicates that extension functions are
+allowed; False otherwise.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">Default
+value</td>
+<td headers="d135600e2047 d135600e2027" valign="top" align=
+"left">true</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">System
+property</td>
+<td headers="d135600e2052 d135600e2027" valign="top" align=
+"left"><code>jdk.xml.enableExtensionFunctions</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2025" valign="top" align="left">Since</td>
+<td headers="d135600e2058 d135600e2027" valign="top" align=
+"left">7u60</td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h2><a name="disabling-dtd-processing" id=
+"disabling-dtd-processing">Disabling DTD Processing</a></h2>
+<p>If your applications don't require DTDs, then consider
+disabling DTD processing to safeguard against many common
+DTD-related attacks, including denial-of-service, XML external
+entity (XXE), and server-side request forgery (SSRF).</p>
+<h3><a name="disabling-dtd-processing-for-sax-and-dom-parsers"
+id="disabling-dtd-processing-for-sax-and-dom-parsers">Disabling
+DTD Processing for SAX and DOM Parsers</a></h3>
+<p>To disable DTD processing for SAX and DOM parsers, set the
+feature
+<code>http://apache.org/xml/features/disallow-doctype-decl</code>
+to true through a factory. The following code snippet disables
+DTDs for SAX parsers. A fatal error is thrown if the incoming XML
+document contains a DOCTYPE declaration.</p>
+<pre>
+    final static String DISALLOW_DTD =
+        "http://apache.org/xml/features/disallow-doctype-decl";
+    // ...
+    SAXParserFactory spf = SAXParserFactory.newInstance();      
+    spf.setFeature(DISALLOW_DTD, true);
+</pre>
+<!-- -->
+<h3><a name="disabling-dtd-processing-for-stax-processors">Disabling DTD Processing for StAX Parsers</a></h3>
+
+<p>To disable DTD processing for StAX parsers, set the property
+<code>SupportDTD</code> with the
+<code>XMLInputFactory.setProperty</code> method:</p>
+<pre>
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+    xif.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+</pre>
+<!-- -->
+<h2><a name="using-java-xml-resolvers" id=
+"using-java-xml-resolvers">Using Java XML Resolvers</a></h2>
+<p>You can register custom resolvers on a JDK XML processor to
+intercept any references to external resources and resolve them
+with local ones. This feature eliminates the need to read and
+access external resources, thus helping to remove a source of
+potential risk.</p>
+<p>The Java XML API supports various resolvers that you can
+register on JDK XML processors to resolve external resources. These
+resolvers includes entity resolvers for SAX and DOM parsers, XML
+resolvers for StAX parsers, <code>LSResourceResolver</code> for
+validation, and <code>URIResolver</code> for transformation.</p>
+<h3><a name="entity-resolvers-for-sax-and-dom" id=
+"entity-resolvers-for-sax-and-dom">Entity Resolvers for SAX and
+DOM</a></h3>
+<p>SAX defines an interface that DOM also supports,
+<code>org.xml.sax.EntityResolver</code>. It enables applications
+to step into the entity resolution process and perform entity
+resolution on their own terms. The following is the interface's
+definition:</p>
+<pre>
+package org.xml.sax;
+
+public interface EntityResolver {
+    public InputSource resolveEntity(String publicID, String systemID)
+        throws SAXException;
+}
+</pre>
+<p>You can then register an implementation of the interface on a
+SAX driver:</p>
+<pre>
+    EntityResolver resolver = ...;
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setNamespaceAware(true);
+    XMLReader reader = factory.newSAXParser().getXMLReader();
+    reader.setEntityResolver(resolver);
+</pre>
+<p>Alternatively, you can register it on a DOM builder:</p>
+<pre>
+    DocumentBuilder builder =
+        DocumentBuilderFactory.newInstance().newDocumentBuilder();       
+    docBuilder.setEntityResolver(resolver);
+</pre>
+<h3><a name="xmlresolver-for-stax" id=
+"xmlresolver-for-stax">XMLResolver for StAX</a></h3>
+<p>StAX defines a <code>javax.xml.stream.XMLResolver</code>
+interface:</p>
+<pre>
+package javax.xml.stream;
+
+public interface XMLResolver {
+    public Object resolveEntity(
+        String publicID, String systemID,
+        String baseURI, String namespace)
+        throws XMLStreamException;
+}
+</pre>
+<p>You can register it on a StAX factory:</p>
+<pre>
+    XMLResolver resolver = ...;
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+    xif.setProperty(XMLInputFactory.RESOLVER, resolver);
+</pre>
+<h3><a name="uriresolver-for-transform" id=
+"uriresolver-for-transform">URIResolver for
+javax.xml.transform</a></h3>
+<p>The <code>javax.xml.transform</code> API supports custom
+resolution of external resources through the
+<code>URIResolver</code> interface:</p>
+<pre>
+package javax.xml.transform;
+
+public interface URIResolver {
+    public Source resolve(String href, String base)
+        throws TransformerException;
+}
+</pre>
+<p>You can register an implementation of <code>URIResolver</code>
+on a <code>Transformer</code> as follows:</p>
+<pre>
+    URIResolver resolver = ...;
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer t =
+      tf.newTransformer(new StreamSource(
+        new StringReader("xsl source")));
+    t.setURIResolver(resolver);
+</pre>
+<h3><a name="lsresource-resolver-for-validation" id=
+"lsresource-resolver-for-validation">LSResourceResolver for
+javax.xml.validation</a></h3>
+<p>The <code>javax.xml.validation</code> API supports Document
+Object Model Level 3 Load and Save (DOM LS) DOM through the
+<code>LSResourceResolver</code> interface:</p>
+<pre>
+package org.w3c.dom.ls;
+
+public interface LSResourceResolver {
+    public LSInput resolveResource(
+        String type, String namespaceURI, String publicId,
+        String systemId, String baseURI);
+}
+</pre>
+<p>You can register an implementation of
+<code>LSResourceResolver</code> on a <code>SchemaFactory</code>
+as follows:</p>
+<pre>
+    SchemaFactory schemaFactory =
+        SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+    LSResourceResolver resolver = ...;
+    schemaFactory.setResourceResolver(resolver);
+</pre>
+<h2><a name="third-party-parsers" id=
+"third-party-parsers">Third-Party Parsers</a></h2>
+<p>The JDK will always use its system-default parser even when
+there's a third-party parser on the classpath. To override the
+JDK system-default parser, set the
+<code>jdk.xml.overrideDefaultParser</code> property to true.</p>
+<h3><a name="overrideDefaultParser" id=
+"overrideDefaultParser">overrideDefaultParser</a></h3>
+<table title="overrideDefaultParser" summary=
+"The jdk.xml.overrideDefaultParser property, which enables third-party parsers for the JDK's Transformer, Validator, and XPath implementations"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h701" valign="bottom" align="left">Attribute</th>
+<th id="h702" valign="bottom" align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">Name</td>
+<td headers="d135600e2466 d135600e2462" valign="top" align=
+"left"><code>jdk.xml.overrideDefaultParser</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">
+Definition</td>
+<td headers="d135600e2472 d135600e2462" valign="top" align=
+"left">Enables the use of a third-party's parser implementation
+to override the system-default parser for the JDK's
+<code>Transformer</code>, <code>Validator</code>, and
+<code>XPath</code> implementations. The property can be set
+through JAXP factories, System properties, or the
+<code>jaxp.properties</code> file.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">Value</td>
+<td headers="d135600e2489 d135600e2462" valign="top" align=
+"left">A boolean. Setting it to true enables third-party parser
+implementations to override the system-default implementation
+during XML transformation, XML validation, or XPath operations.
+Setting it to false disables the use of third-party parser
+implementations. When the value is specified as a String, the
+returning value will be that of
+<code>Boolean.parseBoolean</code>.</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">Default
+value</td>
+<td headers="d135600e2497 d135600e2462" valign="top" align=
+"left">false</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">System
+property</td>
+<td headers="d135600e2502 d135600e2462" valign="top" align=
+"left"><code>jdk.xml.overrideDefaultParser</code></td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2460" valign="top" align="left">Since</td>
+<td headers="d135600e2508 d135600e2462" valign="top" align=
+"left">6u181, 7u171, 8u161, 9.0.4</td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h3><a name="example-of-using-a-third-party-parser" id=
+"example-of-using-a-third-party-parser">Example of Using a
+Third-Party Parser</a></h3>
+<p>The following code snippets instruct the factories to use a
+third-party parser, if found on the classpath, by setting the
+<code>jdk.xml.overrideDefaultParser</code> property with the
+<code>setFeature</code> method:</p>
+<pre>
+    static final String JDK_OVERRIDE_PARSER = "jdk.xml.overrideDefaultParser";
+    ...
+    TransformerFactory tFactory = TransformerFactory.newInstance();
+    tFactory.setFeature(JDK_OVERRIDE_PARSER, true);
+    ...
+    XPathFactory xf = XPathFactory.newInstance();
+    xf.setFeature(JDK_OVERRIDE_PARSER, true);
+    ...
+    SchemaFactory schemaFactory =
+        SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    schemaFactory.setFeature(JDK_OVERRIDE_PARSER, true);
+    ...
+    Schema schema = schemaFactory.newSchema(new File("mySchema.xsd"));
+    Validator validator = schema.newValidator();
+    validator.setFeature(JDK_OVERRIDE_PARSER, true);
+</pre>
+<p>The following code snippet sets
+<code>jdk.xml.overrideDefaultParser</code> as a System
+property:</p>
+<pre>
+    System.setProperty("jdk.xml.overrideDefaultParser", "true"));
+</pre>
+<p>You can add the following line to the
+<code>jaxp.properties</code> file to enable third-party
+parsers:</p>
+<pre>
+    jdk.xml.overrideDefaultParser=true
+</pre>
+<h2><a name="general-recommendations-for-jaxp-security" id=
+"general-recommendations-for-jaxp-security">General
+Recommendations for JAXP Security</a></h2>
+
+<p>The following are general recommendations for configuring JAXP
+properties and features to help secure your applications and
+systems:</p>
+
+<ul>
+<li>Turn on Feature for Secure Processing (FSP), then adjust
+individual features and properties in accordance with your
+specific requirements.</li>
+<li>For processing limits, adjust them so that they are just
+large enough to accommodate the maximum amount your applications
+require.</li>
+<li>For external access restrictions, reduce or eliminate your
+applications' reliance on external resources, including the use
+of resolvers, then tighten these restrictions.</li>
+
+</ul>
+<h2><a name="appendix-a" id="appendix-a">Appendix A: Glossary of
+Java API for XML Processing Terms and Definitions</a></h2>
+<table title="JAXP Glossary" summary=
+"Glossary of Java API for XML Processing Terms and Definitions"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h801" valign="bottom" align="left">Term</th>
+<th id="h802" valign="bottom" align="left">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">JAXP</td>
+<td headers="d135600e2594 d135600e2590" valign="top" align=
+"left">Java API for XML Processing</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">Java SE XML
+API</td>
+<td headers="d135600e2599 d135600e2590" valign="top" align=
+"left">APIs defined in the JAXP JSR and integrated into Java
+SE</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">Java XML
+API</td>
+<td headers="d135600e2604 d135600e2590" valign="top" align=
+"left">Equivalent term for Java SE XML API</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">Java XML
+Features and Properties</td>
+<td headers="d135600e2609 d135600e2590" valign="top" align=
+"left">XML-related features and properties defined by the Java SE
+specification</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">JDK XML</td>
+<td headers="d135600e2624 d135600e2590" valign="top" align=
+"left">The JDK implementation of the Java XML API</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">JDK XML
+Parsers</td>
+<td headers="d135600e2629 d135600e2590" valign="top" align=
+"left">The JDK implementation of the XML parsers</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">JDK XML
+Properties</td>
+<td headers="d135600e2634 d135600e2590" valign="top" align=
+"left">The JDK Implementation-only properties</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2588" valign="top" align="left">FSP</td>
+<td headers="d135600e2639 d135600e2590" valign="top" align=
+"left"><code>FEATURE_SECURE_PROCESSING</code></td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<h2><a name="appendix-b" id="appendix-b">Appendix B: Java and JDK
+XML Features and Properties Naming Convention</a></h2>
+<p>Java and JDK XML features and properties are defined in the
+<code>javax.xml.XMLConstants</code> class. The features have a
+prefix <code>http://javax.xml.XMLConstants/feature</code>, the
+properties <code>http://javax.xml.XMLConstants/property</code>.
+If there is a corresponding System property, its prefix is
+<code>javax.xml</code>.</p>
+<p>The JDK XML properties are JDK implementation-only properties.
+Their prefixes vary depending on the JDK version. The following
+table summarizes this naming convention:</p>
+<table title=
+"Java and JDK XML Features and Properties Naming Convention"
+summary=
+"Summarizes this naming convention for Java and JDK XML features and properties"
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h901" valign="bottom" align="left">Scope</th>
+<th id="h902" valign="bottom" align="left">API Property Prefix</th>
+<th id="h903" valign="bottom" align="left">System Property Prefix</th>
+<th id="h904" valign="bottom" align="left">Java SE and JDK Version</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="d135600e2694" valign="top" align="left">Java SE</td>
+<td headers="d135600e2704 d135600e2696" valign="top" align=
+"left"><code>http://javax.xml.XMLConstants/feature</code><br />
+<code>http://javax.xml.XMLConstants/property</code></td>
+<td headers="d135600e2704 d135600e2698" valign="top" align=
+"left"><code>javax.xml</code></td>
+<td headers="d135600e2704 d135600e2700" valign="top" align=
+"left">Since 1.4</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="d135600e2694" valign="top" align="left">JDK</td>
+<td headers="d135600e2722 d135600e2696" valign="top" align=
+"left">
+<code>http://www.oracle.com/xml/jaxp/properties</code></td>
+<td headers="d135600e2722 d135600e2698" valign="top" align=
+"left"><code>jdk.xml</code></td>
+<td headers="d135600e2722 d135600e2700" valign="top" align=
+"left">Since 7</td>
+</tr>
+</tbody>
+</table>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

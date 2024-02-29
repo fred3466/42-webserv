@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" xml:lang=
+"en-US">
+<head>
+<title>Java Web Start Guide</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<h1>Java Web Start Guide</h1>
+<br />
+<table width="80%" border="0" align="center" cellpadding="3"
+bgcolor="#FFFFCC" summary="layout">
+<tr>
+<td headers="h1" align="left" valign="top">Related Documents
+<dl>
+<dd><a href="../../deploy/index.html">Java Platform, Standard Edition Deployment Guide</a></dd>
+</dl>
+</td>
+</tr>
+</table>
+<table summary="" width="80%" border="2" cellpadding="5"
+align="center" cellspacing="0">
+<tr>
+<td>
+<table summary="" width="100%" border="0" cellpadding="5"
+align="center">
+<tr>
+<td>
+
+<h2><a name="overview" id="overview"></a><a href=
+"overview.html">Overview of Java Web Start Technology</a></h2>
+
+<ul>
+  <li><a href="overview.html#intro">Introduction to Java Web Start</a></li>
+  <li><a href="overview.html#benefits">Benefits of Java Web Start</a></li>
+  <li><a href="overview.html#security">Security Considerations</a></li>
+  <li><a href="overview.html#where">Where to Find Java Web Start</a></li>
+  <li><a href="overview.html#using">Using Java Web Start</a>
+    <ul>
+      <li><a href="overview.html#launching">Launching from a Web Browser</a></li>
+      <li><a href="overview.html#launching-desktop">Launching from Desktop Icons and the Start Menu (Microsoft Windows and Linux 
+Running GNOME 2.0+)</a></li>
+      <li><a href="overview.html#proxy">Using Java Web Start Software Behind a Proxy Server or Firewall</a>
+    </ul>
+  </li>
+</ul>
+
+
+<h2><a href="setup.html">Setting Up the Web Server</a></h2>
+
+<ul>
+  <li><a href="setup.html#installing-jws-protocol-handler">Installing the Java Web Start Protocol Handler</a>
+    <ul>
+      <li><a href="setup.html#chrome">Installing the Protocol Handler for Chrome</a></li>
+      <li><a href="setup.html#firefox">Installing the Protocol Handler in Firefox</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2><a href="development.html">Application Development
+Considerations</a></h2>
+
+<ul>
+<li><a href="development.html#intro">Introduction to Web Deployment</a></li>
+<li><a href="development.html#retrieving">Retrieving Resources from JAR Files</a></li>
+<li><a href="development.html#jnlpAPI">Accessing the Client Using JNLP API</a></li>
+<li><a href="development.html#security">Security and Code Signing</a></li>
+<li><a href="development.html#signing">Signing JAR Files with a Test Certificate</a></li>
+<li><a href="development.html#how">How to Encode JNLP Files</a></li>
+<li><a href="development.html#dynamic">Dynamic Download of HTTPS Certificates</a></li>
+</ul>
+
+<h2><a href="downloadservletguide.html">JnlpDownloadServlet Guide</a></h2>
+
+<ul>
+  <li><a href="downloadservletguide.html#introduction">Introduction</a>
+    <ul>
+      <li><a href="downloadservletguide.html#features">Features</a></li>
+      <li><a href="downloadservletguide.html#baseline-example">Baseline Example</a></li>
+      <li><a href="downloadservletguide.html#other-examples">Other Examples</a></li>
+    </ul>
+  
+  </li>
+  <li><a href="downloadservletguide.html#using">Using <code>JnlpDownloadServlet</code></a></li>
+  <li><a href="downloadservletguide.html#substitutions">Substitutions</a>
+    <ul>
+      <li><a href="downloadservletguide.html#time-stamp">Time Stamp</a></li>
+      <li><a href="downloadservletguide.html#other-examples">Other Examples</a></li>
+      <li><a href="downloadservletguide.html#codebase">Codebase and Other Values</a></li>
+    </ul>
+  </li>
+  <li><a href="downloadservletguide.html#requests">Version, Extension, and Platform Requests</a>
+    <ul>
+      <li><a href="downloadservletguide.html#file-naming">File Naming Convention</a></li>
+      <li><a href="downloadservletguide.html#xml-version-file">XML Version File</a></li>
+    </ul>
+  </li>
+  <li><a href="downloadservletguide.html#incremental">Incremental Updates with JARDiff</a></li>
+  <li><a href="downloadservletguide.html#pack200">Faster Downloads with Pack200</a></li>
+  <li><a href="downloadservletguide.html#other">Other Features</a>
+    <ul>
+      <li><a href="downloadservletguide.html#logging">Logging</a></li>
+      <li><a href="downloadservletguide.html#mime-types">MIME Types</a></li>
+    </ul>
+  </li>
+  <li><a href="downloadservletguide.html#building">Building <code>JnlpDownloadServlet</code></a></li>
+  <li><a href="downloadservletguide.html#reference">References</a>
+    <ul>
+      <li><a href="downloadservletguide.html#iso-time-stamps">More Information About ISO 8601 Time Stamps</a></li>
+      <li><a href="downloadservletguide.html#specification">Specification of the XML Version File</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2><a href="migrating-java-applets-to-jws-and-jnlp.html">Migrating Java Applets to Java Web Start and JNLP</a></h2>
+
+<ul>
+<li><a href="migrating-java-applets-to-jws-and-jnlp.html#migrate">Migrating an Existing Java Applet</a></li>
+<li><a href="migrating-java-applets-to-jws-and-jnlp.html#rewrite">Rewriting a Java Applet as a Java Web Start Application</a></li>
+<li><a href="migrating-java-applets-to-jws-and-jnlp.html#special">Special Considerations</a></li>
+</ul> 
+  
+
+<h2><a href="syntax.html">JNLP File Syntax</a></h2>
+
+<ul>
+<li><a href="syntax.html#intro">Introduction</a></li>
+<li><a href="syntax.html#examples">Examples of a JNLP File</a>
+  <ul>
+    <li><a href="syntax.html#basic">Basic JNLP File</a></li>
+    <li><a href="syntax.html#customizations">JNLP File with Application Customizations</a>
+  </ul>
+
+
+</li>
+<li><a href="syntax.html#jnlp_elements">JNLP Elements</a>
+<ul>
+<li><a href="syntax.html#jnlp"><code>jnlp</code> Element</a></li>
+<li><a href="syntax.html#information"><code>information</code>
+Element</a></li>
+<li><a href="syntax.html#security"><code>security</code> Element</a></li>
+<li><a href="syntax.html#update"><code>update</code> Element</a></li>
+<li><a href="syntax.html#resources"><code>resources</code> Element</a></li>
+<li><a href="syntax.html#application_desc"><code>application-desc</code>
+Element</a></li>
+<li><a href="syntax.html#applet_desc"><code>applet-desc</code>
+Element</a></li>
+<li><a href="syntax.html#comp_desc"><code>component-desc</code>
+Element</a></li>
+<li><a href="syntax.html#install_desc"><code>installer-desc</code>
+Element</a></li>
+</ul>
+</li>
+</ul>
+
+
+<h2><a href="examples.html">JNLP API Examples</a></h2>
+
+<ul>
+<li><a href="examples.html#Introduction">Introduction</a></li>
+<li><a href="examples.html#BasicService">Using the <code>BasicService</code>
+Service</a></li>
+<li><a href="examples.html#ClipboardService">Using the
+<code>ClipboardService</code> Service</a></li>
+<li><a href="examples.html#DownloadService">Using the
+<code>DownloadService</code> Service</a></li>
+<li><a href="examples.html#DownloadService2">Using the
+<code>DownloadService2</code> Service</a></li>
+<li><a href="examples.html#DownloadServiceListener">Implementing the
+<code>DownloadServiceListener</code> Service</a></li>
+<li><a href="examples.html#FileOpenService">Using the
+<code>FileOpenService</code> Service</a></li>
+<li><a href="examples.html#FileSaveService">Using the
+<code>FileSaveService</code> Service</a></li>
+<li><a href="examples.html#IntegrationService">Using the
+<code>IntegrationService</code> Service</a></li>
+<li><a href="examples.html#PrintService">Using the <code>PrintService</code>
+Service</a></li>
+<li><a href="examples.html#PersistenceService">Using the
+<code>PersistenceService</code> Service</a></li>
+<li><a href="examples.html#FileContents">Using
+<code>FileContents</code></a></li>
+<li><a href="examples.html#JNLPRandomAccessFile">Using a
+<code>JNLPRandomAccessFile</code></a></li>
+<li><a href="examples.html#SingleInstanceService">Using the
+<code>SingleInstanceService</code> Service</a></li>
+<li><a href="examples.html#ExtendedService">Using the
+<code>ExtendedService</code> Service</a></li>
+</ul>
+
+<h2><a href="../../../tools/index.html#javaws">The <tt>javaws</tt> Command Line Interface</a></h2>
+
+<ul>
+  <li><a href="../../../tools/unix/javaws.html">Solaris, Linux, and macOS</a></li>
+  <li><a href="../../../tools/windows/javaws.html">Windows</a></li>
+</ul>
+
+<h2><a href="../../../../jre/api/javaws/jnlp/">JNLP API
+(JavaDoc)</a></h2>
+
+<h2><a href="faq.html">Java Web Start Frequently Asked Questions (FAQ)</a></h2>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

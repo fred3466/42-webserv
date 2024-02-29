@@ -1,0 +1,649 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>TLS Application Layer Protocol Negotiation</title>
+ <link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+  <body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+  
+
+  
+  <ul>
+    <li><a href="#what-is-alpn">What is ALPN?</a></li>
+    <li><a href="#setting-up-alpn-on-the-client">Setting up ALPN on the Client</a></li>
+    <li><a href="#setting-up-default-alpn-on-the-server">Setting up Default ALPN on the Server</a></</li>
+    <li><a href="#setting-up-custom-alpn-on-the-server">Setting up Custom ALPN on the Server</a></li>
+    <li><a href="#determining-negotiated-alpn-value-during-handshaking">Determining Negotiated ALPN Value during Handshaking</a></li>
+    <li><a href="#reading-and-writing-alpn-values-with-the-sunjsse-provider">Reading and Writing ALPN Values with the SunJSSE Provider</a></li>
+    <li><a href="#alpn-related-classes-and-methods">ALPN Related Classes and Methods</a></li>
+    
+  </ul>
+  
+  <h2><a name="what-is-alpn">What is ALPN?</a></h2>
+  
+  <p>Some applications might want or need to negotiate a shared application level value before a TLS handshake has completed. For
+  example, HTTP/2 uses the Application Layer Protocol Negotiation mechanism to help establish which HTTP version (&quot;h2&quot;, &quot;spdy/3&quot;, &quot;http/1.1&quot;) can or will be used on a particular TCP or UDP port. ALPN (<a href="https://www.rfc-editor.org/rfc/rfc7301.txt">RFC 7301</a>) does this without adding network round-trips between the
+  client and the server. In the case of HTTP/2 the protocol must be established before the connection is negotiated, as client and
+  server need to know what version of HTTP to use before they start communicating. Without ALPN it would not be possible to have
+  application protocols HTTP/1 and HTTP/2 on the same port.</p>
+  
+  <p>The client uses the ALPN extension at the beginning of the TLS handshake to send a list of supported application protocols to
+  the server as part of the 
+  <code>ClientHello</code>. The server reads the list of supported application protocols in the 
+  <code>ClientHello</code>, and determines which of the supported protocols it prefers. It then sends a 
+  <code>ServerHello</code> message back to the client with the negotiation result. The message may contain either the name of the
+  protocol that has been chosen or that no protocol has been chosen.</p>
+  
+  <p>The application protocol negotiation can thus be accomplished within the TLS handshake, without adding network round-trips,
+  and allows the server to associate a different certificate with each application protocol, if desired.</p>
+  
+  <p>Unlike many other TLS extensions, this extension does not establish properties of the session, only of the connection.
+  That's why you'll find the negotiated values in the 
+  <code>SSLSocket</code>/
+  <code>SSLEngine</code>, not the 
+  <code>SSLSession</code>. When session resumption or session tickets are used (see <a href="http://www.rfc-editor.org/rfc/rfc5077.txt">TLS Session Resumption without Server-Side State</a>), the previously
+  negotiated values are irrelevant, and only the values in the new handshake messages are considered.</p>
+  
+  <h2><a name="setting-up-alpn-on-the-client">Setting up ALPN on the Client</a></h2>
+  
+  <p>Set the Application Layer Protocol Negotiation (ALPN) values supported by the client. During the handshake with the server,
+  the server will read the client's list of application protocols and will determine which is most suitable.</p>
+  
+  <p>For the client, use the 
+  <code>SSLParameters.setApplicationProtocols(String[])</code> method, followed by the 
+  <code>setSSLParameters</code> method of either 
+  <code>SSLSocket</code> or 
+  <code>SSLEngine</code> to set up the application protocols to send to the server.</p>
+  
+  <p>For example, here are the steps to set ALPN values of 
+  <code>&quot;three&quot;</code> and 
+  <code>&quot;two&quot;</code>, on the client.</p>
+  
+  <p>To run the code the property 
+  <code>javax.net.ssl.trustStore</code> must be set to a valid root certificate. (This can be done on the command line).</p>
+  
+  <pre class="codeblock">import java.io.*; 
+import java.util.*;
+import javax.net.ssl.*; 
+public class SSLClient {
+    public static void main(String[] args) throws Exception {
+
+        // Code for creating a client side SSLSocket
+        SSLSocketFactory sslsf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocket sslSocket = (SSLSocket) sslsf.createSocket(&quot;localhost&quot;, 9999);
+
+        // Get an SSLParameters object from the SSLSocket
+        SSLParameters sslp = sslSocket.getSSLParameters();
+
+        // Populate SSLParameters with the ALPN values
+        // On the client side the order doesn't matter as
+        // when connecting to a JDK server, the server's list takes priority
+        String[] clientAPs = {&quot;three&quot;, &quot;two&quot;};
+        sslp.setApplicationProtocols(clientAPs);
+
+        // Populate the SSLSocket object with the SSLParameters object
+        // containing the ALPN values
+        sslSocket.setSSLParameters(sslp);
+
+        sslSocket.startHandshake();
+
+        // After the handshake, get the application protocol that has been negotiated
+        String ap = sslSocket.getApplicationProtocol();
+        System.out.println(&quot;Application Protocol client side: \&quot;&quot; + ap + &quot;\&quot;&quot;);
+
+        // Do simple write/read
+        InputStream sslIS = sslSocket.getInputStream();
+        OutputStream sslOS = sslSocket.getOutputStream();
+        sslOS.write(280);
+        sslOS.flush();
+        sslIS.read();
+        sslSocket.close();
+    }
+}</pre>
+  <p>When this code is run and sends a 
+  <code>ClientHello</code> to a Java server that has set the ALPN values 
+  <code>one</code>, 
+  <code>two</code>, and 
+  <code>three</code>, the output will be:</p>
+  <pre class="codeblock">Application Protocol client side: two</pre>
+  <p>It is also possible to check the results of the negotiation during handshaking. See 
+  <a href="#determining-negotiated-alpn-value-during-handshaking">
+  Determining Negotiated ALPN Value during Handshaking</a>.</p>
+  
+  
+  <!-- -->
+  
+  
+  <h2><a name="setting-up-default-alpn-on-the-server">Setting up Default ALPN on the Server</a></h2>
+  
+  <p>Use the default ALPN mechanism to determine a suitable application protocol by setting ALPN values on the server.</p>To use
+  the default mechanism for ALPN on the server, populate an 
+  <code>SSLParameters</code> object with the ALPN values you wish to set, and then use this 
+  <code>SSLParameters</code> object to populate either the 
+  <code>SSLSocket</code> object or the 
+  <code>SSLEngine</code> object with these parameters as you have done when you set up ALPN on the client (see the section 
+  <a href="#setting-up-alpn-on-the-client">
+  Setting up ALPN on the Client</a>). The first value of the ALPN values set on the server that matches any of the ALPN values
+  contained in the 
+  <code>ClientHello</code> will be chosen and returned to the client as part of the 
+  <code>ServerHello</code>. 
+  <!-- -->
+
+  <p>Here is the code for a Java server that uses the default approach for protocol negotiation. To run the code the property 
+  <code>javax.net.ssl.keyStore</code> must be set to a valid keystore. (This can be done on the command line, see 
+  <a href="JSSERefGuide.html#CreateKeystore">Creating
+  a Keystore to Use with JSSE</a>).</p>
+  <pre class="codeblock">import java.util.*; 
+import javax.net.ssl.*; 
+public class SSLServer {
+    public static void main(String[] args) throws Exception {
+
+        // Code for creating a server side SSLSocket
+        SSLServerSocketFactory sslssf = 
+            (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        SSLServerSocket sslServerSocket = 
+            (SSLServerSocket) sslssf.createServerSocket(9999);
+        SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+
+        // Get an SSLParameters object from the SSLSocket
+        SSLParameters sslp = sslSocket.getSSLParameters();
+
+        // Populate SSLParameters with the ALPN values
+        // As this is server side, put them in order of preference
+        String[] serverAPs ={ &quot;one&quot;, &quot;two&quot;, &quot;three&quot; };
+        sslp.setApplicationProtocols(serverAPs);
+
+        // If necessary at any time, get the ALPN values set on the 
+        // SSLParameters object with:
+        // String serverAPs = sslp.setApplicationProtocols();
+
+        // Populate the SSLSocket object with the ALPN values
+        sslSocket.setSSLParameters(sslp);
+
+        sslSocket.startHandshake();
+
+        // After the handshake, get the application protocol that 
+        // has been negotiated
+
+        String ap = sslSocket.getApplicationProtocol();
+        System.out.println(&quot;Application Protocol server side: \&quot;&quot; + ap + &quot;\&quot;&quot;);
+
+        // Continue with the work of the server
+        InputStream sslIS = sslSocket.getInputStream();
+        OutputStream sslOS = sslSocket.getOutputStream();
+        sslIS.read();
+        sslOS.write(85);
+        sslOS.flush();
+        sslSocket.close();
+    }
+}</pre>When this code is run and a Java client sends a 
+  <code>ClientHello</code> with ALPN values 
+  <code>three</code> and 
+  <code>two</code>, the output is:
+  <pre class="codeblock">Application Protocol server side: two</pre>
+  
+  <p>It is also possible to check the results of the negotiation during handshaking. See 
+  <a href="#determining-negotiated-alpn-value-during-handshaking">
+  Determining Negotiated ALPN Value during Handshaking</a>.</p>
+  
+  <!-- -->
+  <h2><a name="setting-up-custom-alpn-on-the-server">Setting up Custom ALPN on the Server</a></h2>
+  <p>Use the custom ALPN mechanism to determine a suitable application protocol by setting up a callback method.</p>
+  <p>If you do not want to use the server's default negotiation protocol, you can use the 
+  <code>setHandshakeApplicationProtocolSelector</code> method of 
+  <code>SSLEngine</code> or 
+  <code>SSLSocket</code> to register a 
+  <code>BiFunction</code> (lambda) callback that can examine the handshake state so far, and then make your selection based on the
+  client's list of application protocols and any other relevant information. For example, you may consider using the cipher suite
+  suggested, or the Server Name Indication (SNI) or any other data you can obtain in making the choice. If custom negotiation is
+  used, the values set by the 
+  <code>setApplicationProtocols</code> method (default negotiation) will be ignored.</p>
+  <!-- -->
+
+  <p>Here is the code for a Java server that uses the custom mechanism for protocol negotiation. To run the code the property 
+  <code>javax.net.ssl.keyStore</code> must be set to a valid certificate. (This can be done on the command line, see 
+  <a href="JSSERefGuide.html#CreateKeystore">Creating
+  a Keystore to Use with JSSE</a>).</p>
+  <pre class="codeblock">import java.util.*; 
+import javax.net.ssl.*; 
+public class SSLServer {
+    public static void main(String[] args) throws Exception {
+
+        // Code for creating a server side SSLSocket
+        SSLServerSocketFactory sslssf =
+            (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        SSLServerSocket sslServerSocket = 
+            (SSLServerSocket) sslssf.createServerSocket(9999);
+        SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+
+        // Code to set up a callback function
+        // Pass in the current SSLSocket to be inspected and client AP values
+        sslSocket.setHandshakeApplicationProtocolSelector(
+            (serverSocket, clientProtocols) -&gt; {
+                SSLSession handshakeSession = serverSocket.getHandshakeSession();
+                // callback function called with current SSLSocket and client AP values
+                // plus any other useful information to help determine appropriate
+                // application protocol. Here the protocol and ciphersuite are also
+                // passed to the callback function.
+                return chooseApplicationProtocol(
+                    serverSocket,
+                    clientProtocols,
+                    handshakeSession.getProtocol(),
+                    handshakeSession.getCipherSuite());
+         }); 
+
+        sslSocket.startHandshake();
+
+        // After the handshake, get the application protocol that has been
+        // returned from the callback method.
+
+        String ap = sslSocket.getApplicationProtocol();
+        System.out.println(&quot;Application Protocol server side: \&quot;&quot; + ap + &quot;\&quot;&quot;);
+
+        // Continue with the work of the server
+        InputStream sslIS = sslSocket.getInputStream();
+        OutputStream sslOS = sslSocket.getOutputStream();
+        sslIS.read();
+        sslOS.write(85);
+        sslOS.flush();
+        sslSocket.close();
+    }
+
+    // The callback method. Note how the parameters match the call within 
+    // the setHandshakeApplicationProtocolSelector method above.
+    public static String chooseApplicationProtocol(SSLSocket serverSocket,
+            List&lt;String&gt; clientProtocols, String protocol, String cipherSuite ) {
+        // For example, check the cipher suite and return an application protocol
+        // value based on that.
+        if (cipherSuite.equals(&quot;&lt;--a_particular_ciphersuite--&gt;&quot;)) { 
+            return &quot;three&quot;;
+        } else {
+            return &quot;&quot;;
+        }
+    } 
+}</pre>
+  <p>If the cipher suite matches the one you specify in the condition statement when this code is run , then the value 
+  <code>three</code> will be returned. Otherwise an empty string will be returned.</p>
+  <p>Note that the 
+  <code>BiFunction</code> object's return value is a 
+  <code>String</code>, which will be the application protocol name, or null to indicate that none of the advertised names are
+  acceptable. If the return value is an empty <code>String</code>, then application protocol indications will not be used. If the return value is null (no value chosen) or is a
+  value that was not advertised by the peer, the underlying protocol will determine what action to take. (For example, the server
+  code will send a &quot;no_application_protocol&quot; alert and terminate the connection.)</p>
+  <p>After handshaking completes on both client and server, you can check the result of the negotiation by calling the 
+  <code>getApplicationProtocol</code> method on either the 
+  <code>SSLSocket</code> object or the 
+  <code>SSLEngine</code> object.</p>
+  <!-- -->
+  <h2><a name="determining-negotiated-alpn-value-during-handshaking">Determining Negotiated ALPN Value during Handshaking</a></h2>
+  
+  <p>To determine the ALPN value that has been negotiated during the handshaking, create a custom 
+  <code>KeyManager</code> or 
+  <code>TrustManager</code> class, and include in this custom class a call to the 
+  <code>getHandshakeApplicationProtocol</code> method.</p>
+  <p>There are some use cases where the selected ALPN and SNI values will affect the choices made by a 
+  <code>KeyManager</code> or 
+  <code>TrustManager</code>. For example, an application might want to select different certificate/private key sets depending on
+  the attributes of the server and the chosen ALPN/SNI/ciphersuite values.</p>
+  <p>The sample code given illustrates how to call the 
+  <code>getHandshakeApplicationProtocol</code> method from within a custom 
+  <code>X509ExtendedKeyManager</code> that you create and register as the 
+  <code>KeyManager</code> object.</p>
+  <!-- -->
+  
+  <p>This example shows the entire code for a custom 
+  <code>KeyManager</code> that extends 
+  <code>X509ExtendedKeyManager</code>. Most methods simply return the value returned from the 
+  <code>KeyManager</code> class that is being wrapped by this 
+  <code>MyX509ExtendedKeyManager</code> class. However the 
+  <code>chooseServerAlias</code> method calls the 
+  <code>getHandshakeApplicationProtocol</code> on the 
+  <code>SSLSocket</code> object and therefore can determine the current negotiated ALPN value.</p>
+  <pre class="codeblock">import java.net.Socket;
+import java.security.*;
+import javax.net.ssl.*;
+
+public class MyX509ExtendedKeyManager extends X509ExtendedKeyManager {
+
+    // X509ExtendedKeyManager is an abstract class so your new class 
+    // needs to implement all the abstract methods in this class. 
+    // The easiest way to do this is to wrap an existing KeyManager
+    // and call its methods for each of the methods you need to implement.   
+
+    X509ExtendedKeyManager akm;
+    
+    public MyX509ExtendedKeyManager(X509ExtendedKeyManager akm) {
+        this.akm = akm;
+    }
+
+    @Override
+    public String[] getClientAliases(String keyType, Principal[] issuers) {
+        return akm.getClientAliases(keyType, issuers);
+    }
+
+    @Override
+    public String chooseClientAlias(String[] keyType, Principal[] issuers, 
+        Socket socket) {
+        return akm.chooseClientAlias(keyType, issuers, socket);
+    }
+
+    @Override
+    public String chooseServerAlias(String keyType, Principal[] issuers, 
+        Socket socket) {
+        
+        // This method has access to a Socket, so it is possible to call the
+        // getHandshakeApplicationProtocol method here. Note the cast from 
+        // a Socket to an SSLSocket
+        String ap = ((SSLSocket) socket).getHandshakeApplicationProtocol();
+        System.out.println(&quot;In chooseServerAlias, ap is: &quot; + ap);
+        return akm.chooseServerAlias(keyType, issuers, socket);
+    }
+
+    @Override
+    public String[] getServerAliases(String keyType, Principal[] issuers) {
+        return akm.getServerAliases(keyType, issuers);
+    }
+
+    @Override
+    public X509Certificate[] getCertificateChain(String alias) {
+        return akm.getCertificateChain(alias);
+    }
+
+    @Override
+    public PrivateKey getPrivateKey(String alias) {
+        return akm.getPrivateKey(alias);
+    }
+}</pre>When this code is registered as the 
+  <code>KeyManager</code> for a Java server and a Java client sends a 
+  <code>ClientHello</code> with ALPN values, the output will be:
+  <pre class="codeblock">In chooseServerAlias, ap is: &lt;negotiated value&gt;</pre>
+  <!-- -->
+
+  <p>This example shows a simple Java server that uses the default ALPN negotiation strategy and the custom 
+  <code>KeyManager</code>, 
+  <code>MyX509ExtendedKeyManager</code>, shown in the prior code sample.</p>
+  <pre class="codeblock">import java.io.*;
+import java.util.*;
+import javax.net.ssl.*;
+import java.security.KeyStore;
+
+public class SSLServerHandshake {
+    
+    public static void main(String[] args) throws Exception {
+        SSLContext ctx = SSLContext.getInstance(&quot;TLS&quot;);
+
+        // You need to explicitly create a create a custom KeyManager
+
+        // Keystores
+        KeyStore keyKS = KeyStore.getInstance(&quot;PKCS12&quot;);
+        keyKS.load(new FileInputStream(&quot;serverCert.p12&quot;), 
+            &quot;password&quot;.toCharArray());
+
+        // Generate KeyManager
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(&quot;PKIX&quot;);
+        kmf.init(keyKS, &quot;password&quot;.toCharArray());
+        KeyManager[] kms = kmf.getKeyManagers();
+
+        // Code to substitute MyX509ExtendedKeyManager
+        if (!(kms[0] instanceof X509ExtendedKeyManager)) {
+            throw new Exception(&quot;kms[0] not X509ExtendedKeyManager&quot;);
+        }
+
+        // Create a new KeyManager array and set the first index 
+        // of the array to an instance of MyX509ExtendedKeyManager.
+        // Notice how creating this object is done by passing in the 
+        // existing default X509ExtendedKeyManager 
+        kms = new KeyManager[] { 
+            new MyX509ExtendedKeyManager((X509ExtendedKeyManager) kms[0])};
+
+        // Initialize SSLContext using the new KeyManager
+        ctx.init(kms, null, null);
+
+        // Instead of using SSLServerSocketFactory.getDefault(), 
+        // get a SSLServerSocketFactory based on the SSLContext
+        SSLServerSocketFactory sslssf = ctx.getServerSocketFactory();
+        SSLServerSocket sslServerSocket = 
+            (SSLServerSocket) sslssf.createServerSocket(9999);
+        SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+        SSLParameters sslp = sslSocket.getSSLParameters();
+        String[] serverAPs ={&quot;one&quot;,&quot;two&quot;,&quot;three&quot;};
+        sslp.setApplicationProtocols(serverAPs);
+        sslSocket.setSSLParameters(sslp);
+        sslSocket.startHandshake();
+
+        String ap = sslSocket.getApplicationProtocol();
+        System.out.println(&quot;Application Protocol server side: \&quot;&quot; + ap + &quot;\&quot;&quot;);
+
+        InputStream sslIS = sslSocket.getInputStream();
+        OutputStream sslOS = sslSocket.getOutputStream();
+        sslIS.read();
+        sslOS.write(85);
+        sslOS.flush();
+
+        sslSocket.close();
+        sslServerSocket.close();
+    }
+}</pre>
+  <p>With the custom 
+  <code>X509ExtendedKeyManager</code> in place, when 
+  <code>chooseServerAlias</code> is called during handshaking the 
+  <code>KeyManager</code> has the opportunity to examine the negotiated application protocol value. In the case of the example
+  shown, this value is output to the console.</p>For example, when this code is run and a Java client sends a 
+  <code>ClientHello</code> with ALPN values 
+  <code>three</code> and 
+  <code>two</code>, the output will be:
+  <pre class="codeblock">Application Protocol server side: two</pre>
+  <!-- -->
+  
+  
+<h2><a name="reading-and-writing-alpn-values-with-the-sunjsse-provider">Reading and Writing ALPN Values with the SunJSSE Provider</a></h2>
+
+<p>ALPN transports data with byte arrays, which means that it expects text to be encoded with single byte character encodings such as US-ASCII. Java ALPN APIs use the <code>String</code> class for text, but prior to Java SE 16/11.0.2/8u301, the SunJSSE provider converts <code>String</code> instances to byte arrays with UTF-8. However, UTF-8 is a variable-width character encoding. It encodes characters above U+007F with more than one byte, which may not be expected by an ALPN peer.</p>
+
+<p>In Java SE 16/11.0.2/8u301 and later, the SunJSSE provider encodes and decodes String characters as 8-bit ISO_8859_1/LATIN-1 characters.</p>
+
+<p>ALPN values are now represented using the network byte representation expected by the peer, which should require no modification for standard 7-bit ASCII-based <code>String</code> instances.</p>
+
+<p>The methods in the <code>javax.net.ssl.SSLSocket</code> and <code>javax.net.ssl.SSLEngine</code> return <code>ApplicationProtocol</code> <code>String</code> values in the network byte representation sent by the peer.</p>
+
+<p>However, if you have Unicode data with characters that are above U+007F, then your application must correctly encode or decode them to byte arrays before sending or receiving them instead of relying on the SunJSSE provider to automatically encode or decode Unicode characters. Alternatively, you can set the security property <code>jdk.tls.alpnCharset</code> to <code>UTF-8</code> to revert to the previous behavior.</p>
+
+<p>To compare ALPN values with their expected values, you can convert them to byte arrays and then compare them.</p>
+
+<p>The expected ALPN values in the following example are the string <code>http/1.1</code> and the UTF-8 encoded string (in hexadecimal) <code>0xABCD0xABCE0xABCF</code> (which are the Meetei Mayek letters "HUK UN I"). The example converts the ALPN value to a byte array with ISO-8859-1, converts <code>http/1.1</code> to a byte array with UTF-8, and manually specifies the byte array representation of <code>0xABCD0xABCE0xABCF</code>.</p> 
+
+<pre class="codeblock">    // Get the ALPN value negotiated by the TLS handshake currently
+    // in progress
+
+    String networkString = sslEngine.getHandshakeApplicationProtocol();
+    
+    // Encode the ALPN value into a byte array with the ISO-8859-1
+    // character encoding
+        
+    byte[] bytes = networkString.getBytes(StandardCharsets.ISO_8859_1);
+  
+    String HTTP1_1 = "http/1.1";
+    
+    // Encode the String "http/1.1" into a byte array with the
+    // UTF-8 character set
+    
+    byte[] HTTP1_1_BYTES = HTTP1_1.getBytes(StandardCharsets.UTF_8);
+    
+    // Create a byte array representing the Unicode characters 0xABCD,
+    // 0xABCE, and 0xABCF, which are the Meetei Mayek letters "HUK UN I"
+
+    byte[] HUK_UN_I_BYTES = new byte[] {
+        (byte) 0xab, (byte) 0xcd,
+        (byte) 0xab, (byte) 0xce,
+        (byte) 0xab, (byte) 0xcf};
+        
+    // Test whether the APLN value is equal to "http/1.1" or
+    // 0xABCD0xABCE0xABCF
+
+    if ((Arrays.compare(bytes, HTTP1_1_BYTES) == 0 ) ||
+        Arrays.compare(bytes, HUK_UN_I_BYTES) == 0) {
+        // ...
+    }</pre>
+
+<p>Alternatively, you can compare ALPN values with the method <code>String.equals()</code> if you know that the ALPN value was encoded from a <code>String</code> using a certain character set, for example <code>UTF-8</code>. You must decode the ALPN value to a Unicode <code>String</code> before comparing it.</p>
+
+<pre class="codeblock">    String unicodeString = new String(bytes, StandardCharsets.UTF_8);
+    if (unicodeString.equals(HTTP1_1) ||
+        unicodeString.equals("\uabcd\uabce\uabcf")) {
+        // ...
+    }</pre>
+
+<p>For the method <code>javax.net.ssl.SSLParameters.setApplicationProtocols(String[] protocols)</code>, you must convert its String arguments to the network byte representation expected by the peer. For example, if the peer expects ALPN values in UTF-8, you must convert it to a byte array with UTF-8 and then store it as a byte-oriented String:</p>
+
+<pre class="codeblock">// Convert Meetei Mayek letters "HUK UN I" (in hexadecimal, 0xABCD0xABCE0xABCF)
+// to a byte array with UTF-8
+byte[] bytes = "\uabcd\uabce\uabcf".getBytes(StandardCharsets.UTF_8);
+
+// Create a byte-oriented String with ISO-8859-1
+String HUK_UN_I = new String(bytes, StandardCharsets.ISO_8859_1);
+
+// GREASE value {0x8A, 0x8A}
+String rfc7301Grease8A = "\u008A\u008A";
+SSLParameters p = sslSocket.getSSLParameters();
+p.setApplicationProtocols(new String[] {"h2", "http/1.1", rfc7301Grease8A, HUK_UN_I});
+sslSocket.setSSLParameters(p);</pre>
+
+<p>At the beginning of the TLS handshake, the client sends a list of ALPN values to the server, and the server selects which values it can use and ignores those that it doesn't recognize. However, a flawed TLS implementation might instead reject unrecognized ALPN values, which may prevent the handshake from proceeding, but developers or administrators may not notice this flaw because it will still enable clients and servers whose ALPN values it recognizes to connect.</p>
+
+<p>Consequently, the TLS specification has introduced Generate Random Extensions And Sustain Extensibility (GREASE) values: a reserved set of TLS protocol values that a TLS implementation may randomly advertise to ensure that peers correctly handle unrecognized values.</p>
+
+<p>In the previous example, one of the values passed to the method <code>setApplicationProtocols</code>, <code>rfc7301Grease8A</code>, is a GREASE value. The peer should ignore it instead of reject it.</p>
+ 
+  
+  <h2><a name="alpn-related-classes-and-methods">ALPN Related Classes and Methods</a></h2>
+  <p>These classes and methods are used when working with Application Layer Protocol Negotiation (ALPN).</p>
+
+  <p>
+  <code>SSLEngine</code> and 
+  <code>SSLSocket</code> contain the same ALPN related methods and they have the same functionality.</p>
+  <table cellpadding="4" cellspacing="0" title="" summary="These methods enable the setting and getting of ALPN values."
+  width="100%" frame="hsides" border="1" rules="rows">
+    <thead>
+      <tr align="left" valign="top">
+        <th id="h1" align="left" valign="bottom" width="20%">Class</th>
+        <th id="h2" align="left" valign="bottom" width="40%">Method</th>
+        <th id="h3" align="left" valign="bottom" width="40%">Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr align="left" valign="top">
+        <td headers="h1" align="left" valign="top" width="20%" headers="d104183e8704">
+          <code>SSLParameters</code>
+        </td>
+        <td headers="h2" align="left" valign="top" width="40%" headers="d104183e8712 d104183e8706">
+          <code>public String[] getApplicationProtocols();</code>
+        </td>
+        <td headers="h3" align="left" valign="top" width="40%" headers="d104183e8712 d104183e8708">
+        <span>Client-side and server-side</span>: use the method to return a 
+        <code>String</code> array containing each protocol set.</td>
+      </tr>
+      <tr align="left" valign="top">
+        <td headers="h1" align="left" valign="top" width="20%" headers="d104183e8704">
+          <code>SSLParameters</code>
+        </td>
+        <td headers="h2" align="left" valign="top" width="40%" headers="d104183e8726 d104183e8706">
+          <code>public void setApplicationProtocols([] protocols);</code>
+        </td>
+        <td headers="h3" align="left" valign="top" width="40%" headers="d104183e8726 d104183e8708">
+          <p>
+          <span>Client-side</span>: use the method to set the protocols that can be chosen by the server.</p>
+          <p>
+          <span>Server-side</span>: use the method to set the protocols that the server can use. The String array should contain
+          the protocols in order of preference.</p>
+        </td>
+      </tr>
+      <tr align="left" valign="top">
+        <td headers="h1" align="left" valign="top" width="20%" headers="d104183e8704">
+          <code>SSLEngine</code>
+          <code>SSLSocket</code>
+        </td>
+        <td headers="h2" align="left" valign="top" width="40%" headers="d104183e8742 d104183e8706">
+          <code>public String getApplicationProtocol();</code>
+        </td>
+        <td headers="h3" align="left" valign="top" width="40%" headers="d104183e8742 d104183e8708">
+        <span>Client-side and server-side</span>: use the method 
+        <span>after</span> TLS protocol negotiation has completed to return a 
+        <code>String</code> containing the protocol that has been chosen for the connection.</td>
+      </tr>
+      <tr align="left" valign="top">
+        <td headers="h1" align="left" valign="top" width="20%" headers="d104183e8704">
+          <code>SSLEngine</code>
+          <code>SSLSocket</code>
+        </td>
+        <td headers="h2" align="left" valign="top" width="40%" headers="d104183e8762 d104183e8706">
+          <code>public String getHandshakeApplicationProtocol();</code>
+        </td>
+        <td headers="h3" align="left" valign="top" width="40%" headers="d104183e8762 d104183e8708">
+        <span>Client-side and server-side</span>: use the method 
+        <span>during</span> handshaking to return a 
+        <code>String</code> containing the protocol that has been chosen for the connection. If this method is called before or
+        after handshaking, it will return null. See 
+        <a href="#determining-negotiated-alpn-value-during-handshaking">
+        Determining Negotiated ALPN Value during Handshaking</a> for instructions on how to call this method.</td>
+      </tr>
+      <tr align="left" valign="top">
+        <td headers="h1" align="left" valign="top" width="20%" headers="d104183e8704">
+          <code>SSLEngine</code>
+          <code>SSLSocket</code>
+        </td>
+        <td headers="h2" align="left" valign="top" width="40%" headers="d104183e8798 d104183e8706">
+          <code>public void setHandshakeApplicationProtocolSelector(BiFunction,String&gt; selector)</code>
+        </td>
+        <td headers="h3" align="left" valign="top" width="40%" headers="d104183e8798 d104183e8708">
+        <span>Server-side</span>: use the method to register a callback function. The application protocol value can then be set in
+        the callback based on any information available, for example the protocol or cipher suite. See 
+        <a href="#setting-up-custom-alpn-on-the-server">Setting
+        up Custom ALPN on the Server</a> for instructions on how to use this method.</td>
+      </tr>
+    </tbody>
+  </table>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

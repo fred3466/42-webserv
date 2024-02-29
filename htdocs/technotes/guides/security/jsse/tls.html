@@ -1,0 +1,1102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-us">
+<head>
+<title>Transport Layer Security (TLS) Protocol Overview</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+ 
+<h1><a name="tls_overview">Transport Layer Security (TLS) Protocol Overview</a></h1>
+
+  <ul>
+    <li><a href="#how_tls_works">How TLS Works</a></li>
+    <li><a href="#cryptographic_processes">Cryptographic Processes</a>
+    <ul>
+      <li><a href="#secret_key_cryptography">Secret-Key Cryptography</a></li>
+      <li><a href="#public_key_cryptography">Public-Key Cryptography</a></li>
+      <li><a href="#comparison_secret_key_public_key">Comparison Between Secret-Key and Public-Key
+Cryptography</a></li>
+      <li><a href="#public_key_certificates">Public Key Certificates</a></li>
+      <li><a href="#hash_functions">Cryptographic Hash Functions</a></li>
+      <li><a href="#mac">Message Authentication Code</a></li>
+      <li><a href="#digital_signatures">Digital Signatures</a></li>
+    </ul></li>
+    <li><a href="#tls_1.3_handshake">The TLS 1.3 Handshake</a>
+    <ul>
+      <li><a href="#tls_1.3_protocol">The TLS 1.3 Protocol</a>
+      <ul>
+        <li><a href="#key_exchange">Key Exchange</a></li>
+        <li><a href="#server_parameters">Server Parameters</a></li>
+        <li><a href="#authentication">Authentication</a></li>
+      </ul></li>
+      <li><a href="#session_resumption_with_a_pre-shared_key">Session Resumption with a Pre-Shared Key</a></li>
+      <li><a href="#post-handshake_messages">Post-Handshake Messages</a>
+      <ul>
+        <li><a href="#new_session_ticket_message">New Session Ticket Message</a></li>
+        <li><a href="#post-handshake_authentication">Post-Handshake Authentication</a></li>
+        <li><a href="#keyupdate_message">KeyUpdate Message</a></li>
+      </ul></li>
+      <li><a href="#risks">Compatibility Risks and Known Issues</a></li>
+    </ul></li>
+    <li><a href="#the_tls_1.2_handshake">The TLS 1.2 Handshake</a>
+    <ul>
+      <li><a href="#the_1.2_protocol">The TLS 1.2 Protocol</a>
+      <ul>
+        <li><a href="#handshaking_again_renegotiation">Handshaking Again
+(Renegotiation)</a></li>
+        <li><a href="#cipher_suite_choice_and_remote_entity_verification">Cipher Suite Choice and Remote Entity Verification</a></li>
+      </ul></li>
+    </ul></li>
+  </ul>
+
+<p>Transport Layer Security (TLS) is the most widely used
+protocol for implementing cryptography on the web. TLS uses a
+combination of cryptographic processes to provide secure
+communication over a network. This section provides an
+introduction to TLS and the cryptographic processes it uses.</p>
+<p>TLS provides a secure enhancement to the standard TCP/IP
+sockets protocol used for Internet communications. As shown in
+the table <a href="#table_tcp_ip_protocol_stack_with_tls">TCP/IP
+Protocol Stack with TLS</a>, the secure sockets layer is added
+between the transport layer and the application layer in the
+standard TCP/IP protocol stack. The application most commonly
+used with TLS is Hypertext Transfer Protocol (HTTP), the protocol
+for Internet web pages. Other applications, such as Net News
+Transfer Protocol (NNTP), Telnet, Lightweight Directory Access
+Protocol (LDAP), Interactive Message Access Protocol (IMAP), and
+File Transfer Protocol (FTP), can be used with TLS as well.</p>
+<a name="table_tcp_ip_protocol_stack_with_tls"/>
+<p>TCP/IP Protocol Stack with TLS</p>
+<table summary=
+"List of protocols supported in each layer of the TCP/IP protocol stack."
+frame="hsides" rules="rows" cellspacing="0" cellpadding="4"
+border="1">
+<thead>
+<tr valign="top" align="left">
+<th id="h1" rowspan="1" colspan="1" valign="bottom" align="left">TCP/IP
+Layer</th>
+<th id="h2" rowspan="1" colspan="1" valign="bottom" align="left">
+Protocol</th>
+</tr>
+</thead>
+<tbody>
+<tr valign="top" align="left">
+<td headers="h1" rowspan="1" colspan="1" headers="d130186e33" valign="top"
+align="left">Application Layer</td>
+<td headers="h2" rowspan="1" colspan="1" headers="d130186e39 d130186e35"
+valign="top" align="left">HTTP, NNTP, Telnet, FTP, and so on</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h1" rowspan="1" colspan="1" headers="d130186e33" valign="top"
+align="left">Transport Layer Security</td>
+<td headers="h2" rowspan="1" colspan="1" headers="d130186e44 d130186e35"
+valign="top" align="left">TLS</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h1" rowspan="1" colspan="1" headers="d130186e33" valign="top"
+align="left">Transmission Control Protocol</td>
+<td headers="h2" rowspan="1" colspan="1" headers="d130186e49 d130186e35"
+valign="top" align="left">TCP</td>
+</tr>
+<tr valign="top" align="left">
+<td headers="h1" rowspan="1" colspan="1" headers="d130186e33" valign="top"
+align="left">Internet Layer</td>
+<td headers="h2" rowspan="1" colspan="1" headers="d130186e54 d130186e35"
+valign="top" align="left">IP</td>
+</tr>
+</tbody>
+</table>
+<!-- -->
+<p>Secure Socket Layer (SSL) was developed by Netscape in 1994,
+and with input from the Internet community, has evolved to become
+a standard. It is now under the control of the international
+standards organization, the Internet Engineering Task Force
+(IETF). The IETF renamed SSL to TLS, and released the first
+specification, version 1.0, in January 1999. TLS 1.0 is a modest
+upgrade to the most recent version of SSL, version 3.0. This
+upgrade corrected defects in previous versions and prohibited the
+use of known weak algorithms. TLS 1.1 was released in April 2006,
+TLS 1.2 in August 2008, and TLS 1.3 in August 2018. TLS 1.3 is a
+major overhaul of the TLS protocol and provides significant
+security and performance improvements over previous versions.</p>
+<!-- -->
+<h2><a name="how_tls_works">How TLS Works</a></h2>
+<p>One of the reasons that TLS is effective is that it uses
+several different cryptographic processes. TLS uses public-key
+cryptography to provide authentication, and secret-key
+cryptography with hash functions to provide for privacy and data
+integrity. Before you can understand TLS, it&rsquo;s helpful to
+understand these cryptographic processes.</p>
+<h2><a name="cryptographic_processes">Cryptographic Processes</a></h2>
+<p>The primary purpose of cryptography is to make it difficult
+for an unauthorized third party to access and understand private
+communication between two parties. It is not always possible to
+restrict all unauthorized access to data, but private data can be
+made unintelligible to unauthorized parties through the process
+of encryption. Encryption uses complex algorithms to convert the
+original message (cleartext) to an encoded message (ciphertext).
+The algorithms used to encrypt and decrypt data that is
+transferred over a network typically come in two categories:
+secret-key cryptography and public-key cryptography.</p>
+<p>Both secret-key cryptography and public-key cryptography
+depend on the use of an agreed-upon cryptographic key or pair of
+keys. A key is a string of bits that is used by the cryptographic
+algorithm or algorithms during the process of encrypting and
+decrypting the data. A cryptographic key is like a key for a
+lock; only with the right key can you open the lock.</p>
+<p>Safely transmitting a key between two communicating parties is
+not a trivial matter. A public key certificate enables a party to
+safely transmit its public key, while providing assurance to the
+receiver of the authenticity of the public key. See <a href=
+"#public_key_certificates">Public Key Certificates</a>.</p>
+<p>The descriptions of the cryptographic processes in secret-key
+cryptography and public-key cryptography follow conventions
+widely used by the security community: the two communicating
+parties are labeled with the names Alice and Bob. The
+unauthorized third party, also known as the attacker, is named
+Charlie.</p>
+<!-- -->
+<h3><a name="secret_key_cryptography">Secret-Key Cryptography</a></h3>
+<p>With secret-key cryptography, both communicating parties,
+Alice and Bob, use the same key to encrypt and decrypt the
+messages. Before any encrypted data can be sent over the network,
+both Alice and Bob must have the key and must agree on the
+cryptographic algorithm that they will use for encryption and
+decryption</p>
+<p>One of the major problems with secret-key cryptography is the
+logistical issue of how to get the key from one party to the
+other without allowing access to an attacker. If Alice and Bob
+are securing their data with secret-key cryptography, and if
+Charlie gains access to their key, then Charlie can understand
+any secret messages he intercepts between Alice and Bob. Not only
+can Charlie decrypt Alice's and Bob's messages, but he can also
+pretend that he is Alice and send encrypted data to Bob. Bob
+won&rsquo;t know that the message came from Charlie, not
+Alice.</p>
+<p>After the problem of secret key distribution is solved,
+secret-key cryptography can be a valuable tool. The algorithms
+provide excellent security and encrypt data relatively quickly.
+The majority of the sensitive data sent in an TLS session is sent
+using secret-key cryptography.</p>
+<p>Secret-key cryptography is also called <em>symmetric
+cryptography</em> because the same key is used to both encrypt
+and decrypt the data. Well-known secret-key cryptographic
+algorithms include Advanced Encryption Standard (AES), Triple
+Data Encryption Standard (3DES), and Rivest Cipher 4 (RC4).</p>
+<h3><a name="public_key_cryptography">Public-Key Cryptography</a></h3>
+<p>Public-key cryptography solves the logistical problem of key
+distribution by using both a public key and a private key. The
+public key can be sent openly through the network while the
+private key is kept private by one of the communicating parties.
+The public and the private keys are cryptographic inverses of
+each other; what one key encrypts, the other key will
+decrypt.</p>
+<p>Assume that Bob wants to send a secret message to Alice using
+public-key cryptography. Alice has both a public key and a
+private key, so she keeps her private key in a safe place and
+sends her public key to Bob. Bob encrypts the secret message to
+Alice using Alice's public key. Alice can later decrypt the
+message with her private key.</p>
+<p>If Alice encrypts a message using her private key and sends
+the encrypted message to Bob, then Bob can be sure that the data
+he receives comes from Alice; if Bob can decrypt the data with
+Alice's public key, the message must have been encrypted by Alice
+with her private key, and only Alice has Alice's private key. The
+problem is that anybody else can read the message as well because
+Alice's public key is public. Although this scenario does not
+allow for secure data communication, it does provide the basis
+for digital signatures. A digital signature is one of the
+components of a public key certificate, and is used in TLS to
+authenticate a client or a server. See <a href=
+"#public_key_certificates">Public Key Certificates</a> and
+<a href="#digital_signatures">Digital Signatures</a>.</p>
+<p>Public-key cryptography is also called <code>asymmetric
+cryptography</code> because different keys are used to encrypt
+and decrypt the data. A well-known public key cryptographic
+algorithm often used with TLS is the Rivest Shamir Adleman (RSA)
+algorithm. Another public key algorithm used with TLS that is
+designed specifically for secret key exchange is the
+Diffie-Hellman (DH) algorithm. Public-key cryptography requires
+extensive computations, making it very slow. It is therefore
+typically used only for encrypting small pieces of data, such as
+secret keys, rather than for the bulk of encrypted data
+communications.</p>
+<h3><a name="comparison_secret_key_public_key">Comparison Between Secret-Key and Public-Key
+Cryptography</a></h3>
+<p>Both secret-key cryptography and public-key cryptography have
+strengths and weaknesses. With secret-key cryptography, data can
+be encrypted and decrypted quickly, but because both
+communicating parties must share the same secret key information,
+the logistics of exchanging the key can be a problem. With
+public-key cryptography, key exchange is not a problem because
+the public key does not need to be kept secret, but the
+algorithms used to encrypt and decrypt data require extensive
+computations, and are therefore very slow.</p>
+<h3><a name="public_key_certificates">Public Key Certificates</a></h3>
+<p>A public key certificate provides a safe way for an entity to
+pass on its public key to be used in asymmetric cryptography. The
+public key certificate avoids the following situation: if Charlie
+creates his own public key and private key, he can claim that he
+is Alice and send his public key to Bob. Bob will be able to
+communicate with Charlie, but Bob will think that he is sending
+his data to Alice.</p>
+<p>A public key certificate can be thought of as the digital
+equivalent of a passport. It is issued by a trusted organization
+and provides identification for the bearer. A trusted
+organization that issues public key certificates is known as a
+Certificate Authority (CA). The CA can be likened to a notary
+public. To obtain a certificate from a CA, one must provide proof
+of identity. Once the CA is confident that the applicant
+represents the organization it says it represents, the CA signs
+the certificate attesting to the validity of the information
+contained within the certificate.</p>
+<p>A public key certificate contains the following fields:</p>
+<dl>
+<dt><a><!-- --></a>Issuer</dt>
+<dd>The CA that issued the certificate. If a user trusts the CA
+that issued the certificate, and if the certificate is valid,
+then the user can trust the certificate.</dd>
+<dt><a><!-- --></a>Period of validity</dt>
+<dd>A certificate has an expiration date. This date should be
+checked when verifying the validity of a certificate.</dd>
+<dt><a><!-- --></a>Subject</dt>
+<dd>Includes information about the entity that the certificate
+represents.</dd>
+<dt><a><!-- --></a>Subject's public key</dt>
+<dd>The primary piece of information that the certificate
+provides is the subject's public key. All the other fields are
+provided to ensure the validity of this key.</dd>
+<dt><a><!-- --></a>Signature</dt>
+<dd>The certificate is digitally signed by the CA that issued the
+certificate. The signature is created using the CA's private key
+and ensures the validity of the certificate. Because only the
+certificate is signed, not the data sent in the TLS transaction,
+TLS does not provide for nonrepudiation.</dd>
+</dl>
+<p>If Bob only accepts Alice's public key as valid when she sends
+it in a public key certificate, then Bob won&rsquo;t be fooled
+into sending secret information to Charlie when Charlie
+masquerades as Alice.</p>
+<p>Multiple certificates may be linked in a certificate chain.
+When a certificate chain is used, the first certificate is always
+that of the sender. The next is the certificate of the entity
+that issued the sender's certificate. If more certificates are in
+the chain, then each is that of the authority that issued the
+previous certificate. The final certificate in the chain is the
+certificate for a root CA. A root CA is a public Certificate
+Authority that is widely trusted. Information for several root
+CAs is typically stored in the client's Internet browser. This
+information includes the CA's public key. Well-known CAs include
+DigiCert, Entrust, and GlobalSign.</p>
+<!-- -->
+<h3><a name="hash_functions">Cryptographic Hash Functions</a></h3>
+<p>When sending encrypted data, TLS typically uses a
+cryptographic hash function to ensure data integrity. The hash
+function prevents Charlie from tampering with data that Alice
+sends to Bob.</p>
+<p>A cryptographic hash function is similar to a checksum. The
+main difference is that whereas a checksum is designed to detect
+accidental alterations in data, a cryptographic hash function is
+designed to detect deliberate alterations. When data is processed
+by a cryptographic hash function, a small string of bits, known
+as a <code>hash</code>, is generated. The slightest change to the
+message typically makes a large change in the resulting hash. A
+cryptographic hash function does not require a cryptographic key.
+A hash function often used with TLS is Secure Hash Algorithm
+(SHA). SHA was proposed by the <a href=
+"http://www.nist.gov/index.html" target="_blank">U.S. National
+Institute of Standards and Technology (NIST)</a>.</p>
+<h3><a name="mac">Message Authentication Code</a></h3>
+<p>A message authentication code (MAC) is similar to a
+cryptographic hash, except that it is based on a secret key. When
+secret key information is included with the data that is
+processed by a cryptographic hash function, then the resulting
+hash is known as an HMAC.</p>
+<p>If Alice wants to be sure that Charlie does not tamper with
+her message to Bob, then she can calculate an HMAC for her
+message and append the HMAC to her original message. She can then
+encrypt the message plus the HMAC using a secret key that she
+shares with Bob. When Bob decrypts the message and calculates the
+HMAC, he will be able to tell if the message was modified in
+transit. With TLS, an HMAC is used with the transmission of
+secure data.</p>
+<h3><a name="digital_signatures">Digital Signatures</a></h3>
+<p>Once a cryptographic hash is created for a message, the hash
+is encrypted with the sender's private key. This encrypted hash
+is called a digital signature.</p>
+<h2><a name="tls_1.3_handshake">The TLS 1.3 Handshake</a></h2>
+<p>Communication using TLS 1.3 begins the TLS handshake. This is
+an initial negotiation between the client and server that
+establishes the parameters of their subsequent interactions
+within TLS. It consists of three phases: key exchange, server
+parameters, and authentication:</p>
+<ol>
+<li>
+<p><code>Key Exchange</code>: This phase establishes shared
+keying material, such as which named group the shared key can
+belong to (Elliptic Curve Groups (ECDHE) or Finite Field Groups
+(DHE)), and selects cryptographic parameters, such as symmetric
+cipher options.</p>
+</li>
+<li>
+<p><code>Server Parameters</code>: This phase establishes other
+handshake parameters such as whether certificate-based client
+authentication is desired.</p>
+</li>
+<li>
+<p><code>Authentication</code>: This phase authenticates the
+server (and optionally the client) and provides key confirmation
+and handshake integrity.</p>
+</li>
+</ol>
+<h3><a name="tls_1.3_protocol">The TLS 1.3 Protocol</a></h3>
+<p>The following figure shows the sequence of messages for the
+full TLS handshake.</p>
+<img src="images/tls13handshake.png" alt="Full TLS 1.3 handshake"/> 
+<!-- -->
+<ol>
+<li>
+<p>Key exchange:</p>
+<ol type="a">
+<li>
+<p>The client sends a ClientHello message to server.</p>
+</li>
+<li>
+<p>The server processes the ClientHello message and determines
+the appropriate cryptographic parameters for the connection. It
+then responds with its own ServerHello message, which indicates
+the negotiated connection parameters. For TLS 1.3, the
+ServerHello message determines the key and cipher options only.
+Other handshake parameters may be determined later.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Server parameters: The server sends two messages to establish
+server parameters:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p>EncryptedExtensions: This message contains responses to
+ClientHello extensions that are not required to determine the
+cryptographic parameters, other than those that are specific to
+individual certificates.</p>
+</li>
+<li>
+<p>CertificateRequest (optional): If certificate-based client
+authentication is desired, then the server sends this message,
+which contains the desired parameters for that certificate. This
+message is omitted if client authentication is not desired.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Authentication:</p>
+<ol type="a">
+<li>
+<p>The server sends these authentication messages:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p>Certificate (optional): This message contains the
+authentication certificate and any other supporting certificates
+in the certificate chain. This message is omitted if the server
+is not authenticating with a certificate.</p>
+<hr/>
+<p><strong>Note:</strong> The Certificate message can contain a raw key instead of a
+certificate.</p><hr/></li>
+<li>
+<p>CertificateVerify (optional): This message contains a
+signature over the entire handshake using the private key
+corresponding to the public key in the Certificate message. This
+message is omitted if the server is not authenticating with a
+certificate.</p>
+</li>
+<li>
+<p>Finished: a MAC (Message Authentication Code) over the entire
+handshake.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The client responds with its own Certificate,
+CertificateVerify, and Finished messages. The Certificate message
+is omitted if the server did not send a CertificateRequest
+message. The CertificateVerify message is omitted if the client
+is not authenticating with a certificate.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>The client and server can now securely send application data
+to each other.</p>
+<h4><a name="key_exchange">Key Exchange</a></h4>
+<p>The key exchange messages, ClientHello and ServerHello,
+determine the security capabilities of the client and the server
+and establish shared secrets, including the traffic keys used to
+protect the rest of the handshake and the application data.</p>
+<p><strong>ClientHello</strong></p>
+<p>The TLS handshake begins with the client sending a ClientHello
+message to the server. This message contains the following
+fields:</p>
+<hr/>
+<p><strong>Note:</strong> TLS messages may contain additional fields than the ones listed
+here; see the <a href=
+"https://tools.ietf.org/id/draft-ietf-tls-tls13-28.html" target=
+"_blank">TLS 1.3 specification</a> for full details about TLS
+messages and their fields.</p><hr/>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>cipher_suites</code>: This field contains a list of the
+symmetric cipher options supported by the client, specifically
+the record protection algorithm (including secret key length) and
+a hash to be used with Keyed-Hash Message Code (HMAC)-based
+Extract-and-Expand Key Derivation Function (HKDF).</p>
+</li>
+<li>
+<p><code>extensions</code>: Extensions facilitates the addition
+of new features to the TLS protocol with minimal impact to
+existing clients. Extensions that the ClientHello message may
+contain, but are not limited to, the following:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>supported_versions</code>: This extension indicates
+which versions of TLS the client supports. The ClientHello
+message must contain this message.</p>
+</li>
+<li>
+<p><code>status_request</code>: This extension indicates that
+client wants to use a certificate status protocol; the server may
+not agree to use it. An example of a certificate status protocol
+is Online Certificate Status Protocol (OCSP). See <a href=
+"ocsp.html">Client-Driven OCSP and OCSP Stapling</a>.</p>
+</li>
+<li>
+<p><code>supported_groups</code>: This extension indicates the
+named groups that the client supports for key exchange. These
+named groups include elliptic curve groups (ECDHE) and finite
+field groups (DHE). The ClientHello message must include this
+message if it&rsquo;s using ECDHE or DHE key exchange.</p>
+</li>
+<li>
+<p><code>key_share</code>: This extension contains a list of
+cryptographic parameters for key exchange. It contains a field
+named client_shares that contains this list. Each item in this
+list contains the following fields:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>group</code>: The name of the group on which the key
+exchange cryptographic method is based. See <a href=
+"../SunProviders.html#SunJSSEProvider">The SunJSSE Provider</a>
+in <a href="../SunProviders.html">JDK Providers
+Documentation</a>.</p>
+</li>
+<li>
+<p><code>key_exchange</code>: Key exchange information, which is
+determined by the value of the group field.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>pre_shared_key</code>: A pre-shared key (PSK) is a
+shared secret that was previously shared between the two parties
+using some secure channel before it needs to be used. PSKs can be
+established in a previous connection and then used to establish a
+new connection. Once a handshake has completed, the server can
+send to the client a PSK identity that corresponds to a unique
+key derived from the initial handshake. See <a href=
+"#session_resumption_with_a_pre-shared_key">Session Resumption
+with a Pre-Shared Key</a>.</p>
+</li>
+<li>
+<p><code>cookie</code>: When a server sends a HelloRetryRequest
+message, it can include this extension to the client. (The server
+sends a HelloRetryRequest message in response to a ClientHello
+message if it can find an acceptable set of parameters, but the
+ClientHello message doesn&rsquo;t have enough information to
+proceed with the handshake.) One purpose of this extension is to
+enable the server to force the client to demonstrate reachability
+at their apparent network address (which provides some
+denial-of-service attack (DoS) protection. When the client sends
+a new ClientHello message, it must copy the contents received in
+the HelloRetryRequest into a cookie extension in this new
+ClientHello message.</p>
+</li>
+<li>
+<p><code>server_name</code>: TLS 1.3 doesn&rsquo;t provide a
+mechanism for a client to tell a server the name of the server it
+is contacting. Clients can use this extension to provide this
+information to facilitate connections to servers that host
+multiple virtual servers at a single network address. Note that
+some servers may require clients to send this extension.</p>
+</li>
+</ul>
+</li>
+</ul>
+<!-- -->
+<p><strong>ServerHello</strong></p>
+<p>The server responds to the client&rsquo;s ClientHello message
+with a ServerHello message if it&rsquo;s able to negotiate an
+acceptable set of handshake parameters. This message contains the
+following fields:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>cipher_suite</code>: This field contains the single
+cipher suite selected by the server from the list in the
+ClientHello.cipher_suites field.</p>
+</li>
+<li>
+<p><code>extensions</code>: This field contains extensions that
+are required to establish the cryptographic context and negotiate
+the protocol version. The extensions that the SeverHello may
+contain include the following:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>supported_versions</code>: Indicates which version of
+TLS it&rsquo;s using. The ServerHello message must contain this
+extension.</p>
+</li>
+<li>
+<p><code>key_share</code>: This extension contains a list of
+cryptographic parameters for key exchange.</p>
+</li>
+<li>
+<p><code>pre_shared_key</code>: This extension contains the
+pre-shared key the server agreed to use. See <a href=
+"https://docs.oracle.com/en/java/javase/15/security/transport-layer-security-tls-protocol-overview.html#GUID-F32E1E87-F6D2-47E6-ABF4-EF219E6A1EB7">
+Session Resumption with a Pre-Shared Key</a> for information
+about pre-shared keys.</p>
+</li>
+</ul>
+<p>The server sends other extensions separately in the
+EncryptedExtensions message.</p>
+</li>
+</ul>
+<!-- -->
+<h4><a name="server_parameters">Server Parameters</a></h4>
+<p>After the server sends a ServerHello message to the client, it
+sends two messages to establish server parameters:
+EncryptedExtensions and CertificateRequest:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><strong>EncryptedExtensions</strong>: This message contains
+responses to ClientHello extensions that are not required to
+determine cryptographic parameters other than those that are
+specific to individual certificates.</p>
+</li>
+<li>
+<p><strong>CertificateRequest</strong>: If certificate-based client
+authentication is desired, then this message is sent. It contains
+parameters for a certificate requested from the client. It
+includes the following fields:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>certificate_request_context</code>: This field contains
+an identifier that identifies the certificate request</p>
+</li>
+<li>
+<p><code>extensions</code>: This field contains extensions that
+describe the requested certificate&rsquo;s parameters. It may
+contain the following extensions:</p>
+</li>
+</ul>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>signature_algorithms</code>: This extension indicates
+which signature algorithms may be used in CertificateVerify
+messages. The ServerHello message must contain this
+extension.</p>
+</li>
+<li>
+<p><code>signature_algorithms_cert</code>: This extension
+indicates which signature algorithms may be used in digital
+signatures. If this message isn&rsquo;t sent, then it uses the
+values specified in the signature_algorithms extension.</p>
+</li>
+<li>
+<p><code>certificate_authorities</code>: This extension indicates
+which certificate authorities the server accepts.</p>
+</li>
+<li>
+<p><code>supported_groups</code>: This message contains named
+groups that the server prefers. The client may use this
+information to change what groups it uses in its key_share
+extension in subsequent connections.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4><a name="authentication">Authentication</a></h4>
+<p>The last three messages that the server and client send to
+each other in a TLS handshake are Certificate, CertificateVerify,
+and Finished.</p>
+<p><strong>Certificate</strong></p>
+<p>This message contains the authentication certificate and any
+other supporting certificates in the certificate chain. The
+server must send this message if the key exchange method uses
+certificates for authentication. The client must send this if and
+only if the server requested client authentication through a
+CertificateRequest message. The certificate message includes the
+following fields:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>certificate_list</code>: This field contains a sequence
+of CertificateEntry structures, each containing a single
+certificate and a set of extensions</p>
+</li>
+<li>
+<p><code>extensions</code>: Extensions that the Certificate
+message may contain include the following:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>status_request</code>: See <a href=
+"ocsp.html">Client-Driven OCSP and OCSP Stapling</a></p>
+</li>
+<li>
+<p><code>signed_certificate_timestamp</code>: TLS clients
+won&rsquo;t accept certificates unless they are logged. When a
+valid certificate is submitted to a log, the log must return a
+Signed Certificate Timestamp (SCT); see <a href=
+"https://tools.ietf.org/html/rfc6962" target="_blank">RFC 6962:
+Certificate Transparency</a>.</p>
+</li>
+</ul>
+</li>
+</ul>
+<!-- -->
+<p><strong>CertificateVerify</strong></p>
+<p>This message contains a signature over the entire handshake
+using the private key corresponding to the public key in the
+Certificate message. It provides proof that the client or the
+server has the private key corresponding to its certificate. This
+message includes the following fields:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p><code>algorithm</code>: This field contains the signature
+algorithm used. See <a href=
+"https://docs.oracle.com/en/java/javase/15/security/oracle-providers.html#GUID-7093246A-31A3-4304-AC5F-5FB6400405E2">
+The SunJSSE Provider</a> in <a href=
+"https://docs.oracle.com/en/java/javase/15/security/oracle-providers.html#GUID-FE2D2E28-C991-4EF9-9DBE-2A4982726313">
+JDK Providers Documentation</a> for supported algorithms.</p>
+</li>
+<li>
+<p><code>signature</code>: This field contains the digital
+signature using the algorithm.</p>
+</li>
+</ul>
+<!-- -->
+<p><strong>Finished</strong></p>
+<p>This message contains a Message Authentication Code (MAC) over
+the entire handshake. Once the client and server have verified
+the Finished messages that they have received from their peers,
+both sides may send and receive application data over the
+connection.</p>
+<!-- -->
+<h3><a name="session_resumption_with_a_pre-shared_key">Session Resumption with a Pre-Shared Key</a></h3>
+<p>A pre-shared key (PSK) is a shared secret that was previously
+shared between the two parties using some secure channel before
+it needs to be used. You can establish a PSK during one TLS
+handshake and then use it to establish a new connection in
+another handshake; this is called session resumption with a PSK.
+The PSK corresponds to a unique key derived from the initial
+handshake. If the server accepts the PSK when establishing a new
+connection, then the security context of this connection is
+cryptographically tied to the original connection, and the key
+derived from the initial handshake is used to bootstrap the
+cryptographic state instead of the full TLS handshake.</p>
+<p>The following figures show two handshakes, the first
+establishes a PSK and the second uses it.</p>
+<p>TLS 1.3 handshake that establishes a PSK</p>
+<img src="images/tls13handshakeestablishpsk.png" alt=
+"TLS 1.3 handshake that establishes a PSK"/> <!-- -->
+<p>TLS 1.3 handshake that uses a PSK</p>
+<img src="images/tls13handshakeusepsk.png" alt=
+"TLS 1.3 handshake that uses a PSK"/> <!-- -->
+<ol>
+<li>
+<p>The client sends a ClientHello message with a key_share
+extension to the server. This extension lists which key exchange
+cryptographic methods that the client supports.</p>
+</li>
+<li>
+<p>The server responds with a ServerHello message with a
+key_share extension. This extension contains the cryptographic
+method it wants to use for the key exchange.</p>
+</li>
+<li>
+<p>The server sends its server parameters to the client.</p>
+</li>
+<li>
+<p>Both the server and client exchange authentication
+messages.</p>
+</li>
+<li>
+<p>The server sends a NewSessionTicket message to the client,
+which contains a PSK that the client then may use for future
+handshakes by including it in the pre_shared_key extension in its
+ClientHello message.</p>
+</li>
+<li>
+<p>The client and server can now exchange encrypted application
+data.</p>
+</li>
+<li>
+<p>In a future handshake, the client sends to the server a
+ClientHello message with the key_share and pre_shared_key
+extensions. The pre_shared_key extension contains a PSK sent in a
+NewTicketSession message.</p>
+</li>
+<li>
+<p>The server responds with a ServerHello message with the
+pre_shared_key and key_share extensions. The pre_shared_key
+extension contains the PSK the server as agreed to use.</p>
+</li>
+<li>
+<p>The server sends its parameters to the client.</p>
+</li>
+<li>
+<p>The server and the client send each other Finished messages.
+They don&rsquo;t perform the authentication phase as the security
+context of this connection is cryptographically tied to the
+original connection.</p>
+</li>
+<li>
+<p>The client and server can now exchange encrypted application
+data.</p>
+</li>
+</ol><hr/>
+<p><strong>Note:</strong> The following are not supported in JDK 8:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p>Resumption using PSK only: You must use PSKs with (EC)DHE key
+exchange, which provides forward secrecy in combination with
+shared keys. Resumption using PSK only is less secure with
+regards to forward and backward secrecy.</p>
+</li>
+<li>
+<p>Zero Round Trip Time Resumption (0&ndash;RTT): This enables
+the client and server to send application data in the first
+messages (ClientHello and ServerHello) to each other. The client
+uses a PSK to encrypt the application data it initially sends
+with the ClientHello and to authenticate the server. This has the
+security issues of resumption using PSK only and some potential
+for replay attacks.</p>
+</li>
+<li>
+<p>Stateless server PSKs: <a href=
+"https://tools.ietf.org/html/rfc5077" target="_blank">RFC5077:
+Transport Layer Security (TLS) Session Resumption without
+Server-Site State</a> describes a mechanism that enables the
+server to resume sessions and avoid keeping per-client session
+state. This mechanism would reduce server memory usage at the
+expense of forward secrecy for resumption using PSK only.</p>
+</li>
+<li>
+<p>Out-of-band PSK establishment: This means the production of
+PSKs other than through NewSessionTicket messages.</p>
+</li>
+</ul>
+<hr/>
+<h3><a name="post-handshake_messages">Post-Handshake Messages</a></h3>
+<p>The client and server can send other messages after the
+handshake: new session ticket message, post-handshake
+authentication, and key update.</p>
+<h4><a name="new_session_ticket_message">New Session Ticket Message</a></h4>
+<p>The NewSessionTicket message, sent by the server after it
+receives the Finished message, contains a pre-shared key that the
+client then may use for future handshakes. See <a href=
+"#session_resumption_with_a_pre-shared_key">Session Resumption
+with a Pre-Shared Key</a>.</p>
+<h4><a name="post-handshake_authentication">Post-Handshake Authentication</a></h4>
+<p>If client sent the post_handshake_auth extension, the server
+may request client authentication at any time after the handshake
+by sending a CertificateRequest message. If the client
+authenticates, then it must send Certificate, CertificateVerify,
+and Finished messages. If the client declines, then it must send
+a Certificate message that contains no certificates and the
+Finished message.</p>
+<h4><a name="keyupdate_message">KeyUpdate Message</a></h4>
+<p>The KeyUpdate handshake message is used to indicate that the
+sender is updating its sending cryptographic keys. It replaces
+the ChangeCipherSpec message in TLS 1.2.</p>
+<p>You can specify a limit on the amount of data an algorithm may
+encrypt with a specific set of keys with the
+<code>jdk.tls.keyLimits</code> Security Property. See <a href=
+"JSSERefGuide.html#limit-data-encrypted">Limiting Amount of Data
+Algorithms May Encrypt with a Set of Keys</a>.</p>
+<h3><a name="risks">Compatibility Risks and Known Issues</a></h3>
+<p>Enhancements to JSSE may introduce compatibility problems and
+other known issues, which are described in this section.</p>
+<p><strong>TLS 1.3 Not Directly Compatible with Previous Versions</strong></p>
+<p>TLS 1.3 is not directly compatible with previous versions.
+Although TLS 1.3 can be implemented with a backward-compatibility
+mode, there are still several compatibility risks to consider
+when upgrading to TLS 1.3:</p>
+<ul style="list-style-type: disc;">
+<li>
+<p>TLS 1.3 uses a half-close policy, while TLS 1.2 and earlier
+use a duplex-close policy. For applications that depend on the
+duplex-close policy, there may be compatibility issues when
+upgrading to TLS 1.3.</p>
+</li>
+<li>
+<p>The signature_algorithms_cert extension requires that
+pre-defined signature algorithms are used for certificate
+authentication. In practice, however, an application may use
+unsupported signature algorithms.</p>
+</li>
+<li>
+<p>The DSA signature algorithm is not supported in TLS 1.3. If a
+server is configured to only use DSA certificates, it cannot
+negotiate a TLS 1.3 connection.</p>
+</li>
+<li>
+<p>The supported cipher suites for TLS 1.3 are not the same as
+TLS 1.2 and earlier. If an application hardcodes cipher suites
+that are no longer supported, it may not be able to use TLS 1.3
+without modifications to its code, for example
+TLS_AES_128_GCM_SHA256 (1.3 and later) versus
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (1.2 and earlier).</p>
+</li>
+<li>
+<p>The TLS 1.3 session resumption and key update behaviors are
+different from TLS 1.2 and earlier. The compatibility impact
+should be minimal, but it could be a risk if an application
+depends on the handshake details of the TLS protocols.</p>
+</li>
+</ul>
+<!-- -->
+<h2><a name="the_tls_1.2_handshake">The TLS 1.2 Handshake</a></h2>
+<p>Communication using SSL begins with an exchange of information
+between the client and the server. This exchange of information
+is called the SSL handshake. The SSL handshake includes the
+following stages:</p>
+<ol>
+<li><strong>Negotiating the cipher suite</strong>
+<p>The SSL session begins with a negotiation between the client
+and the server as to which cipher suite they will use. A
+<code>cipher suite</code> is a set of cryptographic algorithms
+and key sizes that a computer can use to encrypt data. The cipher
+suite includes information about the public key exchange
+algorithms or key agreement algorithms, and cryptographic hash
+functions. The client tells the server which cipher suites it has
+available, and the server chooses the best mutually acceptable
+cipher suite.</p>
+</li>
+<li><strong>Authenticating the server's identity (optional)</strong>
+<p>In SSL, the authentication step is optional, but in the
+example of an e-commerce transaction over the web, the client
+will generally want to authenticate the server. Authenticating
+the server allows the client to be sure that the server
+represents the entity that the client believes the server
+represents.</p>
+<p>To prove that a server belongs to the organization that it
+claims to represent, the server presents its public key
+certificate to the client. If this certificate is valid, then the
+client can be sure of the identity of the server.</p>
+<p>The client and server exchange information that allows them to
+agree on the same secret key. For example, with RSA, the client
+uses the server's public key, obtained from the public key
+certificate, to encrypt the secret key information. The client
+sends the encrypted secret key information to the server. Only
+the server can decrypt this message because the server's private
+key is required for this decryption.</p>
+</li>
+<li><strong>Agreeing on encryption mechanisms</strong>
+<p>Both the client and the server now have access to the same
+secret key. With each message, they use the cryptographic hash
+function, chosen in the first step of the handshake, and shared
+secret information, to compute an HMAC that they append to the
+message. They then use the secret key and the secret key
+algorithm negotiated in the first step of the handshake to
+encrypt the secure data and the HMAC. The client and server can
+now communicate securely using their encrypted and hashed
+data.</p>
+</li>
+</ol>
+<h3><a name="the_1.2_protocol">The TLS 1.2 Protocol</a></h3>
+<p><a href="#the_tls_1.2_handshake">The TLS 1.2 Handshake</a>
+provides a high-level description of the SSL handshake, which is
+the exchange of information between the client and the server
+prior to sending the encrypted message. The figure <a href=
+"#the_ssl_tls_handshake">The SSL/TLS Handshake</a> provides more
+detail. It shows the sequence of messages that are exchanged in
+the SSL handshake. Messages that are sent only in certain
+situations are noted as optional. Each of the SSL messages is
+described in detail afterward.</p>
+<a name="the_ssl_tls_handshake"/>
+<p>The SSL/TLS Handshake</p>
+<img src="images/ssl-client.png" alt=
+"This figure shows the sequence of messages that are exchanged in the SSL handshake. These messages are described in detail in the following text."/>
+<!-- -->
+<p>The SSL messages are sent in the following order:</p>
+<ol>
+<li><strong>Client hello:</strong> The client sends the server
+information including the highest version of SSL that it supports
+and a list of the cipher suites that it supports (TLS 1.0 is
+indicated as SSL 3.1). The cipher suite information includes
+cryptographic algorithms and key sizes.</li>
+<li><strong>Server hello:</strong> The server chooses the highest
+version of SSL and the best cipher suite that both the client and
+server support and sends this information to the client.</li>
+<li>(Optional) <strong>Certificate:</strong> The server sends the
+client a certificate or a certificate chain. A certificate chain
+typically begins with the server's public key certificate and
+ends with the certificate authority's root certificate. This
+message is optional, but is used whenever server authentication
+is required.</li>
+<li>(Optional) <strong>Certificate request:</strong> If the server
+must authenticate the client, then it sends the client a
+certificate request. In Internet applications, this message is
+rarely sent.</li>
+<li>(Optional) <strong>Server key exchange:</strong> The server sends
+the client a server key exchange message if the public key
+information from the Certificate is not sufficient for key
+exchange. For example, in cipher suites based on Diffie-Hellman
+(DH), this message contains the server's DH public key.</li>
+<li><strong>Server hello done:</strong> The server tells the client
+that it is finished with its initial negotiation messages.</li>
+<li>(Optional) <strong>Certificate:</strong> If the server
+Certificate request from the client, the client sends its
+certificate chain, just as the server did previously.
+<hr/><p><strong>Note:</strong> Only a few Internet server applications ask for a certificate
+from the client.</p><hr/></li>
+<li><strong>Client key exchange:</strong> The client generates
+information used to create a key to use for symmetric encryption.
+For RSA, the client then encrypts this key information with the
+server's public key and sends it to the server. For cipher suites
+based on DH, this message contains the client's DH public
+key.</li>
+<li>(Optional) <strong>Certificate verify:</strong> This message is
+sent by the client when the client presents a certificate as
+previously explained. Its purpose is to allow the server to
+complete the process of authenticating the client. When this
+message is used, the client sends information that it digitally
+signs using a cryptographic hash function. When the server
+decrypts this information with the client's public key, the
+server is able to authenticate the client.</li>
+<li><strong>Change cipher spec:</strong> The client sends a message
+telling the server to change to encrypted mode.</li>
+<li><strong>Finished</strong> The client tells the server that it is
+ready for secure data communication to begin.</li>
+<li><strong>Change cipher spec:</strong> The server sends a message
+telling the client to change to encrypted mode.</li>
+<li><strong>Finished:</strong> The server tells the client that it is
+ready for secure data communication to begin. This is the end of
+the SSL handshake.</li>
+<li><strong>Encrypted data:</strong> The client and the server
+communicate using the symmetric encryption algorithm and the
+cryptographic hash function negotiated during the client hello
+and server hello, and using the secret key that the client sent
+to the server during the client key exchange. The handshake can
+be renegotiated at this time. See <a href=
+"#handshaking_again_renegotiation">Handshaking Again
+(Renegotiation)</a>.</li>
+<li><strong>Close Messages:</strong>At the end of the connection,
+each side sends a <code>close_notify</code> alert to inform the
+peer that the connection is closed.</li>
+</ol>
+<p>If the parameters generated during an SSL session are saved,
+then these parameters can sometimes be reused for future SSL
+sessions. Saving SSL session parameters allows encrypted
+communication to begin much more quickly.</p>
+<h4><a name="handshaking_again_renegotiation">Handshaking Again
+(Renegotiation)</a></h4>
+<p>Once the initial handshake is finished and application data is
+flowing, either side is free to initiate a new handshake at any
+time. An application might like to use a stronger cipher suite
+for especially critical operations, or a server application might
+want to require client authentication.</p>
+<p>Regardless of the reason, the new handshake takes place over
+the existing encrypted session, and application data and
+handshake messages are interleaved until a new session is
+established.</p>
+<p>Your application can initiate a new handshake by using one of
+the following methods:</p>
+<ul style="list-style-type: disc;">
+<li><code>SSLSocket.startHandshake()</code></li>
+<li><code>SSLEngine.beginHandshake()</code></li>
+</ul>
+<h4><a name="cipher_suite_choice_and_remote_entity_verification">Cipher Suite Choice and Remote Entity Verification</a></h4>
+<p>The SSL/TLS protocols define a specific series of steps to
+ensure a <code>protected</code> connection. However, the choice
+of cipher suite directly affects the type of security that the
+connection enjoys. For example, if an anonymous cipher suite is
+selected, then the application has no way to verify the remote
+peer's identity. If a suite with no encryption is selected, then
+the privacy of the data cannot be protected. Additionally, the
+SSL/TLS protocols do not specify that the credentials received
+must match those that peer might be expected to send. If the
+connection were somehow redirected to a rogue peer, but the
+rogue's credentials were acceptable based on the current trust
+material, then the connection would be considered valid.</p>
+<p>When using raw <code>SSLSocket</code> and
+<code>SSLEngine</code> classes, you should always check the
+peer's credentials before sending any data. The
+<code>SSLSocket</code> and <code>SSLEngine</code> classes do not
+automatically verify that the host name in a URL matches the host
+name in the peer's credentials. An application could be exploited
+with URL spoofing if the host name is not verified. Since JDK 7,
+endpoint identification/verification procedures can be handled
+during SSL/TLS handshaking. See the <code><a href=
+"../../../../api/javax/net/ssl/SSLParameters.html#getEndpointIdentificationAlgorithm--">
+SSLParameters.getEndpointIdentificationAlgorithm</a></code>
+method.</p>
+<p>Protocols such as HTTPS (<a href=
+"http://www.ietf.org/rfc/rfc2818.txt" target="_blank">HTTP Over
+TLS</a>) do require host name verification. Since JDK 7, the
+HTTPS endpoint identification is enforced during handshaking for
+<code>HttpsURLConnection</code> by default. See the
+<code><a href="../../../../api/javax/net/ssl/SSLParameters.html#getEndpointIdentificationAlgorithm--">
+SSLParameters.getEndpointIdentificationAlgorithm</a></code>
+method. Alternatively, applications can use the
+<code>HostnameVerifier</code> interface to override the default
+HTTPS host name rules. See <a href=
+"JSSERefGuide.html#HostnameVerifier">HostnameVerifier
+Interface</a> and <a href=
+"JSSERefGuide.html#HttpsURLConnection">HttpsURLConnection
+Class</a>.</p>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

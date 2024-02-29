@@ -1,0 +1,990 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<head>
+<title>Serialization Filtering</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+
+
+<h1>Serialization Filtering</h1>
+
+<p>You can use the Java serialization filtering mechanism to help
+prevent deserialization vulnerabilities. You can define
+pattern-based filters or you can create custom filters.</p>
+
+<p>Topics:</p>
+
+<ul>
+<li><a href="#addressing-deserialization-vulnerabilities">Addressing Deserialization Vulnerabilities</a>
+  <ul>
+    <li><a href="#inherent-dangers-of-deserialization">Inherent Dangers of Deserialization</a></li>
+    <li><a href="#java-serialization-and-deserialization-overview">Java Serialization and Deserialization Overview</a></li>
+    <li><a href="#serialization-filters">Serialization Filters</a></li>
+  </ul>
+</li>
+<li><a href="#java-serialization-filters">Java Serialization Filters</a></li>
+<li><a href="#filter-factories">Filter Factories</a></li>
+<li><a href="#allow-lists-and-reject-lists">Allow-Lists and Reject-Lists</a></li>
+<li><a href="#creating-pattern-based-filters">Creating Pattern-Based Filters</a>
+  <ul>
+    <li><a href="#pattern-based-filter-syntax">Pattern-based Filter Syntax</a></li>
+    <li><a href="#pattern-based-filter-limitations">Pattern-Based Filter Limitations</a></li>
+    <li><a href="#define-a-pattern-based-filter-for-one-application">Define a Pattern-Based Filter for One Application</a></li>  
+    <li><a href="#define-a-pattern-based-filter-for-all-applications">Define a Pattern-Based Filter for All Applications</a></li>
+    <li><a href="#define-a-class-filter">Define a Class Filter</a></li>
+    <li><a href="#define-a-resource-limit-filter">Define a Resource Limit Filter</a></li>  
+  </ul>
+</li>
+<li><a href="#creating-custom-filters">Creating Custom Filters</a>
+  <ul>
+    <li><a href="#reading-a-stream-of-serialized-objects">Reading a Stream of Serialized Objects</a></li>
+    <li><a href="#setting-a-custom-filter-for-an-individual-stream">Setting a Custom Filter for an Individual Stream</a></li>    
+    <li><a href="#setting-a-jvm-wide-custom-filter">Setting a JVM-Wide Custom Filter</a></li>    
+    <li><a href="#setting-a-custom-filter-using-a-pattern">Setting a Custom Filter Using a Pattern</a></li>    
+    <li><a href="#setting-a-custom-filter-as-a-class">Setting a Custom Filter as a Class</a></li>    
+    <li><a href="#setting-a-custom-filter-as-a-method">Setting a Custom Filter as a Method</a></li>    
+  </ul>
+</li>
+<li><a href="#setting-a-filter-factory">Setting a Filter Factory</a>
+  <ul>
+    <li><a href="#creating-a-filter-factory">Creating a Filter Factory</a></li>
+    <li><a href="#specifying-a-filter-factory-in-a-system-or-security-property">Specifying a Filter Factory in a System or Security Property</a></li>
+  </ul>
+</li>
+<li><a href="#built-in-filters">Built-in Filters</a>
+  <ul>
+    <li><a href="#filters-for-rmi-registry">Filters for RMI Registry</a></li>
+    <li><a href="#filters-for-rmi-distributed-garbage-collector">Filters for RMI Distributed Garbage Collector</a></li>
+    <li><a href="#filters-for-jmx">Filters for JMX</a></li>
+  </ul>
+</li>
+<li><a href="#logging-filter-actions">Logging Filter Actions</a></li>
+</ul>
+
+<!-- class="section" -->
+
+
+<h2><a name="addressing-deserialization-vulnerabilities">Addressing Deserialization Vulnerabilities</a></h2>
+
+<p>An application that accepts untrusted data and deserializes it
+is vulnerable to attacks. You can create filters to screen
+incoming streams of serialized objects before they are
+deserialized.</p>
+
+
+<h3><a name="inherent-dangers-of-deserialization">Inherent Dangers of Deserialization</a></h3>
+
+<p>Deserializing untrusted data, especially from an unknown,
+untrusted, or unauthenticated client, is an inherently dangerous
+activity because the content of the incoming data stream
+determines the objects that are created, the values of their
+fields, and the references between them. By careful construction
+of the stream, an adversary can run code in arbitrary classes
+with malicious intent.</p>
+
+<p>For example, if object construction has side effects that
+change state or invoke other actions, then those actions can
+compromise the integrity of application objects, library objects,
+and even the Java runtime. "Gadget classes," which can perform
+arbitrary reflective actions such as create classes and invoke
+methods on them, can be deserialized maliciously to cause a
+denial of service or remote code execution.</p>
+
+<p>The key to disabling deserialization attacks is to prevent
+instances of arbitrary classes from being deserialized, thereby
+preventing the direct or indirect execution of their methods. You
+can do this through serialization filters.</p>
+<!-- class="section" -->
+
+
+<h3><a name="java-serialization-and-deserialization-overview">Java Serialization and Deserialization Overview</a></h3>
+
+<p>An object is serialized when its state is converted to a byte
+stream. That stream can be sent to a file, to a database, or over
+a network. A Java object is serializable if its class or any of
+its superclasses implements either the
+<code>java.io.Serializable</code> interface or the
+<code>java.io.Externalizable</code> subinterface. In the JDK,
+serialization is used in many areas, including Remote Method
+Invocation (RMI), custom RMI for interprocess communication (IPC)
+protocols (such as the Spring HTTP invoker), and Java Management
+Extensions (JMX).</p>
+
+<p>An object is deserialized when its serialized form is
+converted to a copy of the object. It is important to ensure the
+security of this conversion. Deserialization is code execution
+because the <code>readObject</code> method of the class that is
+being deserialized can contain custom code.</p>
+<!-- class="section" -->
+
+
+<h3><a name="serialization-filters">Serialization Filters</a></h3>
+
+<p>A serialization filter enables you to specify which classes
+are acceptable to an application and which should be rejected.
+Filters also enable you to control the object graph size and
+complexity during deserialization so that the object graph
+doesn't exceed reasonable limits. You can configure filters as
+properties or implement them programmatically.</p>
+
+<p><strong>Note:</strong> A serialization filter is not enabled
+or configured by default. Serialization filtering doesn't occur
+unless you have specified the filter in a system property or a
+Security Property or set it with the
+<code>sun.misc.ObjectInputFilter</code> class.</p>
+
+<p>Besides creating filters, you can take the following actions
+to help prevent deserialization vulnerabilities:</p>
+
+<ul>
+<li>Do not deserialize untrusted data.</li>
+<li>Use SSL to encrypt and authenticate the connections between
+applications.</li>
+<li>Validate field values before assignment, for example,
+checking object invariants by using the <code>readObject</code>
+method.</li>
+</ul>
+
+<p><strong>Note:</strong> Built-in filters are provided for RMI.
+However, you should use these built-in filters as starting points
+only. Configure reject-lists and/or extend the allow-list to add
+additional protection for your application that uses RMI. See
+Built-in Filters.</p>
+
+<p>For more information about these and other strategies, see
+"Serialization and Deserialization" in <a href=
+"https://www.oracle.com/java/technologies/javase/seccodeguide.html">
+Secure Coding Guidelines for Java SE</a>.</p>
+<!-- class="section" -->
+
+
+<h2><a name="java-serialization-filters">Java Serialization Filters</a></h2>
+
+<p>The Java serialization filtering mechanism screens incoming
+streams of serialized objects to help improve security and
+robustness. Filters can validate incoming instances of classes
+before they are deserialized.</p>
+
+<p>As stated in <a href="https://openjdk.java.net/jeps/290">JEP
+290</a> and <a href="https://openjdk.java.net/jeps/290">JEP
+415</a>, the goals of the Java serialization filtering mechanism
+are to:</p>
+
+<ul>
+<li>
+
+<p>Provide a way to narrow the classes that can be deserialized
+down to a context-appropriate set of classes.</p>
+</li>
+<li>
+
+<p>Provide metrics to the filter for graph size and complexity
+during deserialization to validate normal graph behaviors.</p>
+</li>
+<li>
+
+<p>Allow RMI-exported objects to validate the classes expected in
+invocations.</p>
+</li>
+</ul>
+
+<p>There are two kinds of filters:</p>
+
+<ul>
+<li><strong>JVM-wide filter</strong>: Is applied to every
+deserialization in the JVM. However, whether and how a JVM-wide
+filter validates classes in a particular deserialization depends
+on how it's combined with other filters.</li>
+<li><strong>Stream-specific filter</strong>: Validates classes
+from one specific <code>ObjectInputStream</code>.</li>
+</ul>
+
+<p>You can implement a serialization filter in the following
+ways:</p>
+
+<ul>
+
+<li>
+
+<p><strong>Specify a JVM-wide, pattern-based filter with the
+<code>jdk.serialFilter</code> property</strong>: A pattern-based
+filter consists of a sequence of patterns that can accept or
+reject the name of specific classes, packages, or modules. It can
+place limits on array sizes, graph depth, total references, and
+stream size. A typical use case is to add classes that have been
+identified as potentially compromising the Java runtime to a
+reject-list. If you specify a pattern-based filter with the
+<code>jdk.serialFilter</code> property, then you don't have to
+modify your application.</p>
+</li>
+<li>
+
+<p><strong>Implement a custom or pattern-based stream-specific
+filter with the <code>sun.misc.ObjectInputFilter</code> API</strong>: You
+can implement a filter with the <code>sun.misc.ObjectInputFilter</code>
+API, which you then set on an <code>ObjectInputStream</code> with the method <code>ObjectInputFilter.Config.setObjectInputFilter(ObjectInputStream, ObjectInputFilter)</code>. You
+can create a pattern-based filter with the
+<code>ObjectInputFilter</code> API by calling the
+<code>Config.createFilter(String)</code> method.</p>
+
+<p>The <code>sun.misc.ObjectInputFilter</code> interface is the same as the
+<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/ObjectInputFilter.html">
+ObjectInputFilter</a></code> interface in JDK 11 except that it's in the <code>sun.misc</code> package.</p>
+
+
+</li>
+</ul>
+
+<p><strong>Note:</strong> A serialization filter is not enabled
+or configured by default. Serialization filtering doesn't occur
+unless you have specified the filter in a system property or a
+Security Property or set it with the
+<code>sun.misc.ObjectInputFilter</code> class.</p>
+
+<p>For every new object in the stream, the filter mechanism
+applies only one filter to it. However, this filter might be a
+combination of filters.</p>
+
+<p>In most cases, a stream-specific filter should check if a
+JVM-wide filter is set, especially if you haven't specified a
+filter factory. If a JVM-wide filter does exist, then the
+stream-specific filter should invoke it and use the JVM-wide
+filter's result unless the status is <code>UNDECIDED</code>.</p>
+
+
+<h2><a name="filter-factories">Filter Factories</a></h2>
+
+<p>A filter factory selects, chooses, or combines filters into a
+single filter to be used for a stream. When you specify one, a
+deserialization operation uses it when it encounters a class for
+the first time to determine whether to allow it. (Subsequent
+instances of the same class aren't filtered.) It's implemented as
+a <code>BinaryOperator&lt;sun.misc.ObjectInputFilter&gt;</code> and
+specified in a system or Security property; see Setting a Filter
+Factory. Whenever an <code>ObjectInputStream</code> is created,
+the filter factory selects an <code>ObjectInputFilter</code>.
+However, you can have a different filter created based on the
+characteristics of the stream and the filter that the filter
+factory previously created.</p>
+
+
+<h2><a name="allow-lists-and-reject-lists">Allow-Lists and Reject-Lists</a></h2>
+
+<p>Allow-lists and reject-lists can be implemented using
+pattern-based filters or custom filters. These lists allow you to
+take proactive and defensive approaches to protect your
+applications.</p>
+
+<p>The proactive approach uses allow-lists to allow only class
+names that are recognized and trusted and to reject all others.
+You can implement allow-lists in your code when you develop your
+application, or later by defining pattern-based filters. If your
+application only deals with a small set of classes then this
+approach can work very well. You can implement allow-lists by
+specifying the names of classes, packages, or modules that are
+allowed.</p>
+
+<p>The defensive approach uses reject-lists to reject instances
+of classes that are not trusted. Usually, reject-lists are
+implemented after an attack that reveals that a class is a
+problem. A class name can be added to a reject-list, without a
+code change, by adding it to a pattern-based filter that's
+specified in the <code>jdk.serialFilter</code> property.</p>
+
+
+<h2><a name="creating-pattern-based-filters">Creating Pattern-Based Filters</a></h2>
+
+<p>Pattern-based filters are filters that you define without
+changing your application code. You add JVM-wide filters in
+properties files or application-specific filters on the
+<code>java</code> command line.</p>
+
+<p>A pattern-based filter is a sequence of patterns. Each pattern
+is matched against the name of a class in the stream or a
+resource limit. Class-based and resource limit patterns can be
+combined in one filter string, with each pattern separated by a
+semicolon (;).</p>
+
+
+<h3><a name="pattern-based-filter-syntax">Pattern-based Filter Syntax</a></h3>
+When you create a filter that is composed of patterns, use the
+following guidelines:
+
+<ul>
+<li>
+
+<p>Separate patterns by semicolons. For example:</p>
+
+<p><code>pattern1.*;pattern2.*</code></p>
+</li>
+<li>
+
+<p>White space is significant and is considered part of the
+pattern.</p>
+</li>
+<li>
+
+<p>Put the limits first in the string. They are evaluated first
+regardless of where they are in the string, so putting them first
+reinforces the ordering. Otherwise, patterns are evaluated from
+left to right.</p>
+</li>
+<li>A class name that matches a pattern that is preceded by
+<code>!</code> is rejected. A class name that matches a pattern
+without <code>!</code> is allowed. The following filter rejects
+<code>pattern1.MyClass</code> but allows
+<code>pattern2.MyClass</code>:
+
+<p><code>!pattern1.*;pattern2.*</code></p>
+</li>
+<li>Use the wildcard symbol (<code>*</code>) to represent
+unspecified class names in a pattern as shown in the following
+examples:
+
+<ul>
+<li>
+
+<p>To match every class name, use <code>*</code></p>
+</li>
+<li>
+
+<p>To match every class name in <code>mypackage</code>, use
+<code>mypackage.*</code></p>
+</li>
+<li>
+
+<p>To match every class name in <code>mypackage</code> and its
+subpackages, use <code>mypackage.**</code></p>
+</li>
+<li>
+
+<p>To match every class name that starts with <code>text</code>,
+use <code>text*</code></p>
+</li>
+</ul>
+</li>
+</ul>
+
+<p>If a class name doesn't match any filter, then it is allowed.
+If you want to allow only certain class names, then your filter
+must reject everything that doesn't match. To reject all class
+names other than those specified, include <code>!*</code> as the
+last pattern in a class filter.</p>
+
+<p>For a complete description of the syntax for the patterns, see
+<a href="https://openjdk.java.net/jeps/290">JEP 290</a>.</p>
+<!-- class="section" -->
+
+
+<h3><a name="pattern-based-filter-limitations">Pattern-Based Filter Limitations</a></h3>
+
+<p>The following are some of the limitations of pattern-based
+filters:</p>
+
+<ul>
+<li>
+
+<p>Patterns can't allow different sizes of arrays based on the
+class name.</p>
+</li>
+<li>
+
+<p>Patterns can't match classes based on the supertype or
+interfaces of the class name.</p>
+</li>
+<li>
+
+<p>Patterns have no state and can't make choices depending on the
+class instances deserialized earlier in the stream.</p>
+</li>
+</ul>
+
+<p><strong>Note:</strong> A pattern-based filter doesn't check
+interfaces that are implemented by classes being deserialized.
+The filter is invoked for interfaces explicitly referenced in the
+stream; it isn't invoked for interfaces implemented by classes
+for objects being deserialized.</p>
+<!-- class="section" -->
+
+
+<h3><a name="define-a-pattern-based-filter-for-one-application">Define a Pattern-Based Filter for One Application</a></h3>
+
+<p>You can define a pattern-based filter as a system property for
+one application. A system property supersedes a Security Property
+value.</p>
+
+<p>To create a filter that only applies to one application, and
+only to a single invocation of Java, define the
+<code>jdk.serialFilter</code> system property in the command
+line.</p>
+
+<p>The following example shows how to limit resource usage for an
+individual application:</p>
+
+<p><code>java
+-Djdk.serialFilter=maxarray=100000;maxdepth=20;maxrefs=500??com.example.test.Application</code>
+<!-- class="section" --></p>
+
+
+<h3><a name="define-a-pattern-based-filter-for-all-applications">Define a Pattern-Based Filter for All Applications</a></h3>
+
+<p>You can define a pattern-based, JVM-wide filter that affects
+every application run with a Java runtime from
+<code>$JAVA_HOME</code> by specifying it as a Security Property.
+(Note that a system property supersedes a Security Property
+value.) Edit the file
+<code>$JAVA_HOME/lib/security/java.security</code> and add the
+pattern-based filter to the <code>jdk.serialFilter</code>
+Security Property.</p>
+<!-- class="section" -->
+
+
+<h3><a name="define-a-class-filter">Define a Class Filter</a></h3>
+
+<p>You can create a pattern-based class filter that is applied
+globally. For example, the pattern might be a class name or a
+package with wildcard.</p>
+In the following example, the filter rejects one class name from
+a package (<code>!example.somepackage.SomeClass</code>), and
+allows all other class names in the package:
+
+<p>
+<code>jdk.serialFilter=!example.somepackage.SomeClass;example.somepackage.*;</code>
+The previous example filter allows all other class names, not
+just those in <code>example.somepackage.*</code>. To reject all
+other class names, add <code>!*</code>:</p>
+
+<p>
+<code>jdk.serialFilter=!example.somepackage.SomeClass;example.somepackage.*;<strong>!*</strong></code>
+<!-- class="section" --></p>
+
+
+<h3><a name="define-a-resource-limit-filter">Define a Resource Limit Filter</a></h3>
+A resource filter limits graph complexity and size. You can
+create filters for the following parameters to control the
+resource usage for each application:
+
+<ul>
+<li>
+
+<p>Maximum allowed array size. For example:
+<code>maxarray=100000;</code></p>
+</li>
+<li>
+
+<p>Maximum depth of a graph. For example:
+<code>maxdepth=20;</code></p>
+</li>
+<li>
+
+<p>Maximum references in a graph between objects. For example:
+<code>maxrefs=500;</code></p>
+</li>
+<li>
+
+<p>Maximum number of bytes in a stream. For example:
+<code>maxbytes=500000;</code></p>
+</li>
+</ul>
+<!-- class="section" -->
+
+
+<h2><a name="creating-custom-filters">Creating Custom Filters</a></h2>
+
+<p>Custom filters are filters you specify in your application's
+code. They are set on an individual stream or on all streams in a
+process. You can implement a custom filter as a pattern, a
+method, a lambda expression, or a class.</p>
+
+<!-- class="section" -->
+
+
+<h3><a name="reading-a-stream-of-serialized-objects">Reading a Stream of Serialized Objects</a></h3>
+
+<p>You can set a custom filter on one
+<code>ObjectInputStream</code>, or, to apply the same filter to
+every stream, set a JVM-wide filter. If an
+<code>ObjectInputStream</code> doesn't have a filter defined for
+it, the JVM-wide filter is called, if there is one.</p>
+
+<p>While the stream is being decoded, the following actions
+occur:</p>
+
+<ul>
+<li>For each new object in the stream and before the object is
+instantiated and deserialized, the filter is called when it
+encounters a class for the first time. (Subsequent instances of
+the same class aren't filtered.)</li>
+<li>For each class in the stream, the filter is called with the
+resolved class. It is called separately for each supertype and
+interface in the stream.</li>
+<li>The filter can examine each class referenced in the stream,
+including the class of objects to be created, supertypes of those
+classes, and their interfaces.</li>
+<li>For each array in the stream, whether it is an array of
+primitives, array of strings, or array of objects, the filter is
+called with the array class and the array length.</li>
+<li>For each reference to an object already read from the stream,
+the filter is called so it can check the depth, number of
+references, and stream length. The depth starts at??1??and
+increases for each nested object and decreases when each nested
+call returns.</li>
+<li>The filter is not called for primitives or for
+<code>java.lang.String</code> instances that are encoded
+concretely in the stream.</li>
+<li>The filter returns a status of accept, reject, or
+undecided.</li>
+<li>Filter actions are logged if logging is enabled.</li>
+</ul>
+
+<p>Unless a filter rejects the object, the object is
+accepted.</p>
+
+
+<h3><a name="setting-a-custom-filter-for-an-individual-stream">Setting a Custom Filter for an Individual Stream</a></h3>
+
+<p>You can set a filter on an individual
+<code>ObjectInputStream</code> when the input to the stream is
+untrusted and the filter has a limited set of classes or
+constraints to enforce. For example, you could ensure that a
+stream only contains numbers, strings, and other
+application-specified types.</p>
+
+<p>A custom filter is set using the
+<code>sun.misc.ObjectInputFilter.Config.setObjectInputFilter(ObjectInputStream, ObjectInputFilter)</code> method. The custom filter must
+be set before objects are read from the stream.</p>
+
+<p>In the following example, the
+<code>setObjectInputFilter</code> method is invoked with the
+<code>dateTimeFilter</code> method. This filter only accepts
+classes from the <code>java.time</code> package. The
+<code>dateTimeFilter</code> method is defined in a code sample in
+<a href="#setting-a-custom-filter-as-a-method">Setting a Custom Filter as a Method</a>.</p>
+
+<pre class="codeblock">LocalDateTime readDateTime(InputStream is) throws IOException {
+    try (ObjectInputStream ois = new ObjectInputStream(is)) {
+        ObjectInputFilter.Config.setObjectInputFilter(ois, FilterClass::dateTimeFilter);
+        return (LocalDateTime) ois.readObject();
+    } catch (ClassNotFoundException ex) {
+        IOException ioe = new StreamCorruptedException("class missing");
+        ioe.initCause(ex);
+        throw ioe;
+    }
+}</pre>
+
+<h3><a name="setting-a-jvm-wide-custom-filter">Setting a JVM-Wide Custom Filter</a></h3>
+
+<p>You can set a JVM-wide filter that applies to every use of
+<code>ObjectInputStream</code> unless it is overridden on a
+specific stream. If you can identify every type and condition
+that is needed by the entire application, the filter can allow
+those and reject the rest. Typically, JVM-wide filters are used
+to reject specific classes or packages, or to limit array sizes,
+graph depth, or total graph size.</p>
+
+<p>A JVM-wide filter is set once using the methods of the
+<code>sun.misc.ObjectInputFilter.Config</code> class. The filter can be an
+instance of a class, a lambda expression, a method reference, or
+a pattern.</p>
+
+<pre class="codeblock">ObjectInputFilter filter = ...
+ObjectInputFilter.Config.setSerialFilter(filter);</pre>
+
+<p>In the following example, the JVM-wide filter is set by using
+a lambda expression.</p>
+
+<pre class="codeblock">ObjectInputFilter.Config.setSerialFilter( info -&gt;
+    info.depth() &gt; 10 ? Status.REJECTED : Status.UNDECIDED);</pre>
+
+<p>In the following example, the JVM-wide filter is set by using
+a method reference:</p>
+
+<pre class="codeblock">ObjectInputFilter.Config.setSerialFilter(FilterClass::dateTimeFilter);</pre>
+
+
+<h3><a name="setting-a-custom-filter-using-a-pattern">Setting a Custom Filter Using a Pattern</a></h3>
+
+<p>A pattern-based custom filter, which is convenient for simple
+cases, can be created by using the
+<code>sun.misc.ObjectInputFilter.Config.createFilter</code> method. You
+can create a pattern-based filter as a system property or
+Security Property. Implementing a pattern-based filter as a
+method or a lambda expression gives you more flexibility.</p>
+
+<p>The filter patterns can accept or reject specific names of
+classes, packages, and modules and can place limits on array
+sizes, graph depth, total references, and stream size. Patterns
+cannot match the names of the supertype or interfaces of the
+class.</p>
+In the following example, the filter allows
+<code>example.File</code> and rejects
+<code>example.Directory</code>.
+
+<pre class="codeblock">ObjectInputFilter filesOnlyFilter =
+    ObjectInputFilter.Config.createFilter("example.File;!example.Directory");</pre>
+    
+    
+<p>This example allows only <code>example.File</code>. All other
+class names are rejected.</p>
+
+<pre class="codeblock">ObjectInputFilter filesOnlyFilter =
+    ObjectInputFilter.Config.createFilter("example.File;!*");</pre>
+
+
+<h3><a name="setting-a-custom-filter-as-a-class">Setting a Custom Filter as a Class</a></h3>
+
+<p>A custom filter can be implemented as a class implementing the
+<code>sun.misc.ObjectInputFilter</code> interface, as a lambda
+expression, or as a method.</p>
+
+<p>A filter is typically stateless and performs checks solely on
+the input parameters.?? However, you may implement a filter that,
+for example, maintains state between calls to the
+<code>checkInput</code> method to count artifacts in the
+stream.</p>
+
+<p>In the following example, the <code>FilterNumber</code> class
+allows any object that is an instance of the <code>Number</code>
+class and rejects all others.</p>
+
+<pre class="codeblock">    class FilterNumber implements ObjectInputFilter {
+        public Status checkInput(FilterInfo filterInfo) {
+            Class&lt;?&gt; clazz = filterInfo.serialClass();
+            if (clazz != null) {
+                return (Number.class.isAssignableFrom(clazz))
+                    ? ObjectInputFilter.Status.ALLOWED
+                    : ObjectInputFilter.Status.REJECTED;
+            }
+            return ObjectInputFilter.Status.UNDECIDED;
+        }
+    }</pre>
+
+<p>In the example:</p>
+
+<ul>
+<li>The <code>checkInput</code> method accepts an
+<code>ObjectInputFilter.FilterInfo</code> object.??The object's
+methods provide access to the class to be checked, array size,
+current depth, number of references to existing objects, and
+stream size read so far.</li>
+<li>If <code>serialClass</code> is not null, then the value is
+checked to see if the class of the object is <code>Number</code>.
+If so, it is accepted and returns
+<code>ObjectInputFilter.Status.ALLOWED</code>. Otherwise, it is
+rejected and returns
+<code>ObjectInputFilter.Status.REJECTED</code>.</li>
+<li>Any other combination of arguments returns
+<code>ObjectInputFilter.Status.UNDECIDED</code>. Deserialization
+continues, and any remaining filters are run until the object is
+accepted or rejected. If there are no other filters, the object
+is accepted.</li>
+</ul>
+
+
+<h3><a name="setting-a-custom-filter-as-a-method">Setting a Custom Filter as a Method</a></h3>
+
+<p>A custom filter can also be implemented as a method. The
+method reference is used instead of an inline lambda
+expression.</p>
+
+<p>The <code>dateTimeFilter</code> method that is defined in the
+following example is used by the code sample in <a href="#setting-a-custom-filter-for-an-individual-stream">Setting a Custom Filter for an Individual Stream</a>.</p>
+
+<pre class="codeblock">    public class FilterClass {
+        static ObjectInputFilter.Status dateTimeFilter(ObjectInputFilter.FilterInfo info) {
+            Class&lt;?&gt; serialClass = info.serialClass();
+            if (serialClass != null) {
+                return serialClass.getPackageName().equals("java.time")
+                        ? ObjectInputFilter.Status.ALLOWED
+                        : ObjectInputFilter.Status.REJECTED;
+            }
+            return ObjectInputFilter.Status.UNDECIDED;
+        }
+    }</pre>
+
+<p>This custom filter allows only the classes found in the base
+module of the JDK:</p>
+
+<pre class="codeblock">        static ObjectInputFilter.Status baseFilter(ObjectInputFilter.FilterInfo info) {
+            Class&lt;?&gt; serialClass = info.serialClass();
+            if (serialClass != null) {
+                return serialClass.getModule().getName().equals("java.base")
+                        ? ObjectInputFilter.Status.ALLOWED
+                        : ObjectInputFilter.Status.REJECTED;
+            }
+            return ObjectInputFilter.Status.UNDECIDED;
+       }</pre>
+
+
+<h2><a name="setting-a-filter-factory">Setting a Filter Factory</a></h2>
+
+<p>A filter factory is a <code>BinaryOperator</code>, which is a
+function of two operands that chooses the filter for a stream.
+You set a filter factory by specifying its class name in the
+system property <code>jdk.serialFilterFactory</code> or in the
+Security Property <code>jdk.serialFilterFactory</code>.</p>
+
+
+<h3><a name="creating-a-filter-factory">Creating a Filter Factory</a></h3>
+
+<p>The sample code <a href="BasicFilterFactory.java"><code>BasicFilterFactory.java</code></a> is a simple example of a filter factory. It
+prints its <code>sun.misc.ObjectInputFilter</code> parameters every time
+its <code>apply</code> method is invoked, then returns an
+<code>ObjectInputFilter</code> that consists of the
+<code>apply</code> method's parameters merged into one
+filter.</p>
+
+<p>When you set a filter factory, the filter factory's method
+<code>BinaryOperator&lt;ObjectInputFilter&gt;.apply(sun.misc.ObjectInputFilter
+t, sun.misc.ObjectInputFilter u)</code> will be invoked when an
+<code>ObjectInputStream</code> is constructed and when a
+stream-specific filter is set on an
+<code>ObjectInputStream</code>. The parameter <code>t</code> is
+the current filter and <code>u</code> is the requested filter.
+When <code>apply</code> is first invoked, <code>t</code> will be
+null. If a JVM-wide filter has been set, then when
+<code>apply</code> is first invoked, <code>u</code> will be the
+JVM-wide filter. Otherwise, <code>u</code> will be null. The
+<code>apply</code> method (which you must implement yourself)
+returns the filter to be used for the stream. If
+<code>apply</code> is invoked again, then the parameter
+<code>t</code> will be this returned filter. When you set a
+filter with the method
+<code>sun.misc.ObjectInputFilter.Config.setObjectInputFilter(ObjectInputStrea, ObjectInputFilter)</code>,
+then parameter <code>u</code> will be this filter.</p>
+
+<p><strong>Note:</strong> To protect against unexpected
+deserializations, ensure that security experts thoroughly review
+how your filter factories select and combine filters.</p>
+<!-- class="section" -->
+
+
+<h3><a name="specifying-a-filter-factory-in-a-system-or-security-property">
+Specifying a Filter Factory in a System or Security
+Property</a></h3>
+
+<p>You can set a filter factory that applies to only one
+application and to only a single invocation of Java by specifying
+it in the <code>jdk.serialFilterFactory</code> system property in
+the command line:</p>
+
+<p><code>java
+-Djdk.serialFilterFactory=<em>FilterFactoryClassName</em>
+<em>YourApplication</em></code></p>
+
+<p>The value of <code>jdk.serialFilterFactory</code> is the fully
+qualified class name of the filter factory to be set before the
+first deserialization. The class must be public and accessible to
+the application class loader (which the method
+<code><a href="../../../../api/java/lang/ClassLoader.html#getSystemClassLoader--">java.lang.ClassLoader.getSystemClassLoader()</a></code> returns).</p>
+
+<p>You can set a JVM-wide filter factory that affects every
+application run with a Java runtime from <code>$JAVA_HOME</code>
+by specifying it in a Security Property. Note that a system
+property supersedes a Security Property value. Edit the file
+<code>$JAVA_HOME/lib/security/java.security</code> and specify
+the filter factory's class name in the
+<code>jdk.serialFilterFactory</code> Security Property.</p>
+
+<p>The sample code <a href="TestBasicFilter.java"><code>TestBasicFilter.java</code></a> demonstrates the filter factory
+<code>BasicFilterFactory</code>.</p>
+
+<p>Run <code>TestBasicFilter</code> with the following
+command:</p>
+
+<p><code>java -Djdk.serialFilterFactory=BasicFilterFactory
+TestBasicFilter</code></p>
+
+<p>This command prints output similar to the following:</p>
+
+<pre class="codeblock">Current filter: null
+Requested filter: example.*;java.lang.*;!*
+Current filter: example.*;java.lang.*;!*
+Requested filter: TestBasicFilter$FilterNumber@7cca494b
+Read obj: 42</pre>
+
+
+<p>The <code>apply</code> method is invoked twice: when the
+<code>ObjectInputStream</code> <code>ois</code> is created and
+when the method <code>ObjectInputFilter.Config.setObjectInputFilter(ObjectInputStream, ObjectInputFilter)</code> is called.</p>
+
+<p><strong>Note:</strong> You can set a filter on an
+<code>ObjectInputStream</code> only once. An
+<code>IllegalStateException</code> will be thrown otherwise. 
+<!-- class="section" --></p>
+
+
+<h2><a name="built-in-filters">Built-in Filters</a></h2>
+
+<p>The Java Remote Method Invocation (RMI) Registry, the RMI
+Distributed Garbage Collector, and Java Management Extensions
+(JMX) all have filters that are included in the JDK. You should
+specify your own filters for the RMI Registry and the RMI
+Distributed Garbage Collector to add additional protection.</p>
+
+
+<h3><a name="filters-for-rmi-registry">Filters for RMI Registry</a></h3>
+
+<p><strong>Note:</strong> Use these built-in filters as starting
+points only. Edit the
+<code>sun.rmi.registry.registryFilter</code> system property to
+configure reject-lists and/or extend the allow-list to add
+additional protection for the RMI Registry. To protect the whole
+application, add the patterns to the
+<code>jdk.serialFilter</code> global system property to increase
+protection for other serialization users that do not have their
+own custom filters.</p>
+
+<p>The RMI Registry has a built-in allow-list filter that allows
+objects to be bound in the registry. It includes instances of the
+<code>java.rmi.Remote</code>, <code>java.lang.Number</code>,
+<code>java.lang.reflect.Proxy</code>,
+<code>java.rmi.server.UnicastRef</code>,
+<code>java.rmi.server.UID</code>,
+<code>java.rmi.server.RMIClientSocketFactory</code>, and
+<code>java.rmi.server.RMIServerSocketFactory</code> classes.</p>
+The built-in filter includes size limits:??
+
+<p><code>maxarray=1000000;maxdepth=20</code></p>
+
+<p>Supersede the built-in filter by defining a filter using the
+<code>sun.rmi.registry.registryFilter</code> system property with
+a pattern. If the filter that you define either accepts classes
+passed to the filter, or rejects classes or sizes, the built-in
+filter is not invoked.?? If your filter does not accept or reject
+anything, the built-filter is invoked.</p>
+<!-- class="section" -->
+
+
+<h3><a name="filters-for-rmi-distributed-garbage-collector">Filters for RMI Distributed Garbage Collector</a></h3>
+
+<p><strong>Note:</strong> Use these built-in filters as starting
+points only. Edit the <code>sun.rmi.transport.dgcFilter</code>
+system property to configure reject-lists and/or extend the
+allow-list to add additional protection for Distributed Garbage
+Collector. To protect the whole application, add the patterns to
+the <code>jdk.serialFilter</code> global system property to
+increase protection for other serialization users that do not
+have their own custom filters.</p>
+
+<p>The RMI Distributed Garbage Collector has a built-in
+allow-list filter that accepts a limited set of classes. It
+includes instances of the <code>java.rmi.server.ObjID</code>,
+<code>java.rmi.server.UID</code>, <code>java.rmi.dgc.VMID</code>,
+and <code>java.rmi.dgc.Lease</code> classes.</p>
+The built-in filter includes size limits:??
+
+<p><code>maxarray=1000000;maxdepth=20</code></p>
+
+<p>Supersede the built-in filter by defining a filter using the
+<code>sun.rmi.transport.dgcFilter</code> system property with a
+pattern. If the filter accepts classes passed to the filter, or
+rejects classes or sizes, the built-in filter is not invoked.?? If
+the superseding filter does not accept or reject anything, the
+built-filter is invoked.</p>
+<!-- class="section" -->
+
+
+<h3><a name="filters-for-jmx">Filters for JMX</a></h3>
+
+<p><strong>Note:</strong> Use these built-in filters as starting
+points only. Edit the
+<code>jmx.remote.rmi.server.serial.filter.pattern</code>
+management property to configure reject-lists and/or extend the
+allow-list to add additional protection for JMX. To protect the
+whole application, add the patterns to the
+<code>jdk.serialFilter</code> global system property to increase
+protection for other serialization users that do not have their
+own custom filters.</p>
+
+<p>JMX has a built-in filter to limit a set of classes allowed to
+be sent as a deserializing parameters over RMI to the server.
+That filter is disabled by default. To enable the filter, define
+the <code>jmx.remote.rmi.server.serial.filter.pattern</code>
+management property with a pattern.</p>
+
+<p>The pattern must include the types that are allowed to be sent
+as parameters over RMI to the server and all types they depends
+on, plus <code>javax.management.ObjectName</code> and
+<code>java.rmi.MarshalledObject</code> types. For example, to
+limit the allowed set of classes to Open MBean types and the
+types they depend on, add the following line to
+<code>management.properties</code> file.</p>
+
+<p>
+<code>com.sun.management.jmxremote.serial.filter.pattern=java.lang.*;java.math.BigInteger;java.math.BigDecimal;java.util.*;javax.management.openmbean.*;javax.management.ObjectName;java.rmi.MarshalledObject;!*</code>
+<!-- class="section" --></p>
+
+
+<h2><a name="logging-filter-actions">Logging Filter Actions</a></h2>
+
+<p>You can turn on logging to record the initialization,
+rejections, and acceptances of calls to serialization filters.
+Use the log output as a diagnostic tool to see what's being
+deserialized, and to confirm your settings when you configure
+allow-lists and reject-lists.</p>
+
+<p>When logging is enabled, filter actions are logged to the
+<code>java.io.serialization</code> logger.</p>
+
+<p>To enable serialization filter logging, edit the
+<code>$JDK_HOME/conf/logging.properties</code> file.</p>
+
+<p>To log calls that are rejected, add</p>
+
+<p><code>java.io.serialization.level = FINE</code></p>
+
+<p>To log all filter results, add</p>
+
+<p><code>java.io.serialization.level = FINEST</code></p>
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>

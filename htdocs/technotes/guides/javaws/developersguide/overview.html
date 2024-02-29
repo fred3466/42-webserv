@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xmlns="http://www.w3.org/1999/xhtml" xml:lang=
+"en-US">
+<head>
+<title>Overview</title>
+<link rel="stylesheet" type="text/css" href="../../../../technotes/css/guide.css" />
+</head>
+<body>
+<!-- STATIC HEADER -->
+
+<!-- header start -->
+<div id="javaseheader">
+<div id="javaseheaderlogo">
+<img src="../../../../images/javalogo.gif"
+alt="Java logo" />
+</div>
+<div id="javaseheaderindex">
+
+<a href=
+"../../../../index.html">Documentation Contents</a>
+</div>
+<div class="clear"></div>
+</div>
+
+<!-- header end -->
+
+
+<p><small><a href="contents.html">&lt; Contents</a></small></p>
+<h1>Overview of Java Web Start Technology</h1>
+
+<p>This section includes the following topics:</p>
+
+<ul>
+  <li><a href="#intro">Introduction to Java Web Start</a></li>
+  <li><a href="#benefits">Benefits of Java Web Start</a></li>
+  <li><a href="#security">Security Considerations</a></li>
+  <li><a href="#where">Where to Find Java Web Start</a></li>
+  <li><a href="#using">Using Java Web Start</a>
+    <ul>
+      <li><a href="#launching">Launching from a Web Browser</a></li>
+      <li><a href="#launching-desktop">Launching from Desktop Icons and the Start Menu (Microsoft Windows and Linux 
+Running GNOME 2.0+)</a></li>
+      <li><a href="#proxy">Using Java Web Start Software Behind a Proxy Server or Firewall</a>
+    </ul>
+  </li>
+</ul>
+
+<h2><a name="intro">Introduction to Java Web Start</a></h2>
+
+<p>Java Web Start is an application-deployment technology that enables your 
+users to launch full-featured applications with a single click from any web 
+browser. Users can download and launch applications without going through 
+complicated installation procedures.</p>
+
+<p>With Java Web Start, your users launch applications by clicking a web page 
+link. If the application is not present on their computer, Java Web Start 
+automatically downloads all necessary files. It then caches the files on the 
+computer so that the application is always ready to be relaunched anytime the 
+user wants &mdash; either from an icon on the desktop or from the browser link. No 
+matter which method is used to launch the application, the most current version 
+of the application is always presented.</p>
+
+<p>The technology underlying Java Web Start is the Java Network Launching 
+Protocol &amp; API (JNLP). This technology was developed through the Java 
+Community Process (JCP). Java Web Start is the reference implementation (RI) for 
+the JNLP specification. The JNLP technology defines, among other things, the 
+JNLP file, which is a standard file format that describes how to launch an 
+application. The JNLP specification is available at <a href=
+"https://jcp.org/en/jsr/detail?id=56">JSR 56: Java Network Launching Protocol and 
+API</a>.</p>
+
+
+<h2><a name="benefits">Benefits of Java Web Start</a></h2>
+
+<p>From a technology standpoint, Java Web Start has a number of key benefits 
+that make it an attractive platform to use for deploying applications.</p>
+<p>The benefits include the following:</p>
+<ul> 
+<li>
+<p>Java Web Start is built exclusively to launch applications written to the 
+Java Platform, Standard Edition. Thus, a single application can be made 
+available on a web server and then deployed on a wide variety of platforms, 
+including Windows, Linux, and macOS.</p>
+</li>
+<li>
+<p>Java Web Start supports multiple revisions of the Java Platform, Standard 
+Edition. Thus, an application can request a particular version of the platform 
+it requires, such as Java SE 8. Several applications can run at the same time on 
+different platform revisions without causing conflicts.</p>
+</li>
+<li>
+<p>Java Web Start enables applications to be launched independently of a web 
+browser. This can be used for off-line operation of an application, where 
+launching the application through the browser is inconvenient or impossible. The 
+application can also be launched through desktop shortcuts, making launching the 
+web-deployed application similar to launching a native application.</p>
+</li>
+<li>
+<p>Java Web Start takes advantage of security features of the Java Platform. 
+Sandbox applications are run in a protective environment with restricted access 
+to local disk and network resources. Users must also agree to run the 
+application the first time it is launched.</p>
+</li>
+<li>
+<p>Applications launched with Java Web Start are cached locally. Thus, an 
+already-downloaded application is launched similar to a traditionally installed 
+application.</p>
+</li>
+</ul>
+
+<h2><a name="security">Security Considerations</a></h2>
+
+<p>Java Web Start allows you to run code from the internet. Although there are 
+mechanisms in place, such as HTTPS, that attempt to validate the provenance of 
+code obtained from the internet, it's not always possible to do so. Therefore 
+Java Web Start relies on code signing to determine if the code comes from a 
+trusted party.</p>
+
+<p>Unsigned code will be rejected, and after signature verification, the user 
+will be prompted to determine if the code signer should be trusted. It is very 
+important that no unsigned code or code from a nontrusted signer be granted run 
+permission. This means that users must pay attention to the security warnings 
+and prompts. See <a href="development.html#security">Security and Code Signing
+</a>.</p>
+
+<p>You can use the <a href="../../deploy/deployment_rules.html">Deployment Rule Set</a> 
+(DRS) feature to prevent a user the ability to decide whether a code 
+signer should be trusted. Instead, an organization can specify a security policy 
+that determines this. Consequently, if your organization uses a DRS, you can 
+avoid presenting dialogs to end users. Trusted signers can have their code 
+launched without prompts while untrusted and unsigned code can be denied without 
+prompts.</p>
+
+<p>You can use the <a href="../../deploy/exception_site_list.html">Exception 
+Site List</a> feature to provides a way for users to run Rich Internet 
+Applications (RIAs) that otherwise would be blocked by security checks. The 
+exception site list contains URLs for sites that host RIAs that users want to 
+run. RIAs that are launched from sites in the exception site list are allowed to 
+run with the appropriate security prompts.</p>
+
+<p>Java Web Start Users should apply all critical patch updates for JRE 8 
+(specifically, the JRE version that launches Java Web Start). Turning on 
+auto-update can help you keep your JRE up-to-date.</p>
+
+<p>There are alternative providers that can manage Java Web Start applications 
+and JNLP, such as IcedTea-Web. Oracle makes no claims as to whether these 
+providers perform all the security checks that the JDK performs. If you choose 
+to rely on those providers, carefully evaluate them as you would any new 
+technology that you plan to run in your systems. Oracle recommends that you 
+check that these providers do not allow unsigned code to run and that they 
+request user acceptance with information from the signature before trusting 
+signed code.</p>
+
+<h2><a name="where" id="where"></a>Where to Find Java Web Start</h2>
+
+<p>Java Web Start is included in the Java Platform, Standard Edition development 
+kit (JDK) and Java Runtime Environment (JRE), and includes the security features 
+of the Java platform.</p>
+
+<h2><a name="using" id="using"></a>Using Java Web Start Software</h2>
+
+<p>Java Web Start allows you to launch Java-technology-based
+applications directly from the Web. An application can be launched
+in three different ways:</p>
+<ul>
+<li>From a Web browser by clicking on a link.</li>
+<li>From desktop icons or the Start Menu.</li>
+<li>From the Java Cache Viewer</li>
+</ul>
+<p>Regardless of which way is used, Java Web Start will connect
+back to the Web server each time an application is launched to
+check whether an updated version of the application is
+available.</p>
+
+<h3><a name="launching">Launching from a Web Browser</a></h3>
+
+<p>Point your web browser to a page with a link to a JNLP application, and click 
+that link.</p>
+<p>A security dialog box will pop up with information about the origin of the 
+application based on who digitally signed the code, and the level of access 
+requested. The application will run only if you decide to trust the vendor.</p>
+<p>That is really all there is to using Java Web Start, but how does it work? 
+The HTML links that launch the applications are, in fact, standard HTML links. 
+However, instead of pointing to another web page, they link to a special 
+configuration file called a JNLP file. The web browser examines the file 
+extension or the MIME type of the file, and sees that it belongs to Java Web 
+Start. It then launches Java Web Start with the downloaded JNLP file as an 
+argument. Java Web Start proceeds with downloading, caching, and running the 
+application as directed by the JNLP file.</p>
+<a name= "appman" id="appman"></a>
+
+<h3><a name="launching-desktop">Launching from Desktop Icons and the Start Menu (Microsoft Windows and Linux 
+Running GNOME 2.0+)</a></h3>
+
+<p>Java Web Start technology can automatically create shortcuts for your 
+application on the desktop and in the Start Menu for web-deployed applications 
+developed with Java technology. You can use the Java Control Panel to control 
+the shortcut settings. Shortcuts can also be added by using the Java Web Start 
+Cache Viewer, using the install shortcut menu item.</p>
+
+<h3><a name="proxy">Using Java Web Start Software Behind a Proxy Server or Firewall</a></h3>
+
+<p>Java Web Start software must be configured with the correct proxy settings 
+in order to launch applications from outside your firewall. Java Web Start 
+software automatically tries to detect the proxy settings from the default 
+browser on your system. Java Web Start technology supports most web proxy 
+auto-configuration scripts. It can detect proxy settings in almost all 
+environments.</p>
+
+<p>You can also use the Java Web Start Control Panel to view or
+edit the proxy configuration. Refer to the <a href="../../deploy/jcp.html">
+Java Control Panel</a> for more details.</p>
+
+
+<!--  footer start -->
+<div id="javasefooter">
+<div class="hr">
+<hr /></div>
+<div id="javasecopyright">
+<img id="oraclelogofooter" src=
+"../../../../images/oraclelogo.gif" alt="Oracle and/or its affiliates"
+border="0" width="100" height="29" name=
+"oraclelogofooter" />
+
+<a href="../../../../legal/cpyr.html">Copyright
+&#169;</a> 1993, 2024, Oracle and/or its affiliates. All rights
+reserved.</div>
+<div id="javasecontactus">
+<a href=
+"http://docs.oracle.com/javase/feedback.html">Contact
+Us</a>
+</div>
+</div>
+<!-- footer end -->
+
+<!-- STATIC FOOTER -->
+
+</body>
+</html>
