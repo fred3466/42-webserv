@@ -29,7 +29,8 @@ RequestHttp::~RequestHttp()
 //	// TODO Auto-generated method stub
 //
 //}
-RequestHttp::RequestHttp(std::string *rawContent)
+RequestHttp::RequestHttp(std::string *rawContent) :
+		fdClient(-1)
 {
 
 	std::stringstream lines;

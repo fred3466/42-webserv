@@ -81,12 +81,17 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 //Send Response
 	std::string statusHeaderBody = resp->getStatusLine() + resp->getHeader()
-			+ resp->getBody();
+			+ std::string(resp->getBody());
 	int length = resp->getStatusLine().length() + resp->getHeader().length()
-			+ resp->getBodyLength() + 1;
-	char *cstr = new char[length];
-	std::strcpy(cstr, statusHeaderBody.c_str());
-	send(request->getFdClient(), cstr, length, 0);
+			+ resp->getBodyLength();
+	char *cstr = new char[length]();
+//	std::strcpy(cstr, statusHeaderBody.c_str());
+	std::memcpy(cstr, statusHeaderBody.c_str(), length);
+	int fd = e.getFdClient();
+	if (request && fd && cstr && length)
+		send(fd, cstr, length, 0);
+	harl.debug("%d sent %d bytes through the wire", fd, length);
+	harl.trace("%s", cstr);
 //	write(request->getFdClient(), cstr, length);
 //	rc = send(curentPollFd.fd, buffer, len, 0);
 //	if (rc < 0) {

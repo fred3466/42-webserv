@@ -17,7 +17,7 @@ public:
 //	FileUtil(const FileUtil &other);
 //	FileUtil& operator=(const FileUtil &other);
 
-	int readFile(std::string path, std::string body);
+	int readFile(std::string path, char **emptyBodyBin);
 	std::vector<std::string> listDir(std::string path);
 };
 

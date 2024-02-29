@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 
 #include "ProcessorImplDirectFs.h"
 
@@ -31,12 +32,12 @@ Response* ProcessorImplDirectFs::process(Request *request)
 	std::string root = config->getParamStr("root");
 	std::string path = root + request->getUri();
 	harl.info(request->getUri() + " -> " + path);
-
-	std::string body = "";
+	char *body;
 
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
 	{
+		std::string bodyStr = "";
 		if (s.st_mode & S_IFDIR)
 		{
 			std::vector<std::string> files = fu->listDir(path);
@@ -45,15 +46,30 @@ Response* ProcessorImplDirectFs::process(Request *request)
 				std::string sending = "<a href=\"" + files[i] + "\">" + files[i]
 						+ "</a>\n";
 
-				body += sending;
+				bodyStr += sending;
 			}
-//			bodyStr.copy(body, bodyStr.size(), 0);
-			resp->setBodyLength(body.size());
+			resp->setBodyLength(bodyStr.size());
+			bodyStr.copy(body, bodyStr.size(), 0);
+//			body = bodyStr.c_str();
 
 		} else if (s.st_mode & S_IFREG)
 		{
-			int len = fu->readFile(path, body);
+			char *bodyBin;
+			int len = fu->readFile(path, &bodyBin);
 			resp->setBodyLength(len);
+
+//			std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
+//			out.write(bodyBin, len);
+////			bodyBin >> out;
+//			out.close();
+
+			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
+			os.write(bodyBin, len);
+			os.close();
+
+			body = bodyBin;
+//			bodyStr.copy(body, bodyStr.size(), 0);
+
 //			send(request->getFdClient(), ret.c_str(), ret.size(), 0);
 
 //			fin >> rno >> name >> fee;   //read data from the file student
@@ -71,7 +87,7 @@ Response* ProcessorImplDirectFs::process(Request *request)
 //    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
 //    _response_content.append(statusCodeString(_code));
 //    _response_content.append("\r\n");
-	resp->setStatusLine("HTTP/1.1 200 OK\r\n");
+	resp->setStatusLine("HTTP/1.1 200 OK\r\n\r\n");
 //	resp->setBody("<html><body>" + body + "</body></html>");
 	resp->setBody(body);
 	return resp;

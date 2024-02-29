@@ -6,6 +6,8 @@
  */
 
 #include "FileUtil.h"
+#include <iostream>
+#include <ostream>
 
 FileUtil::FileUtil()
 {
@@ -30,21 +32,36 @@ FileUtil::~FileUtil()
 //
 //}
 
-int FileUtil::readFile(std::string path, std::string body)
+int FileUtil::readFile(std::string path, char *emptyBodyBin[])
 {
+//	std::ifstream file(path.c_str());
+//
+//	if (file.fail())
+//	{
+//		return (-1);
+//	}
+//	std::ostream ss;
+//	ss << file.rdbuf();
+//	bodyBin = ss.str();
+
 	int rno, fee;
 	char name[50];
 
-	std::ifstream is(path.c_str(), std::ios::binary);
+	std::ifstream is(path.c_str(), std::ios::binary | std::ios::in);
 
 	// get length of file:
 	is.seekg(0, is.end);
 	int length = is.tellg();
 	is.seekg(0, is.beg);
 
-	char *buffer = new char[length];
-	is.read(buffer, length);
-	body += buffer;
+	*emptyBodyBin = new char[length]();
+	is.read(*emptyBodyBin, length);
+	is.close();
+
+//	std::ofstream os("img.gif", std::ios::binary | std::ios::out);
+//	os.write(emptyBodyBin, length);
+//	os.close();
+
 	return length;
 }
 

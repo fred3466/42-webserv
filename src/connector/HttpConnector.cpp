@@ -367,7 +367,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		int &close_conn)
 {
-	char buffer[450];
+	char buffer[4500];
 	bool compress_array = 0;
 	/*******************************************************/
 	/* Receive all incoming data on this socket            */
@@ -416,6 +416,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 //				break;
 //			}
 			std::string cont = std::string(buffer);
+			harl.trace(cont);
 			ConnectorEvent e(cont);
 			e.setFdClient(curentPollFd->fd);
 			publishDataReceiving(e);
