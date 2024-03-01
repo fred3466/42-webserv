@@ -1,8 +1,8 @@
 #pragma once
+#include <string>
+
 #include "Processor.h"
 #include "ProcessorImplDirectFs.h"
-
-#include <string>
 
 class ProcessorFactory
 {

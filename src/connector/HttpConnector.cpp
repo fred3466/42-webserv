@@ -1,7 +1,7 @@
 #include "HttpConnector.h"
 
 HttpConnector::HttpConnector() :
-		harl()
+		harl(), connectorListener(NULL), _soListen(-1)
 {
 
 }
@@ -10,19 +10,13 @@ HttpConnector::~HttpConnector()
 {
 }
 
-HttpConnector::HttpConnector(const HttpConnector &o)
-{
-	*this = o;
-}
+//HttpConnector::HttpConnector(const HttpConnector &o)
+//{
+//	*this = o;
+//}
 
-HttpConnector& HttpConnector::operator=(const HttpConnector &o)
-{
-	if (this != &o)
-		*this = o;
-	return *this;
-}
-
-//bool HttpConnector::operator==(const HttpConnector &o) {
+//bool HttpConnector::operator==(const HttpConnector &o)
+//{
 ////	if (o)
 //	return this->_soListen == o._soListen;
 ////	return 0;
@@ -30,12 +24,12 @@ HttpConnector& HttpConnector::operator=(const HttpConnector &o)
 
 void HttpConnector::registerIt(ConnectorListener *l)
 {
-//	connectorListenerList.push_back(l);
+//	connectorListenerList.push_back(*l);
 	connectorListener = l;
 }
 void HttpConnector::unregisterIt(ConnectorListener *l)
 {
-//	connectorListenerList.remove(l);
+//	connectorListenerList.remove(*l);
 	connectorListener = NULL;
 }
 void HttpConnector::init(ConnectorListener &l)
@@ -44,31 +38,34 @@ void HttpConnector::init(ConnectorListener &l)
 }
 void HttpConnector::publishAccepting(ConnectorEvent e)
 {
-//	std::list<ConnectorListener>::iterator iteListeners;
-//	for (iteListeners = connectorListenerList.begin();
-//			iteListeners != connectorListenerList.end(); iteListeners++) {
-//		iteListeners->onIncomming(e);
-	connectorListener->onIncomming(e);
+//	std::list<ConnectorListener>::iterator ite;
+//	for (ite = connectorListenerList.begin();
+//			ite != connectorListenerList.end(); ite++)
+//	{
+//		ite->onIncomming(e);
 //	}
+	connectorListener->onIncomming(e);
 }
 void HttpConnector::publishDataReceiving(ConnectorEvent e)
 {
 //	std::list<ConnectorListener>::iterator iteListeners;
 //	for (iteListeners = connectorListenerList.begin();
-//			iteListeners != connectorListenerList.end(); iteListeners++) {
+//			iteListeners != connectorListenerList.end(); iteListeners++)
+//	{
 //		iteListeners->onDataReceiving(e);
-	connectorListener->onDataReceiving(e);
 //	}
+	connectorListener->onDataReceiving(e);
 
 }
 
-HttpConnector::HttpConnector(std::string ipStr, int port)
+HttpConnector::HttpConnector(std::string ipStr, int port) :
+		connectorListener(NULL)
 {
 
 	int on = 1;
 	struct sockaddr_in sockaddrStruct;
 
-	connectorListener = NULL;
+//	connectorListener = NULL;
 
 //protocol ip==0 (/etc/protocols)
 	if ((_soListen = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -433,7 +430,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 	/*******************************************************/
 	if (close_conn)
 	{
-		harl.debug("---- %i Fermeture \n", curentPollFd->fd);
+		harl.debug("---- %i Fermeture de la connexion \n", curentPollFd->fd);
 		close(curentPollFd->fd);
 		curentPollFd->fd = -1;
 		compress_array = 1;

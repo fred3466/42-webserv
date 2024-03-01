@@ -4,13 +4,13 @@
 class Connector /*: public ConnectorEventPublisher*/
 {
 private:
-protected:
-//	Connector(const Connector &other);
+	protected:
+	//	Connector(const Connector &other);
 //	Connector& operator=(const Connector &other);
 public:
-//	Connector();
-//	Connector(std::string stIp, int port);
-//	virtual ~Connector();
+	Connector();
+	//	Connector(std::string stIp, int port);
+	virtual ~Connector();
 	virtual void doListen()=0;
 
 	virtual void registerIt(ConnectorListener *l)=0;

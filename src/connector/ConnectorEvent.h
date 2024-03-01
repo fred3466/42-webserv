@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+
 #include "../request/Request.h"
-#include "../response/Response.h"
+#include "../response/API/Response.h"
 
 class ConnectorEvent
 {
@@ -13,7 +14,7 @@ private:
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);
-//	ConnectorEvent& operator=(const ConnectorEvent &other);
+	//	ConnectorEvent& operator=(const ConnectorEvent &other);
 	ConnectorEvent(Request *req, Response *resp);
 	ConnectorEvent(std::string temp);
 	~ConnectorEvent();

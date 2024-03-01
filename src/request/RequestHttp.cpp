@@ -1,34 +1,13 @@
-/*
- * RequestHttp.cpp
- *
- *  Created on: 22 févr. 2024
- *      Author: fbourgue
- */
-
 #include "RequestHttp.h"
 
 RequestHttp::RequestHttp()
 {
-	// TODO Auto-generated constructor stub
-
 }
 
 RequestHttp::~RequestHttp()
 {
-	// TODO Auto-generated destructor stub
 }
 
-//RequestHttp::RequestHttp(const RequestHttp &other)
-//{
-//	// TODO Auto-generated constructor stub
-//
-//}
-//
-//RequestHttp& RequestHttp::operator=(const RequestHttp &other)
-//{
-//	// TODO Auto-generated method stub
-//
-//}
 RequestHttp::RequestHttp(std::string *rawContent) :
 		fdClient(-1)
 {

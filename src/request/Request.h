@@ -1,15 +1,18 @@
 #pragma once
 #include <string>
 #include <map>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 class Request
 {
 private:
-public:
+	public:
 	Request();
 	virtual ~Request();
 	Request(std::string *rawContent);
-//	Request(Request const &o);
+	//	Request(Request const &o);
 //	Request& operator=(Request const &o);
 
 	virtual std::string getValue(std::string paramName)=0;

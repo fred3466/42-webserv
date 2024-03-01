@@ -1,7 +1,7 @@
 #pragma once
-#include "FileUtil.h"
-
 #include <string>
+
+#include "FileUtil.h"
 
 class FileUtilFactory
 {

@@ -1,3 +1,5 @@
+#include "ProcessorImplDirectFs.h"
+
 #include <iostream>
 #include <vector>
 
@@ -6,11 +8,10 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
-
-#include "ProcessorImplDirectFs.h"
+#include <cstring>
 
 ProcessorImplDirectFs::ProcessorImplDirectFs() :
-		harl()
+		harl(), stringUtil(), config()
 {
 }
 ProcessorImplDirectFs::~ProcessorImplDirectFs()
@@ -24,7 +25,8 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 
 Response* ProcessorImplDirectFs::process(Request *request)
 {
-	Response *resp = ResponseFactory().build();
+	ResponseHeader *header = ResponseHeaderFactory().build();
+	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
 //	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
@@ -54,20 +56,37 @@ Response* ProcessorImplDirectFs::process(Request *request)
 
 		} else if (s.st_mode & S_IFREG)
 		{
+			std::string fileExt = path.substr(
+					path.rfind(".", std::string::npos));
+
+			if (stringUtil.strUpper(fileExt) == ".GIF")
+			{
+				resp->getHeader()->addField("Content-Type: image/gif\r\n");
+			}
+			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
+//			{
+//				resp->getHeader()->addField("Content-Type: image/png\r\n");
+//			}
+			else if (stringUtil.strUpper(fileExt) == ".JPEG"
+					|| stringUtil.strUpper(fileExt) == ".JPG")
+			{
+				resp->getHeader()->addField("Content-Type: image/jpeg\r\n");
+			}
+
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
 			resp->setBodyLength(len);
+			resp->setBodyBin(bodyBin);
 
-//			std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
-//			out.write(bodyBin, len);
-////			bodyBin >> out;
-//			out.close();
-
-			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
-			os.write(bodyBin, len);
-			os.close();
+			std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
+			out.write(bodyBin, len);
+//			bodyBin >> out;
+			out.close();
 
 			body = bodyBin;
+//			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
+//			os.write(body, len);
+//			os.close();
 //			bodyStr.copy(body, bodyStr.size(), 0);
 
 //			send(request->getFdClient(), ret.c_str(), ret.size(), 0);
@@ -87,8 +106,11 @@ Response* ProcessorImplDirectFs::process(Request *request)
 //    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
 //    _response_content.append(statusCodeString(_code));
 //    _response_content.append("\r\n");
-	resp->setStatusLine("HTTP/1.1 200 OK\r\n\r\n");
+	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+	resp->getHeader()->addField("\r\n");
 //	resp->setBody("<html><body>" + body + "</body></html>");
-	resp->setBody(body);
+//	resp->setBody(body);
+
+	delete fu;
 	return resp;
 }

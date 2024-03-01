@@ -20,13 +20,15 @@ ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) :
 //	return *this;
 //}
 
-ConnectorEvent::ConnectorEvent(Request *req, Response *resp)
+ConnectorEvent::ConnectorEvent(Request *req, Response *resp) :
+		fdClient(-1), resp(NULL)
 {
 	this->req = req;
 	this->resp = resp;
 }
 
-ConnectorEvent::ConnectorEvent(std::string temp)
+ConnectorEvent::ConnectorEvent(std::string temp) :
+		fdClient(-1), resp(NULL), req(NULL)
 {
 	this->temp = temp;
 }

@@ -1,9 +1,7 @@
 #pragma once
-#include "../request/Request.h"
+
+#include "Request.h"
 #include <map>
-#include <string>
-#include <iostream>
-#include <sstream>
 
 class RequestHttp: public Request
 {
@@ -11,10 +9,10 @@ private:
 	std::string uri, method;
 	std::map<std::string, std::string> kv;
 	int fdClient;
-public:
+	public:
 	RequestHttp();
 	~RequestHttp();
-//	RequestHttp(const RequestHttp &other);
+	//	RequestHttp(const RequestHttp &other);
 //	RequestHttp& operator=(const RequestHttp &other);
 	RequestHttp(std::string *rawContent);
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "../response/Response.h"
-#include "../request/Request.h"
 #include "../config/Config.h"
+#include "../request/Request.h"
+#include "../response/API/Response.h"
 
 class Processor
 {

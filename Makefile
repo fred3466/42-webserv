@@ -19,11 +19,16 @@ SRCS = \
     config.h \
     config/Config.cpp \
     config/ConfigFactory.cpp \
-	response/Response.cpp \
+	response/API/Response.cpp \
+	response/API/ResponseHeader.cpp \
 	response/ResponseHttp.cpp \
-    response/ResponseFactory.cpp \
+	response/ResponseHttpHeader.cpp \
+ 	response/ResponseTools.cpp \
+ 	response/factory/ResponseHeaderFactory.cpp \
+    response/factory/ResponseFactory.cpp \
     util/FileUtil.cpp \
     util/FileUtilFactory.cpp \
+    util/StringUtil.cpp \
 	main.cpp 
 	
 OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)

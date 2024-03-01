@@ -18,20 +18,20 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
-#include "Harl.h"
-#include "connector/Connector.h"
-#include "connector/ConnectorFactory.h"
-#include "request/Request.h"
-#include "request/RequestFactory.h"
-#include "processor/Processor.h"
-#include "processor/ProcessorFactory.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
+#include "connector/Connector.h"
+#include "connector/ConnectorFactory.h"
+#include "Harl.h"
+#include "processor/Processor.h"
+#include "processor/ProcessorFactory.h"
+#include "request/Request.h"
+#include "request/RequestFactory.h"
 
 class HttpServer: public ConnectorListener
 {
 private:
-//	std::list<Connector> consListenersList;
+	//	std::list<Connector> consListenersList;
 
 	Connector *connector;
 	Config *config;
@@ -49,9 +49,9 @@ public:
 	HttpServer();
 	~HttpServer();
 
-	void init(std::string ipStr, int port);
-	void onIncomming(ConnectorEvent e);
-	void onDataReceiving(ConnectorEvent e);
-
+	virtual void init(std::string ipStr, int port);
+	virtual void onIncomming(ConnectorEvent e);
+	virtual void onDataReceiving(ConnectorEvent e);
+//	virtual bool operator==(const ConnectorListener &other);
 };
 
