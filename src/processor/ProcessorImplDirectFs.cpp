@@ -10,8 +10,7 @@
 #include <ostream>
 #include <cstring>
 
-ProcessorImplDirectFs::ProcessorImplDirectFs() :
-		harl(), stringUtil(), config()
+ProcessorImplDirectFs::ProcessorImplDirectFs() : harl(), stringUtil(), config()
 {
 }
 ProcessorImplDirectFs::~ProcessorImplDirectFs()
@@ -23,13 +22,13 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplDirectFs::process(Request *request)
+Response *ProcessorImplDirectFs::process(Request *request)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
-//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
+	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
 	std::string root = config->getParamStr("root");
 	std::string path = root + request->getUri();
@@ -45,30 +44,28 @@ Response* ProcessorImplDirectFs::process(Request *request)
 			std::vector<std::string> files = fu->listDir(path);
 			for (unsigned int i = 0; i < files.size(); i++)
 			{
-				std::string sending = "<a href=\"" + files[i] + "\">" + files[i]
-						+ "</a>\n";
+				std::string sending = "<a href=\"" + files[i] + "\">" + files[i] + "</a>\n";
 
 				bodyStr += sending;
 			}
 			resp->setBodyLength(bodyStr.size());
 			bodyStr.copy(body, bodyStr.size(), 0);
-//			body = bodyStr.c_str();
-
-		} else if (s.st_mode & S_IFREG)
+			//			body = bodyStr.c_str();
+		}
+		else if (s.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
-					path.rfind(".", std::string::npos));
+				path.rfind(".", std::string::npos));
 
 			if (stringUtil.strUpper(fileExt) == ".GIF")
 			{
 				resp->getHeader()->addField("Content-Type: image/gif\r\n");
 			}
 			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
-//			{
-//				resp->getHeader()->addField("Content-Type: image/png\r\n");
-//			}
-			else if (stringUtil.strUpper(fileExt) == ".JPEG"
-					|| stringUtil.strUpper(fileExt) == ".JPG")
+			//			{
+			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
+			//			}
+			else if (stringUtil.strUpper(fileExt) == ".JPEG" || stringUtil.strUpper(fileExt) == ".JPG")
 			{
 				resp->getHeader()->addField("Content-Type: image/jpeg\r\n");
 			}
@@ -78,38 +75,38 @@ Response* ProcessorImplDirectFs::process(Request *request)
 			resp->setBodyLength(len);
 			resp->setBodyBin(bodyBin);
 
-			std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
-			out.write(bodyBin, len);
-//			bodyBin >> out;
-			out.close();
+			// std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
+			// out.write(bodyBin, len);
+			// out.close();
 
 			body = bodyBin;
-//			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
-//			os.write(body, len);
-//			os.close();
-//			bodyStr.copy(body, bodyStr.size(), 0);
+			//			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
+			//			os.write(body, len);
+			//			os.close();
+			//			bodyStr.copy(body, bodyStr.size(), 0);
 
-//			send(request->getFdClient(), ret.c_str(), ret.size(), 0);
+			//			send(request->getFdClient(), ret.c_str(), ret.size(), 0);
 
-//			fin >> rno >> name >> fee;   //read data from the file student
+			//			fin >> rno >> name >> fee;   //read data from the file student
 
-//			is.close();
-
-		} else
+			//			is.close();
+		}
+		else
 		{
 			// something else
 		}
-	} else
+	}
+	else
 	{
 		// error
 	}
-//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
-//    _response_content.append(statusCodeString(_code));
-//    _response_content.append("\r\n");
+	//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
+	//    _response_content.append(statusCodeString(_code));
+	//    _response_content.append("\r\n");
 	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	resp->getHeader()->addField("\r\n");
-//	resp->setBody("<html><body>" + body + "</body></html>");
-//	resp->setBody(body);
+	//	resp->setBody("<html><body>" + body + "</body></html>");
+	//	resp->setBody(body);
 
 	delete fu;
 	return resp;

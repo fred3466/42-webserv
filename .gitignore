@@ -2,3 +2,7 @@ webserv
 
 
 /Default/
+.vscode/launch.json
+.vscode/targets.log
+out2.gif
+webserv.code-workspace
