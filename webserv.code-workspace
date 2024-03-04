@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"C_Cpp.default.cppStandard": "c++98",
+		"C_Cpp.default.cStandard": "c89",
+		"makefile.launchConfigurations": [
+			{
+				"cwd": "/home/fbourgue/0-wsp/webserv",
+				"binaryPath": "/home/fbourgue/0-wsp/webserv/webserv",
+				"binaryArgs": []
+			}
+		],
+		"files.exclude": {
+			"**/htdocs": true
+		},
+		"webPreview.mediaScreenOverride": false,
+		"webPreview.url": "http://localhost:8080"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			
+
+
+			
+
+		]
+	}
+}

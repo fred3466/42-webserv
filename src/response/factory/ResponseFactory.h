@@ -1,5 +1,10 @@
 #pragma once
-#include "../ResponseHttp.h"
+//#include "../ResponseHttp.h"
+#include "../API/ResponseHeader.h"
+#include "../API/Response.h"
+#include "../../config.h"
+#include RESPONSE_IMPL_INC
+
 class ResponseFactory
 {
 public:

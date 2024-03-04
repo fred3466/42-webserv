@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:UMLLabProfile="http:///schemas/UMLLabProfile/NS/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http:///schemas/UMLLabProfile/NS/0 pathmap://UMLLAB_PROFILES/UMLLab.profile.uml#UMLLabProfile-Annotation_2-UMLLabProfile">
+  <uml:Model xmi:id="_K1kPIM8PEe6GYp_2srRULQ" name="webserv">
+    <elementImport xmi:id="_LjL7YM8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#boolean"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Yc8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#byte"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Ys8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#char"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Y88VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#double"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7ZM8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#float"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Zc8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Zs8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#long"/>
+    </elementImport>
+    <elementImport xmi:id="_LjL7Z88VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#short"/>
+    </elementImport>
+    <elementImport xmi:id="_Llr1wM8VEe6GYp_2srRULQ">
+      <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </elementImport>
+    <packagedElement xmi:type="uml:Class" xmi:id="_RkXpcM8PEe6GYp_2srRULQ" name="HttpServer">
+      <generalization xmi:id="_nYOx0M8kEe6GYp_2srRULQ" general="__QG40M8XEe6GYp_2srRULQ"/>
+      <ownedAttribute xmi:id="_xaE2wc8PEe6GYp_2srRULQ" name="request" type="_cweVgM8PEe6GYp_2srRULQ" association="_xaBzcM8PEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xaE2ws8PEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xaE2w88PEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_CWDPss8QEe6GYp_2srRULQ" name="response" type="_2eX3EM8PEe6GYp_2srRULQ" association="_CWCBkM8QEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_CWJ9YM8QEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_CWJ9Yc8QEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_eK9ZsM8TEe6GYp_2srRULQ" name="requestProcessor" type="_bNNPIM8TEe6GYp_2srRULQ" association="_eK7kgM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eK-AwM8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_eK-Awc8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_oAdfM88TEe6GYp_2srRULQ" name="requestValidator" type="_ljQc8M8TEe6GYp_2srRULQ" association="_oAc4IM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_oAeGQM8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_oAeGQc8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_zM7Xos8TEe6GYp_2srRULQ" name="responseValidator" type="_uxg8QM8TEe6GYp_2srRULQ" association="_zM6wkM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zM7Xo88TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zM7XpM8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_zpZ4Qs8TEe6GYp_2srRULQ" name="responseProcessor" type="_uxg8Qc8TEe6GYp_2srRULQ" association="_zpZRMM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zpZ4Q88TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zpZ4RM8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_AHvoRM8UEe6GYp_2srRULQ" name="serverConfig" type="_9EZzEM8TEe6GYp_2srRULQ" association="_AHvoQM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_AHwPUM8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_AHwPUc8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_SR-kE88UEe6GYp_2srRULQ" name="serverFactory" type="_KhGowM8UEe6GYp_2srRULQ" association="_SR99AM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SR-kFM8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SR-kFc8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_rE2Ngs8kEe6GYp_2srRULQ" name="connectorEvent" type="_0ZuHoM8jEe6GYp_2srRULQ" association="_rE1mcM8kEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rE2Ng88kEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rE2NhM8kEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_D_2noc8nEe6GYp_2srRULQ" name="connector" type="_-OHSgM8mEe6GYp_2srRULQ" association="_D_2AkM8nEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D_2nos8nEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_D_2no88nEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_Bjk9AM8oEe6GYp_2srRULQ" name="connectorFactory" type="_7LA4cM8nEe6GYp_2srRULQ" association="_Bjju4M8oEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Bjk9Ac8oEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Bjk9As8oEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_cweVgM8PEe6GYp_2srRULQ" name="Request">
+      <ownedAttribute xmi:id="_xaBzcc8PEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_xaBzcM8PEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xaEPsM8PEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xaE2wM8PEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_OwTNEM8UEe6GYp_2srRULQ" name="requestFactory" type="_HuLOIM8UEe6GYp_2srRULQ" association="_OwSmAM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OwTNEc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OwTNEs8UEe6GYp_2srRULQ"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_alJ7Mc8UEe6GYp_2srRULQ" name="requestValidator" type="_ljQc8M8TEe6GYp_2srRULQ" association="_alJ7MM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_alJ7Ms8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_alJ7M88UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bHyHIc8UEe6GYp_2srRULQ" name="requestProcessor" type="_bNNPIM8TEe6GYp_2srRULQ" association="_bHyHIM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bHyHIs8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bHyHI88UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_xaBzcM8PEe6GYp_2srRULQ" name="" memberEnd="_xaBzcc8PEe6GYp_2srRULQ _xaE2wc8PEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_2eX3EM8PEe6GYp_2srRULQ" name="Response">
+      <ownedAttribute xmi:id="_CWCooM8QEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_CWCBkM8QEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_CWDPsM8QEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_CWDPsc8QEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_WpXbEM8UEe6GYp_2srRULQ" name="responseFactory" type="_KhGowM8UEe6GYp_2srRULQ" association="_WpW0AM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WpXbEc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WpXbEs8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cF0csc8UEe6GYp_2srRULQ" name="responseValidator" type="_uxg8QM8TEe6GYp_2srRULQ" association="_cF0csM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cF0css8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cF0cs88UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_clZ7sM8UEe6GYp_2srRULQ" name="responseProcessor" type="_uxg8Qc8TEe6GYp_2srRULQ" association="_clZUoM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_clZ7sc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_clZ7ss8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_CWCBkM8QEe6GYp_2srRULQ" name="" memberEnd="_CWCooM8QEe6GYp_2srRULQ _CWDPss8QEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_bNNPIM8TEe6GYp_2srRULQ" name="RequestProcessor">
+      <ownedAttribute xmi:id="_eK7kgc8TEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_eK7kgM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eK7kgs8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_eK8LkM8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_bHyHJM8UEe6GYp_2srRULQ" name="request" type="_cweVgM8PEe6GYp_2srRULQ" association="_bHyHIM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bHyHJc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bHyHJs8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_gYbE4M8VEe6GYp_2srRULQ" name="process">
+        <ownedParameter xmi:id="_gYbE4c8VEe6GYp_2srRULQ" name="Request"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_eK7kgM8TEe6GYp_2srRULQ" name="" memberEnd="_eK7kgc8TEe6GYp_2srRULQ _eK9ZsM8TEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_ljQc8M8TEe6GYp_2srRULQ" name="RequestValidator" visibility="public">
+      <ownedAttribute xmi:id="_oAdfMM8TEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_oAc4IM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_oAdfMc8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_oAdfMs8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_alJ7NM8UEe6GYp_2srRULQ" name="request" type="_cweVgM8PEe6GYp_2srRULQ" association="_alJ7MM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_alJ7Nc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_alJ7Ns8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_capxU88hEe6GYp_2srRULQ" name="requestFactory" type="_HuLOIM8UEe6GYp_2srRULQ" association="_capKQM8hEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_capxVM8hEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_capxVc8hEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_SANCIM8VEe6GYp_2srRULQ" name="validate">
+        <ownedParameter xmi:id="_SANCIc8VEe6GYp_2srRULQ" type="_cweVgM8PEe6GYp_2srRULQ" direction="return"/>
+        <ownedParameter xmi:id="_jBjqUM8VEe6GYp_2srRULQ" name="string"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_oAc4IM8TEe6GYp_2srRULQ" name="" memberEnd="_oAdfMM8TEe6GYp_2srRULQ _oAdfM88TEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uxg8QM8TEe6GYp_2srRULQ" name="ResponseValidator" visibility="public">
+      <ownedAttribute xmi:id="_zM6wkc8TEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_zM6wkM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zM7XoM8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zM7Xoc8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_cF1DwM8UEe6GYp_2srRULQ" name="response" type="_2eX3EM8PEe6GYp_2srRULQ" association="_cF0csM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cF1Dwc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cF1Dws8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_uxg8Qc8TEe6GYp_2srRULQ" name="ResponseProcessor" visibility="public">
+      <ownedAttribute xmi:id="_zpZRMc8TEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_zpZRMM8TEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zpZ4QM8TEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zpZ4Qc8TEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_clZ7s88UEe6GYp_2srRULQ" name="response" type="_2eX3EM8PEe6GYp_2srRULQ" association="_clZUoM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_clZ7tM8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_clZ7tc8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_zM6wkM8TEe6GYp_2srRULQ" name="" memberEnd="_zM6wkc8TEe6GYp_2srRULQ _zM7Xos8TEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_zpZRMM8TEe6GYp_2srRULQ" name="" memberEnd="_zpZRMc8TEe6GYp_2srRULQ _zpZ4Qs8TEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_9EZzEM8TEe6GYp_2srRULQ" name="ServerConfig">
+      <ownedAttribute xmi:id="_AHvoQc8UEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_AHvoQM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_AHvoQs8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_AHvoQ88UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_AHvoQM8UEe6GYp_2srRULQ" name="" memberEnd="_AHvoQc8UEe6GYp_2srRULQ _AHvoRM8UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_HuLOIM8UEe6GYp_2srRULQ" name="RequestFactory">
+      <ownedAttribute xmi:id="_capxUM8hEe6GYp_2srRULQ" name="requestValidator" type="_ljQc8M8TEe6GYp_2srRULQ" association="_capKQM8hEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_capxUc8hEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_capxUs8hEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_Mv0GkM8VEe6GYp_2srRULQ" name="build">
+        <ownedParameter xmi:id="_Mv0Gkc8VEe6GYp_2srRULQ" type="_cweVgM8PEe6GYp_2srRULQ" direction="return"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_KhGowM8UEe6GYp_2srRULQ" name="ResponseFactory">
+      <ownedAttribute xmi:id="_SR-kEM8UEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_SR99AM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SR-kEc8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SR-kEs8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_WpXbE88UEe6GYp_2srRULQ" name="response" type="_2eX3EM8PEe6GYp_2srRULQ" association="_WpW0AM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WpXbFM8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WpXbFc8UEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_OwSmAM8UEe6GYp_2srRULQ" name="" memberEnd="_OwTNEM8UEe6GYp_2srRULQ _OwTNE88UEe6GYp_2srRULQ">
+      <ownedEnd xmi:id="_OwTNE88UEe6GYp_2srRULQ" name="request" type="_cweVgM8PEe6GYp_2srRULQ" isUnique="false" association="_OwSmAM8UEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OwTNFM8UEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OwTNFc8UEe6GYp_2srRULQ" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_SR99AM8UEe6GYp_2srRULQ" name="" memberEnd="_SR-kEM8UEe6GYp_2srRULQ _SR-kE88UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_WpW0AM8UEe6GYp_2srRULQ" name="" memberEnd="_WpXbEM8UEe6GYp_2srRULQ _WpXbE88UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_alJ7MM8UEe6GYp_2srRULQ" name="" memberEnd="_alJ7Mc8UEe6GYp_2srRULQ _alJ7NM8UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_bHyHIM8UEe6GYp_2srRULQ" name="" memberEnd="_bHyHIc8UEe6GYp_2srRULQ _bHyHJM8UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_cF0csM8UEe6GYp_2srRULQ" name="" memberEnd="_cF0csc8UEe6GYp_2srRULQ _cF1DwM8UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_clZUoM8UEe6GYp_2srRULQ" name="" memberEnd="_clZ7sM8UEe6GYp_2srRULQ _clZ7s88UEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:DataType" xmi:id="_SACqEM8VEe6GYp_2srRULQ" name="bool"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_X3skgM8WEe6GYp_2srRULQ" name="HttpConnector">
+      <generalization xmi:id="_C_pH0M8nEe6GYp_2srRULQ" general="_-OHSgM8mEe6GYp_2srRULQ"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="__QG40M8XEe6GYp_2srRULQ" name="ConnectorListener" isAbstract="true">
+      <ownedAttribute xmi:id="_WSmGks8kEe6GYp_2srRULQ" name="connectorEvent" type="_0ZuHoM8jEe6GYp_2srRULQ" association="_WSlfgM8kEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WSmGk88kEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WSmGlM8kEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_H2hVAM8YEe6GYp_2srRULQ" name="onIncomming">
+        <ownedParameter xmi:id="_7BnMMM8kEe6GYp_2srRULQ" name="ConnectorEvent"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_U82SEM8YEe6GYp_2srRULQ" name="onDataReceiving">
+        <ownedParameter xmi:id="_8wSUgM8kEe6GYp_2srRULQ" name="ConnectorEvent"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_capKQM8hEe6GYp_2srRULQ" name="" memberEnd="_capxUM8hEe6GYp_2srRULQ _capxU88hEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_0ZuHoM8jEe6GYp_2srRULQ" name="ConnectorEvent">
+      <ownedAttribute xmi:id="_64DdAM8jEe6GYp_2srRULQ" name="res" type="_2eX3EM8PEe6GYp_2srRULQ"/>
+      <ownedAttribute xmi:id="_9rnJwM8jEe6GYp_2srRULQ" name="req" type="_cweVgM8PEe6GYp_2srRULQ"/>
+      <ownedAttribute xmi:id="_WSlfgc8kEe6GYp_2srRULQ" name="connectorListener" type="__QG40M8XEe6GYp_2srRULQ" association="_WSlfgM8kEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WSmGkM8kEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WSmGkc8kEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_rE1mcc8kEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_rE1mcM8kEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_rE2NgM8kEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_rE2Ngc8kEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_tKHT4NF0Ee6mRJ_CfpGngw" name="connectorEventPublisher" type="_FznLoM8kEe6GYp_2srRULQ" association="_tKGFwNF0Ee6mRJ_CfpGngw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_tKJJENF0Ee6mRJ_CfpGngw"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_tKJJEdF0Ee6mRJ_CfpGngw" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_UZAx8M8oEe6GYp_2srRULQ" name="ConnectorEvent">
+        <ownedParameter xmi:id="_UZAx8c8oEe6GYp_2srRULQ" type="_0ZuHoM8jEe6GYp_2srRULQ" direction="return"/>
+        <ownedParameter xmi:id="_UZAx8s8oEe6GYp_2srRULQ" name="Request"/>
+        <ownedParameter xmi:id="_UZBZAM8oEe6GYp_2srRULQ" name="Response"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_FznLoM8kEe6GYp_2srRULQ" name="ConnectorEventPublisher" isAbstract="true">
+      <ownedAttribute xmi:id="_tKJJEtF0Ee6mRJ_CfpGngw" name="connectorEvent" type="_0ZuHoM8jEe6GYp_2srRULQ" association="_tKGFwNF0Ee6mRJ_CfpGngw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_tKJJE9F0Ee6mRJ_CfpGngw"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_tKJJFNF0Ee6mRJ_CfpGngw" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_zWR4MM8kEe6GYp_2srRULQ" name="register">
+        <ownedParameter xmi:id="_zWSfQM8kEe6GYp_2srRULQ" name="ConnectorListener"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_1aE78M8kEe6GYp_2srRULQ" name="unregister">
+        <ownedParameter xmi:id="_1aFjAM8kEe6GYp_2srRULQ" name="ConnectorListener"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_o7QjcM8nEe6GYp_2srRULQ" name="publishAccepting" visibility="protected">
+        <ownedParameter xmi:id="_o7Qjcc8nEe6GYp_2srRULQ" name="ConnectorEvent"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_s8Hw0M8nEe6GYp_2srRULQ" name="publishDataReceiving" visibility="protected">
+        <ownedParameter xmi:id="_s8Hw0c8nEe6GYp_2srRULQ" name="ConnectorEvent"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_WSlfgM8kEe6GYp_2srRULQ" name="" memberEnd="_WSlfgc8kEe6GYp_2srRULQ _WSmGks8kEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_rE1mcM8kEe6GYp_2srRULQ" name="" memberEnd="_rE1mcc8kEe6GYp_2srRULQ _rE2Ngs8kEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_-OHSgM8mEe6GYp_2srRULQ" name="Connector" isAbstract="true">
+      <generalization xmi:id="_HTGhEM8nEe6GYp_2srRULQ" general="_FznLoM8kEe6GYp_2srRULQ"/>
+      <ownedAttribute xmi:id="_D_2Akc8nEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_D_2AkM8nEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D_2Aks8nEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_D_2noM8nEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_Dfi6cc8oEe6GYp_2srRULQ" name="connectorFactory" type="_7LA4cM8nEe6GYp_2srRULQ" association="_Dfi6cM8oEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_DfjhgM8oEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Dfjhgc8oEe6GYp_2srRULQ" value="1"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="_AlkAIM8pEe6GYp_2srRULQ" name="init">
+        <ownedParameter xmi:id="_dZHOkM8qEe6GYp_2srRULQ" name="ConnectorListener"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_TfznIM8qEe6GYp_2srRULQ" name="listen"/>
+      <ownedOperation xmi:id="_RC7GQM8wEe6GYp_2srRULQ" name="Connector">
+        <ownedParameter xmi:id="_RC7GQc8wEe6GYp_2srRULQ" type="_-OHSgM8mEe6GYp_2srRULQ" direction="return"/>
+        <ownedParameter xmi:id="_RC7GQs8wEe6GYp_2srRULQ" name="string"/>
+        <ownedParameter xmi:id="_RC7GQ88wEe6GYp_2srRULQ" name="int"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_D_2AkM8nEe6GYp_2srRULQ" name="" memberEnd="_D_2Akc8nEe6GYp_2srRULQ _D_2noc8nEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_7LA4cM8nEe6GYp_2srRULQ" name="ConnectorFactory">
+      <ownedAttribute xmi:id="_Bjju4c8oEe6GYp_2srRULQ" name="httpServer" type="_RkXpcM8PEe6GYp_2srRULQ" association="_Bjju4M8oEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Bjju4s8oEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BjkV8M8oEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_Dfjhgs8oEe6GYp_2srRULQ" name="connector" type="_-OHSgM8mEe6GYp_2srRULQ" association="_Dfi6cM8oEe6GYp_2srRULQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Dfjhg88oEe6GYp_2srRULQ"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_DfjhhM8oEe6GYp_2srRULQ" value="*"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_ccnmkM8pEe6GYp_2srRULQ" name="ip">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="_dyiQoM8pEe6GYp_2srRULQ" name="port">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+      </ownedAttribute>
+      <ownedOperation xmi:id="__huaAM8nEe6GYp_2srRULQ" name="build">
+        <ownedParameter xmi:id="__huaAc8nEe6GYp_2srRULQ" type="_-OHSgM8mEe6GYp_2srRULQ" direction="return"/>
+        <ownedParameter xmi:id="_ZCGAcM8pEe6GYp_2srRULQ" name="string"/>
+        <ownedParameter xmi:id="__hvBEM8nEe6GYp_2srRULQ" name="int"/>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_Bjju4M8oEe6GYp_2srRULQ" name="" memberEnd="_Bjju4c8oEe6GYp_2srRULQ _Bjk9AM8oEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_Dfi6cM8oEe6GYp_2srRULQ" name="" memberEnd="_Dfi6cc8oEe6GYp_2srRULQ _Dfjhgs8oEe6GYp_2srRULQ"/>
+    <packagedElement xmi:type="uml:Association" xmi:id="_tKGFwNF0Ee6mRJ_CfpGngw" name="" memberEnd="_tKHT4NF0Ee6mRJ_CfpGngw _tKJJEtF0Ee6mRJ_CfpGngw"/>
+    <profileApplication xmi:id="_SACqEc8VEe6GYp_2srRULQ">
+      <eAnnotations xmi:id="_SAHikM8VEe6GYp_2srRULQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="pathmap://UMLLAB_PROFILES/UMLLab.profile.uml#UMLLabProfile-Annotation_2-UMLLabProfile"/>
+      </eAnnotations>
+      <appliedProfile href="pathmap://UMLLAB_PROFILES/UMLLab.profile.uml#UMLLabProfile"/>
+    </profileApplication>
+  </uml:Model>
+  <UMLLabProfile:UnresolvedElement xmi:id="_SALM8M8VEe6GYp_2srRULQ" base_Element="_SACqEM8VEe6GYp_2srRULQ"/>
+</xmi:XMI>
