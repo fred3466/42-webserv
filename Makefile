@@ -9,9 +9,11 @@ SRCS = \
 	connector/ConnectorFactory.cpp \
 	connector/ConnectorListener.cpp \
 	connector/HttpConnector.cpp \
+	connector/TcpConnector.cpp \
 	request/Request.cpp \
 	request/RequestHttp.cpp \
 	request/RequestFactory.cpp \
+	request/HttpRequest.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
  	processor/Processor.cpp \
@@ -29,6 +31,7 @@ SRCS = \
     util/FileUtil.cpp \
     util/FileUtilFactory.cpp \
     util/StringUtil.cpp \
+	CGI/CGIHandler.cpp \
 	main.cpp 
 	
 OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)

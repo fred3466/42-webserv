@@ -8,8 +8,7 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(std::string *rawContent) :
-		fdClient(-1)
+RequestHttp::RequestHttp(std::string *rawContent) : fdClient(-1)
 {
 
 	std::stringstream lines;
@@ -27,21 +26,21 @@ RequestHttp::RequestHttp(std::string *rawContent) :
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
 			uri = key;
-		} else
+		}
+		else
 		{
 			lineSs.getline(key, 2048, ':');
 			lineSs.getline(val, 2048, '\n');
-//			lineSs >> val;
-//			std::cout << key << " -> " << val << std::endl;
+			//			lineSs >> val;
+			//			std::cout << key << " -> " << val << std::endl;
 			kv[std::string(key)] = std::string(val);
-
 		}
 	}
 }
 
-void RequestHttp::dump()
+void RequestHttp::dump() const
 {
-	std::map<std::string, std::string>::iterator ite = kv.begin();
+	std::map<std::string, std::string>::const_iterator ite = kv.begin();
 	while (ite != kv.end())
 	{
 		std::cout << ite->first << " -> " << ite->second << std::endl;
@@ -49,9 +48,22 @@ void RequestHttp::dump()
 	}
 }
 
-std::string RequestHttp::getValue(std::string paramName)
+// std::string RequestHttp::getValue(std::string paramName) const
+// {
+// 	return kv[paramName];
+// }
+
+std::string RequestHttp::getValue(std::string paramName) const
 {
-	return kv[paramName];
+	std::map<std::string, std::string>::const_iterator it = kv.find(paramName);
+	if (it != kv.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return ""; // Return an empty string if the parameter is not found
+	}
 }
 
 void RequestHttp::addParam(std::string paramName, std::string paramValue)
@@ -59,11 +71,11 @@ void RequestHttp::addParam(std::string paramName, std::string paramValue)
 	kv[paramName] = paramValue;
 }
 
-std::string RequestHttp::getUri()
+std::string RequestHttp::getUri() const
 {
 	return uri;
 }
-std::string RequestHttp::getMethod()
+std::string RequestHttp::getMethod() const
 {
 	return method;
 }
