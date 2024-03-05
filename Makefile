@@ -9,9 +9,9 @@ SRCS = \
 	connector/ConnectorFactory.cpp \
 	connector/ConnectorListener.cpp \
 	connector/HttpConnector.cpp \
-	request/Request.cpp \
+	request/API/Request.cpp \
 	request/RequestHttp.cpp \
-	request/RequestFactory.cpp \
+	request/factory/RequestFactory.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
  	processor/Processor.cpp \

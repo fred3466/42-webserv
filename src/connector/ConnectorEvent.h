@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "../request/Request.h"
+#include "../request/API/Request.h"
 #include "../response/API/Response.h"
 
 class ConnectorEvent

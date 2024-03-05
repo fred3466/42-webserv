@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Request.h"
+#include "API/Request.h"
+#include "API/RequestHeader.h"
 #include <map>
 
 class RequestHttp: public Request
@@ -14,7 +15,7 @@ private:
 	~RequestHttp();
 	//	RequestHttp(const RequestHttp &other);
 //	RequestHttp& operator=(const RequestHttp &other);
-	RequestHttp(std::string *rawContent);
+	RequestHttp(RequestHeader *header);
 
 	std::string getValue(std::string paramName);
 	void addParam(std::string paramName, std::string paramValue);

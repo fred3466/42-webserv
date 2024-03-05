@@ -8,7 +8,7 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(std::string *rawContent) :
+RequestHttp::RequestHttp(RequestHeader *header) :
 		fdClient(-1)
 {
 
