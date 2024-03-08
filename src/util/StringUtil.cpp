@@ -28,3 +28,97 @@ std::string StringUtil::fromListToString(std::list<std::string> l)
 	}
 	return ret;
 }
+
+// bool isCommented
+
+bool StringUtil::isSpace(char c)
+{
+	return std::isspace(c);
+}
+
+bool StringUtil::isCommented(std::string s)
+{
+	bool bMoreSpaces = true;
+	int i;
+	for (i = 0; bMoreSpaces && (i < s.length()); i++)
+	{
+		bMoreSpaces = isSpace(s[i]);
+	}
+	if (i > 0 && s[i - 1] == '#')
+		return true;
+	return false;
+}
+
+bool StringUtil::isalnum(std::string s)
+{
+	bool ret = true;
+	int i = 0;
+	const char *cstr = s.c_str();
+	while (ret && std::isalnum(cstr[i]))
+		i++;
+	return i == s.length();
+}
+
+std::string StringUtil::normalizeSpaces(std::string s)
+{
+	int count = 0;
+	std::string ret;
+	char *cstrWithNoTab = new char[s.length()];
+	memccpy(cstrWithNoTab, s.c_str(), 0, s.length());
+
+	for (int i = 0; i < s.length(); i++)
+	{
+		bool bIsSpaces = isSpace(cstrWithNoTab[i]) && cstrWithNoTab[i] != ' ';
+		if (bIsSpaces)
+			cstrWithNoTab[i] = ' ';
+	}
+	if (isSpace(cstrWithNoTab[s.length() - 1])
+			&& cstrWithNoTab[s.length() - 1] != ' ')
+		cstrWithNoTab[s.length() - 1] = ' ';
+
+	for (int i = 0; i < s.length(); i++)
+	{
+		bool bTwosSpaces = isSpace(cstrWithNoTab[i]) && i > 0
+				&& isSpace(cstrWithNoTab[i - 1]);
+		if (!bTwosSpaces && i > 0)
+			ret += cstrWithNoTab[i - 1];
+	}
+	if (!isSpace(cstrWithNoTab[s.length() - 1]))
+		ret += cstrWithNoTab[s.length() - 1];
+	return ret;
+}
+
+std::vector<std::string> StringUtil::tokenize(std::string s)
+{
+	std::vector<std::string> ret = std::vector<std::string>();
+	std::stringstream ss(s);
+	std::string word;
+	while (ss >> word)
+	{
+		ret.push_back(word);
+	}
+	return ret;
+}
+
+std::vector<std::string> StringUtil::tokenize(std::string s, char sep)
+{
+	std::vector<std::string> ret = std::vector<std::string>();
+	std::stringstream ss(s);
+	std::string word;
+	while (!ss.eof())
+	{
+		getline(ss, word, sep);
+		ret.push_back(word);
+	}
+	return ret;
+}
+
+std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
+		int index,
+		std::string defaultValue)
+{
+	if (v.size() > index)
+		return v[index];
+	else
+		return defaultValue;
+}

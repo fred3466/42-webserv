@@ -1,42 +1,13 @@
 #include "RequestHttp.h"
 
-RequestHttp::RequestHttp()
-{
-}
-
 RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *header) :
+RequestHttp::RequestHttp(RequestHeader *head) :
 		fdClient(-1)
 {
-
-	std::stringstream lines;
-	lines.str(rawContent->c_str());
-	char key[2048], val[2048], line[2048];
-	while (lines)
-	{
-		lines.getline(line, 2048, '\n');
-		std::stringstream lineSs;
-		lineSs.str(line);
-		std::string lineStr = lineSs.str();
-		if (!lineStr.compare(0, 3, "GET"))
-		{
-			method = "GET";
-			lineSs.getline(key, 2048, ' ');
-			lineSs >> key;
-			uri = key;
-		} else
-		{
-			lineSs.getline(key, 2048, ':');
-			lineSs.getline(val, 2048, '\n');
-//			lineSs >> val;
-//			std::cout << key << " -> " << val << std::endl;
-			kv[std::string(key)] = std::string(val);
-
-		}
-	}
+	header = head;
 }
 
 void RequestHttp::dump()
@@ -49,23 +20,18 @@ void RequestHttp::dump()
 	}
 }
 
-std::string RequestHttp::getValue(std::string paramName)
+const std::list<std::string> RequestHttp::getFields() const
 {
-	return kv[paramName];
-}
-
-void RequestHttp::addParam(std::string paramName, std::string paramValue)
-{
-	kv[paramName] = paramValue;
+	return header->getFields();
 }
 
 std::string RequestHttp::getUri()
 {
-	return uri;
+	return header->getUri();
 }
 std::string RequestHttp::getMethod()
 {
-	return method;
+	return header->getMethod();
 }
 
 int RequestHttp::getFdClient()

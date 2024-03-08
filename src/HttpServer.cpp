@@ -54,9 +54,9 @@ void HttpServer::onIncomming(ConnectorEvent e)
 }
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
-//	std::cout << e.getTemp();
 	std::string rawRequest = e.getTemp();
-	Request *request = RequestFactory().build(&rawRequest);
+	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
 //	req->dump();
 
