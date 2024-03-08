@@ -28,10 +28,9 @@ struct netStruct
 
 	int portServer;
 	std::string ipServer;
-
 };
 
-class HttpConnector: public Connector
+class HttpConnector : public Connector
 {
 private:
 	Harl harl;
@@ -41,11 +40,11 @@ private:
 	ConnectorListener *connectorListener;
 	std::list<int> _allSockets;
 
-//	HttpConnector(const HttpConnector &o);
-//	HttpConnector& operator=(const HttpConnector &o);
+	//	HttpConnector(const HttpConnector &o);
+	//	HttpConnector& operator=(const HttpConnector &o);
 
 	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
-			int &end_server, int &nfds);
+							int &end_server, int &nfds);
 	virtual bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
 	virtual void _listen(int _soListen, netStruct ns);
 
@@ -53,7 +52,8 @@ public:
 	HttpConnector();
 	~HttpConnector();
 	HttpConnector(std::string stIp, int port);
-	protected:
+
+protected:
 	void init(ConnectorListener &l);
 	void doListen();
 
@@ -61,6 +61,4 @@ public:
 	virtual void unregisterIt(ConnectorListener *l);
 	virtual void publishAccepting(ConnectorEvent e);
 	virtual void publishDataReceiving(ConnectorEvent e);
-
 };
-

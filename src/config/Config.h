@@ -2,17 +2,24 @@
 #include <string>
 #include <map>
 #include <stdexcept>
+#include "../Harl.h"
 
 class Config
 {
 private:
 	std::map<std::string, std::string> kv;
+	static int idRef;
+	int id;
+
 public:
 	Config();
 	~Config();
-//	Config(const Config &other);
-//	Config& operator=(const Config &other);
-	void read(std::string path);
-	std::string getParamStr(std::string param);
-};
+	Config(Config &bis);
+	Config& operator=(Config &bis);
+	std::string getParamStr(std::string param, std::string stringDefault);
+	int getParamInt(std::string param, int intDefault);
+	void addParam(std::string param, std::string value);
 
+//	void setId(int id);
+	int getId();
+};

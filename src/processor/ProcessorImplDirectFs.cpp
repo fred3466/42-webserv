@@ -30,7 +30,7 @@ Response *ProcessorImplDirectFs::process(Request *request)
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
-	std::string root = config->getParamStr("root");
+	std::string root = config->getParamStr("root", NULL);
 	std::string path = root + request->getUri();
 	harl.info(request->getUri() + " -> " + path);
 	char *body;

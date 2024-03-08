@@ -1,14 +1,37 @@
+#include <string>
+#include "config/ConfigReader.h"
 #include "HttpServer.h"
+
+// void bye(){
+
+// }
 
 int main(int ac, char **av)
 {
+	Harl harl = Harl();
 	HttpServer server;
-	server.init("127.0.0.1", 8080);
-
-//	if(ac == 2){
-//		Harl harl = Harl();
-//		harl.complain(av[1]);
-//	}else{
-//		std::cerr << "Nombre d'arguments incorrect." << std::endl;
-//	}
+	// TODO gestion des erreurs
+	if (ac == 2)
+	{
+		std::string path = std::string(av[1]);
+//				std::string path = "conf/webserv.conf";
+		ConfigReader cr = ConfigReader();
+		std::vector<Config*> configVector = std::vector<Config*>();
+		harl.info("Reading config file : [%s]", path.c_str());
+		bool bValidated = cr.buildConfigVector(configVector, path);
+		if (bValidated)
+		{
+			server.init(*configVector[0]);
+		} else
+		{
+			harl.error("ERROR");
+		}
+//	TODO ne pas oublier de nettoyer le vecteur de config*
+	}
+	else
+	{
+		std::cout
+				<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
+				<< std::endl;
+	}
 }

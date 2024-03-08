@@ -4,68 +4,82 @@
 #include <fstream>
 #include <sstream>
 
+int Config::idRef = 0;
+
 Config::Config() :
 		kv()
 {
-
+//	if (idRef == NULL)
+//		idRef = 0;
+	id = idRef++;
 }
 
 Config::~Config()
 {
-	// TODO Auto-generated destructor stub
 }
 
-//Config::Config(const Config &other)
-//{
-//	// TODO Auto-generated constructor stub
-//
-//}
-//
-//Config& Config::operator=(const Config &other)
-//{
-//	// TODO Auto-generated method stub
-//
-//}
-
-void Config::read(std::string path)
-{
-	std::string key, val;
-
-	std::ifstream is(path.c_str());
-
-	std::string line;
-	if (is.is_open())
-	{
-		while (std::getline(is, line))
-		{
-			std::stringstream ss(line);
-			std::getline(ss, key, '=');
-//			key << ss;
-			std::getline(ss, val, '=');
-			kv[key] = val;
-			std::cout << key << " -> " << val << std::endl;
-		}
-		is.close();
-	}
-}
-
-std::string Config::getParamStr(std::string param)
+int Config::getParamInt(std::string param, int intDefault)
 {
 	try
 	{
-//		if (kv.count(param) > 0)
-//		{
-//		std::map<std::string, std::string>::iterator it;
-//		it = kv.find(param);
+		std::string res = kv[param];
+		if (!res.empty())
+		{
+			std::stringstream ss(res);
+			int resInt;
+			ss >> resInt;
+			return resInt;
+		}
+	}
+	catch (const std::out_of_range &oor)
+	{
+		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	}
+	return intDefault;
+}
+
+void Config::addParam(std::string param, std::string value)
+{
+	kv[param] = value;
+}
+
+std::string Config::getParamStr(std::string param, std::string stringDefault)
+{
+	try
+	{
 		std::string res = kv[param];
 		if (!res.empty())
 		{
 			return res;
 		}
-	} catch (const std::out_of_range &oor)
+	}
+	catch (const std::out_of_range &oor)
 	{
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
-		return "";
 	}
-	return "";
+	return stringDefault;
+}
+
+//void Config::setId(std::string id)
+//{
+//	this->id = id;
+//}
+
+int Config::getId()
+{
+	return id;
+}
+
+Config::Config(Config &bis) :
+		kv(bis.kv)
+{
+	this->kv = bis.kv;
+	if (this != &bis)
+		*this = bis;
+}
+
+Config& Config::operator =(Config &bis)
+{
+	this->kv = bis.kv;
+	return bis;
 }

@@ -11,13 +11,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <sys/poll.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <netinet/in.h>
-
 #include "HttpServer.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
@@ -55,7 +48,7 @@ public:
 	HttpServer();
 	~HttpServer();
 
-	virtual void init(std::string ipStr, int port);
+	virtual void init(Config conf);
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 	//	virtual bool operator==(const ConnectorListener &other);

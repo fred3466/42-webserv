@@ -21,6 +21,8 @@ SRCS = \
     config.h \
     config/Config.cpp \
     config/ConfigFactory.cpp \
+   	config/ConfigReader.cpp \
+   	config/ConfigValidator.cpp \
 	response/API/Response.cpp \
 	response/API/ResponseHeader.cpp \
 	response/ResponseHttp.cpp \

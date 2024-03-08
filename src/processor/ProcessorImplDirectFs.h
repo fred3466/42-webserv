@@ -11,18 +11,17 @@
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 
-class ProcessorImplDirectFs: public Processor
+class ProcessorImplDirectFs : public Processor
 {
 private:
 	Config *config;
 	FileUtil fileUtil;
 	Harl harl;
 	StringUtil stringUtil;
-	public:
+
+public:
 	ProcessorImplDirectFs();
 	~ProcessorImplDirectFs();
-	Response* process(Request *request);
+	Response *process(Request *request);
 	void setConfig(Config *conf);
-
 };
-

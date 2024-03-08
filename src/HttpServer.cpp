@@ -32,15 +32,15 @@ void shutFd(int fd)
 		fd = -1;
 	}
 }
-void HttpServer::init(std::string ipStr, int port)
+void HttpServer::init(Config c)
 {
 	netStruct ns;
 
-	config = ConfigFactory().build();
-
+	// config = ConfigFactory().build(fileConf);
 	//	config.read("config.properties");
 
-	connector = ConnectorFactory().build(ipStr, port);
+	connector = ConnectorFactory().build(c.getParamStr("ip", "localhost"),
+										 c.getParamInt("port", 8080));
 	connector->registerIt(this);
 
 	connector->doListen();
