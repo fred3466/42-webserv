@@ -34,7 +34,7 @@ std::string RequestHttp::getMethod()
 	return header->getMethod();
 }
 
-int RequestHttp::getFdClient()
+int RequestHttp::getFdClient() const
 {
 	return fdClient;
 }

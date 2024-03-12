@@ -137,20 +137,21 @@ void CGIHandler::logSuccess(const std::string &message)
     }
 }
 
-void CGIHandler::setupEnvironmentVariables(const std::map<std::string,
-                                                          std::string> &requestHeaders,
+void CGIHandler::setupEnvironmentVariables(const std::map<std::string, std::string> &requestHeaders,
                                            const std::string &requestMethod,
                                            const std::string &queryString)
 {
-    // Example environment variables
+    // Environment variables
     setenv("REQUEST_METHOD", requestMethod.c_str(), 1);
     setenv("QUERY_STRING", queryString.c_str(), 1);
-
-    // More variables if needed
+    setenv("REDIRECT_STATUS", "200", 1);
 }
 
-std::string CGIHandler::executeCGIScript(const std::string &scriptPath)
+std::string CGIHandler::executeCGIScript(const std::string &scriptPath, const std::map<std::string, std::string> &requestHeaders, const std::string &requestMethod, const std::string &queryString)
 {
+    // Setup environment variables
+    setupEnvironmentVariables(requestHeaders, requestMethod, queryString);
+
     int pipefd[2];
     pipe(pipefd); // Create a pipe
 
@@ -176,8 +177,14 @@ std::string CGIHandler::executeCGIScript(const std::string &scriptPath)
             buffer[count] = '\0';
             output += buffer;
         }
-
         close(pipefd[0]); // Close read end
+
+        // Wait for child process to terminate
+        int status;
+        waitpid(pid, &status, 0);
+
+        // Reset environment variables if needed here
+
         return output;
     }
 }
