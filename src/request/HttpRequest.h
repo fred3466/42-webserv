@@ -12,6 +12,7 @@ private:
     std::string httpVersion;
     std::map<std::string, std::string> headers;
     std::string body;
+    int fdClient;
 
     void parseRequestLine(std::istringstream &stream);
     void parseHeaders(std::istringstream &stream);
@@ -26,4 +27,6 @@ public:
     virtual std::string getUri() const;
     virtual std::string getMethod() const;
     virtual void dump() const;
+    virtual void setFdClient(int fd);
+    virtual int getFdClient() const;
 };

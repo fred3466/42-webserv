@@ -110,3 +110,13 @@ void HttpRequest::dump() const
         std::cout << it->first << ": " << it->second << std::endl;
     }
 }
+
+void HttpRequest::setFdClient(int fd)
+{
+    fdClient = fd;
+}
+
+int HttpRequest::getFdClient() const
+{
+    return fdClient;
+}

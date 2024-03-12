@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php-cgi
 <?php
 // Explicitly turn off output buffering
 while (@ob_end_flush());    
