@@ -80,7 +80,7 @@ std::string RequestHttp::getMethod() const
 	return method;
 }
 
-int RequestHttp::getFdClient()
+int RequestHttp::getFdClient() const
 {
 	return fdClient;
 }

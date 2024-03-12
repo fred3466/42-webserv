@@ -23,5 +23,5 @@ public:
 	std::string getMethod() const;
 	void dump() const;
 	void setFdClient(int fd);
-	int getFdClient();
+	int getFdClient() const;
 };
