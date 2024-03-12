@@ -1,46 +1,18 @@
 #include "RequestHttp.h"
 
-RequestHttp::RequestHttp()
-{
-}
-
 RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(std::string *rawContent) : fdClient(-1)
+RequestHttp::RequestHttp(RequestHeader *head) :
+		fdClient(-1)
 {
-
-	std::stringstream lines;
-	lines.str(rawContent->c_str());
-	char key[2048], val[2048], line[2048];
-	while (lines)
-	{
-		lines.getline(line, 2048, '\n');
-		std::stringstream lineSs;
-		lineSs.str(line);
-		std::string lineStr = lineSs.str();
-		if (!lineStr.compare(0, 3, "GET"))
-		{
-			method = "GET";
-			lineSs.getline(key, 2048, ' ');
-			lineSs >> key;
-			uri = key;
-		}
-		else
-		{
-			lineSs.getline(key, 2048, ':');
-			lineSs.getline(val, 2048, '\n');
-			//			lineSs >> val;
-			//			std::cout << key << " -> " << val << std::endl;
-			kv[std::string(key)] = std::string(val);
-		}
-	}
+	header = head;
 }
 
-void RequestHttp::dump() const
+void RequestHttp::dump()
 {
-	std::map<std::string, std::string>::const_iterator ite = kv.begin();
+	std::map<std::string, std::string>::iterator ite = kv.begin();
 	while (ite != kv.end())
 	{
 		std::cout << ite->first << " -> " << ite->second << std::endl;
@@ -48,36 +20,18 @@ void RequestHttp::dump() const
 	}
 }
 
-// std::string RequestHttp::getValue(std::string paramName) const
-// {
-// 	return kv[paramName];
-// }
-
-std::string RequestHttp::getValue(std::string paramName) const
+const std::list<std::string> RequestHttp::getFields() const
 {
-	std::map<std::string, std::string>::const_iterator it = kv.find(paramName);
-	if (it != kv.end())
-	{
-		return it->second;
-	}
-	else
-	{
-		return ""; // Return an empty string if the parameter is not found
-	}
+	return header->getFields();
 }
 
-void RequestHttp::addParam(std::string paramName, std::string paramValue)
+std::string RequestHttp::getUri()
 {
-	kv[paramName] = paramValue;
+	return header->getUri();
 }
-
-std::string RequestHttp::getUri() const
+std::string RequestHttp::getMethod()
 {
-	return uri;
-}
-std::string RequestHttp::getMethod() const
-{
-	return method;
+	return header->getMethod();
 }
 
 int RequestHttp::getFdClient()

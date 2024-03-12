@@ -8,8 +8,8 @@ class Config
 {
 private:
 	std::map<std::string, std::string> kv;
-	static int idRef;
-	int id;
+	//	static int idRef;
+	std::string alias;
 
 public:
 	Config();
@@ -21,5 +21,5 @@ public:
 	void addParam(std::string param, std::string value);
 
 //	void setId(int id);
-	int getId();
+	std::string getAlias();
 };

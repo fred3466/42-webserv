@@ -8,7 +8,7 @@ bool ConfigValidator::checkAlias(std::vector<Config*> v, Config *config,
 	{
 		std::string alias = config->getParamStr("alias", "");
 		if (alias == aliasParam
-				&& (*iteConf)->getId() != config->getId())
+				&& (*iteConf)->getAlias() != config->getAlias())
 			return false;
 	}
 	return true;

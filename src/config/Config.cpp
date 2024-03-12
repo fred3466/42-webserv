@@ -4,14 +4,14 @@
 #include <fstream>
 #include <sstream>
 
-int Config::idRef = 0;
+//int Config::idRef = 0;
 
 Config::Config() :
-		kv()
+		kv(), alias("")
 {
 //	if (idRef == NULL)
 //		idRef = 0;
-	id = idRef++;
+//	alias = idRef++;
 }
 
 Config::~Config()
@@ -65,9 +65,9 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 //	this->id = id;
 //}
 
-int Config::getId()
+std::string Config::getAlias()
 {
-	return id;
+	return getParamStr("alias", "");
 }
 
 Config::Config(Config &bis) :

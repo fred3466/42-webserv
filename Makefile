@@ -10,10 +10,12 @@ SRCS = \
 	connector/ConnectorListener.cpp \
 	connector/HttpConnector.cpp \
 	connector/TcpConnector.cpp \
-	request/Request.cpp \
+	request/API/Request.cpp \
+	request/API/RequestHeader.cpp \
+	request/RequestHttpHeader.cpp \
 	request/RequestHttp.cpp \
-	request/RequestFactory.cpp \
-	request/HttpRequest.cpp \
+	request/factory/RequestFactory.cpp \
+	request/factory/RequestHeaderFactory.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
  	processor/Processor.cpp \
@@ -54,13 +56,7 @@ $(NAME):
 prof:
 	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
 	
-clean:
-	rm -f $(OBJS)
-	
-
-fclean: clean
-	rm -f $(NAME)
-	rm -f debug
-
-re: fclean all
+re: 
+	rm -f $(NAME) debug
+	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
 

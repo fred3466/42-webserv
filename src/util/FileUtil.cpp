@@ -71,3 +71,9 @@ std::vector<std::string> FileUtil::listDir(std::string path)
 	return files;
 }
 
+bool FileUtil::fileExists(std::string path)
+{
+	struct stat sb;
+	bool ret = stat(path.c_str(), &sb) == 0;
+	return ret;
+}

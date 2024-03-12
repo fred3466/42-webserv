@@ -7,104 +7,130 @@ ConfigReader::ConfigReader()
 ConfigReader::~ConfigReader()
 {
 }
-std::vector<std::string> tokenize(std::string s)
-{
-	std::vector<std::string> ret = std::vector<std::string>();
-	std::stringstream ss(s);
-	std::string word;
-	while (ss >> word)
-	{
-		ret.push_back(word);
-	}
-	return ret;
-}
 
-std::vector<std::string> tokenize(std::string s, char sep)
-{
-	std::vector<std::string> ret = std::vector<std::string>();
-	std::stringstream ss(s);
-	std::string word;
-	while (!ss.eof())
-	{
-		getline(ss, word, sep);
-		ret.push_back(word);
-	}
-	return ret;
-}
-
-std::string getNthTokenIfExists(std::vector<std::string> v, int index,
-		std::string defaultValue)
-{
-	if (v.size() > index)
-		return v[index];
-	else
-		return defaultValue;
-}
-
-Config* findConfigById(std::vector<Config*> v, int id)
+Config* findConfigByAlias(std::vector<Config*> v, std::string alias)
 {
 	Config *ret = NULL;
 	std::vector<Config*>::iterator ite;
 	for (ite = v.begin(); ite != v.end(); ite++)
 	{
-		if ((*ite)->getId() == id)
+		if ((*ite)->getAlias() == alias)
 			ret = *ite;
 	}
 	return ret;
 }
 
-bool ConfigReader::buildConfigVector(std::vector<Config*> ret,
+bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 		std::string path)
 {
 	ConfigFactory factory = ConfigFactory();
 	Harl harl = Harl();
 	std::string key, val;
-	StringUtil stringUtil = StringUtil();
+	StringUtil su = StringUtil();
 	std::ifstream is(path.c_str());
-	int configId;
 //	TODO et la factory alors?
 	ConfigValidator validator = ConfigValidator();
 	int lineNumber = 1;
 	bool bValidated = true;
 
-	std::string
-	line;
+	std::string line;
 	if (is.is_open())
 	{
 		while (std::getline(is, line))
 		{
-			if (stringUtil.isCommented(line))
+			is.clear();
+			if (is.peek() == '0' || line.empty()
+					//					|| line.length() == 0
+//					|| !line.c_str()
+					)
+			{
+				continue;
+			}
+
+			if (su.isCommented(line))
 				continue;
 
-			line = stringUtil.normalizeSpaces(line);
+			line = su.normalizeSpaces(line);
 			harl.info(line);
+
+			su.trim(line);
+			if (is.peek() == '0' || line.empty() || line + "" == ""
+					|| line.length() == 0
+					|| !line.c_str())
+			{
+				continue;
+			}
 
 			std::stringstream ss(line);
 			std::getline(ss, key, '=');
-			stringUtil.ltrim(key);
+			su.ltrim(key);
+			if (key.empty() || key == "" || key.length() == 0
+					|| !key.c_str())
+			{
+				continue;
+			}
 			std::getline(ss, val, '=');
+			Config *c;
+//			std::string alias;
+			std::vector<std::string> toks;
+//			std
 
 //			SERVER
 			if (key == "server")
 			{
-				Config *c = factory.build();
-				ret.push_back(c);
+				c = factory.build();
+				ret->push_back(c);
 
-				std::vector<std::string> toks = tokenize(val);
-				std::string name = getNthTokenIfExists(toks, 0, "");
+				toks = su.tokenize(val);
+
+				std::string name = su.getNthTokenIfExists(toks, 0, "");
 				c->addParam("name", name);
-				c->addParam("alias", getNthTokenIfExists(toks, 1, name));
+				c->addParam("alias", su.getNthTokenIfExists(toks, 1, name));
 
 //				Validating
 				//alias must be unique
-				std::string alias = c->getParamStr("alias", "");
-				if (!validator.checkAlias(ret, c, alias))
+				std::string alias = c->getAlias();
+				if (!validator.checkAlias(*ret, c, alias))
 				{
 					bValidated = false;
 					harl.error(
 							"Multiple occurrence of the same alias/name for [%s] in line %i",
 							alias.c_str(), lineNumber);
 				}
+				continue;
+			}
+			else
+			{
+//				exemple : s1.listen=8080
+				toks = su.tokenize(key, '.');
+				std::string aliasKey = su.getNthTokenIfExists(toks, 0, "");
+				c = findConfigByAlias(*ret, aliasKey);
+			}
+
+//			root
+			if (key == "root")
+			{
+				c->addParam("root", su.getNthTokenIfExists(toks, 0, ""));
+			}
+//			server_name
+			if (key == "server_name")
+			{
+				c->addParam("server_name", su.getNthTokenIfExists(toks, 0, ""));
+			}
+
+//			listen
+			if (key == "listen")
+			{
+				c->addParam("listen",
+						su.getNthTokenIfExists(toks, 0, "localhostttttt"));
+				c->addParam("port", su.getNthTokenIfExists(toks, 1, ""));
+			}
+			//			listen
+			if (key == "qs")
+			{
+				c->addParam("listen",
+						su.getNthTokenIfExists(toks, 0, "localhostttttt"));
+				c->addParam("port", su.getNthTokenIfExists(toks, 1, ""));
 			}
 
 			harl.trace("%s -> %s", key.c_str(), val.c_str());

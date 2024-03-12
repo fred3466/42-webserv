@@ -20,12 +20,12 @@
 #include "Harl.h"
 #include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
-#include "request/Request.h"
-#include "request/HttpRequest.h"
-#include "request/RequestFactory.h"
-#include "CGI/CGIHandler.h"
+#include "request/API/Request.h"
+#include "request/factory/RequestFactory.h"
+#include "request/API/RequestHeader.h"
+#include "request/factory/RequestHeaderFactory.h"
 
-class HttpServer : public ConnectorListener
+class HttpServer: public ConnectorListener
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -33,18 +33,7 @@ private:
 	Connector *connector;
 	Config *config;
 	Harl harl;
-	std::map<int, int> _clients;
-	std::map<std::string, std::string> env;
-	std::map<std::string, std::string> prepareCGIEnvironment(const HttpRequest &request);
-
-	//	void _process_ready_for_read(int fwPort, int _soListen, netStruct NS);
-	//	void _listen(int _soListen, netStruct ns);
-	//	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
-	//			int &end_server, int &nfds);
-	//	bool _onDataReceiving(struct pollfd &curentPollFd, int &close_conn);
-	//
-	//	int _newClient(int _soListen, netStruct NS);
-public:
+	public:
 	HttpServer();
 	~HttpServer();
 

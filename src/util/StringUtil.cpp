@@ -60,6 +60,13 @@ void StringUtil::ltrim(std::string &s)
 		s.erase(s.begin(), p);
 }
 
+//supprime les espaces en début et fin de chaine
+void StringUtil::trim(std::string &s)
+{
+	ltrim(s);
+	rtrim(s);
+}
+
 bool StringUtil::isSpace(char c)
 {
 	return std::isspace(c);
@@ -151,3 +158,4 @@ std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
 	else
 		return defaultValue;
 }
+

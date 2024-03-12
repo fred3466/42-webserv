@@ -16,7 +16,7 @@ public:
 	ConfigReader();
 	virtual ~ConfigReader();
 
-	bool buildConfigVector(std::vector<Config*> ret, std::string path);
+	bool buildConfigVector(std::vector<Config*> *ret, std::string path);
 
 private:
 //	Config read(std::string path);
