@@ -28,7 +28,7 @@ int main(int ac, char **av)
 		bool bValidated = cr.buildConfigVector(&configVector, path);
 		if (bValidated)
 		{
-			server.init(*configVector[0]);
+			server.init(configVector[0]);
 		} else
 		{
 			harl.error("ERROR");
@@ -38,7 +38,7 @@ int main(int ac, char **av)
 	else
 	{
 		std::cout
-				<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
+		<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
 				<< std::endl;
 	}
 }

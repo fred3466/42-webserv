@@ -25,7 +25,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 {
 	ConfigFactory factory = ConfigFactory();
 	Harl harl = Harl();
-	std::string key, val;
+	std::string fullKey, val;
 	StringUtil su = StringUtil();
 	std::ifstream is(path.c_str());
 //	TODO et la factory alors?
@@ -62,30 +62,31 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			}
 
 			std::stringstream ss(line);
-			std::getline(ss, key, '=');
-			su.ltrim(key);
-			if (key.empty() || key == "" || key.length() == 0
-					|| !key.c_str())
+			std::getline(ss, fullKey, '=');
+			su.ltrim(fullKey);
+			if (fullKey.empty() || fullKey == "" || fullKey.length() == 0
+					|| !fullKey.c_str())
 			{
 				continue;
 			}
 			std::getline(ss, val, '=');
 			Config *c;
 //			std::string alias;
-			std::vector<std::string> toks;
+			std::vector<std::string> toksVal = su.tokenize(val, ' ');
+			std::string key = "";
 //			std
 
 //			SERVER
-			if (key == "server")
+			if (fullKey == "server")
 			{
 				c = factory.build();
 				ret->push_back(c);
 
-				toks = su.tokenize(val);
+//				toksVal = su.tokenize(val, ' ');
 
-				std::string name = su.getNthTokenIfExists(toks, 0, "");
+				std::string name = su.getNthTokenIfExists(toksVal, 0, "");
 				c->addParam("name", name);
-				c->addParam("alias", su.getNthTokenIfExists(toks, 1, name));
+				c->addParam("alias", su.getNthTokenIfExists(toksVal, 1, name));
 
 //				Validating
 				//alias must be unique
@@ -102,35 +103,40 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			else
 			{
 //				exemple : s1.listen=8080
-				toks = su.tokenize(key, '.');
-				std::string aliasKey = su.getNthTokenIfExists(toks, 0, "");
+				std::vector<std::string> toksFullKey = su.tokenize(fullKey,
+						'.');
+				std::string aliasKey = su.getNthTokenIfExists(toksFullKey, 0,
+						"");
+				key = su.getNthTokenIfExists(toksFullKey, 1, "");
 				c = findConfigByAlias(*ret, aliasKey);
 			}
 
 //			root
 			if (key == "root")
 			{
-				c->addParam("root", su.getNthTokenIfExists(toks, 0, ""));
+				c->addParam("root", su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 //			server_name
 			if (key == "server_name")
 			{
-				c->addParam("server_name", su.getNthTokenIfExists(toks, 0, ""));
+				c->addParam("server_name",
+						su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 
 //			listen
 			if (key == "listen")
 			{
-				c->addParam("listen",
-						su.getNthTokenIfExists(toks, 0, "localhostttttt"));
-				c->addParam("port", su.getNthTokenIfExists(toks, 1, ""));
+				std::string ip = su.getNthTokenIfExists(toksVal, 0, "127.0.0.1");
+				c->addParam("listen", ip);
+				std::string port = su.getNthTokenIfExists(toksVal, 1, "");
+				c->addParam("port", port);
 			}
 			//			listen
 			if (key == "qs")
 			{
 				c->addParam("listen",
-						su.getNthTokenIfExists(toks, 0, "localhostttttt"));
-				c->addParam("port", su.getNthTokenIfExists(toks, 1, ""));
+						su.getNthTokenIfExists(toksVal, 0, "localhostttttt"));
+				c->addParam("port", su.getNthTokenIfExists(toksVal, 1, ""));
 			}
 
 			harl.trace("%s -> %s", key.c_str(), val.c_str());

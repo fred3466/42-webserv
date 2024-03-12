@@ -22,7 +22,7 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response *ProcessorImplDirectFs::process(Request *request)
+Response* ProcessorImplDirectFs::process(Request *request)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -30,7 +30,7 @@ Response *ProcessorImplDirectFs::process(Request *request)
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
-	std::string root = config->getParamStr("root", NULL);
+	std::string root = config->getParamStr("root", "root");
 	std::string path = root + request->getUri();
 	harl.info(request->getUri() + " -> " + path);
 	char *body;
@@ -55,7 +55,7 @@ Response *ProcessorImplDirectFs::process(Request *request)
 		else if (s.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
-				path.rfind(".", std::string::npos));
+					path.rfind(".", std::string::npos));
 
 			if (stringUtil.strUpper(fileExt) == ".GIF")
 			{
