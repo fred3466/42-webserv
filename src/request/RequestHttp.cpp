@@ -10,26 +10,25 @@ RequestHttp::RequestHttp(RequestHeader *head) :
 	header = head;
 }
 
-void RequestHttp::dump()
+void RequestHttp::dump() const
 {
-	std::map<std::string, std::string>::iterator ite = kv.begin();
+	std::map<std::string, std::string>::const_iterator ite = kv.begin();
 	while (ite != kv.end())
 	{
 		std::cout << ite->first << " -> " << ite->second << std::endl;
 		ite++;
 	}
 }
-
-const std::list<std::string> RequestHttp::getFields() const
+const std::list<std::string>& RequestHttp::getFields() const
 {
 	return header->getFields();
 }
 
-std::string RequestHttp::getUri()
+std::string RequestHttp::getUri() const
 {
 	return header->getUri();
 }
-std::string RequestHttp::getMethod()
+std::string RequestHttp::getMethod() const
 {
 	return header->getMethod();
 }

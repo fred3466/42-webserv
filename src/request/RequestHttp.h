@@ -3,6 +3,8 @@
 #include "API/Request.h"
 #include "API/RequestHeader.h"
 #include <map>
+#include <iterator>
+#include <string>
 
 class RequestHttp: public Request
 {
@@ -17,20 +19,10 @@ public:
 	~RequestHttp();
 	RequestHttp(RequestHeader *header);
 
-<<<<<<< HEAD
-	virtual const std::list<std::string> getFields() const;
-	virtual std::string getUri();
-	virtual std::string getMethod();
-	virtual void dump();
+	virtual const std::list<std::string>& getFields() const;
+	virtual std::string getUri() const;
+	virtual std::string getMethod() const;
+	virtual void dump() const;
 	virtual void setFdClient(int fd);
-	virtual int getFdClient();
-=======
-	std::string getValue(std::string paramName) const;
-	void addParam(std::string paramName, std::string paramValue);
-	std::string getUri() const;
-	std::string getMethod() const;
-	void dump() const;
-	void setFdClient(int fd);
-	int getFdClient() const;
->>>>>>> branch 'main' of git@github.com:fred3466/42-webserv.git
+	virtual int getFdClient() const;
 };
