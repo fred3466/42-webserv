@@ -1,6 +1,8 @@
-10:21:59 **** Auto Build of configuration Default for project webserv ****
-make -k -j4 all 
-make: rien à faire pour « all ».
+23:14:21 **** Incremental Build of configuration Default for project webserv ****
+make -k -j4 re 
+rm -f 
+rm -f webserv
+rm -f debug
 
-10:21:59 Build Finished. 0 errors, 0 warnings. (took 128ms)
+23:14:25 Build Finished. 0 errors, 0 warnings. (took 3s.908ms)
 

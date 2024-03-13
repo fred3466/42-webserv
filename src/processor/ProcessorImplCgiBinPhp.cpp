@@ -30,13 +30,13 @@ Response* ProcessorImplCgiBinPhp::process(Request *request)
 		CGIHandler cgiHandler;
 
 		// Prepare CGI environment variables
-		std::map<std::string, std::string> envVars = prepareCGIEnvironment(request);
+		std::map<std::string, std::string> envVars = prepareCGIEnvironment(request); // @suppress("Invalid template argument")
 
 		// Determine script path from the URI
 		std::string scriptPath = getScriptPath(request->getUri());
 
 		// Execute the CGI script and get output
-		std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(),
+		std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(), // @suppress("Invalid arguments")
 				request->getQueryString());
 
 		// Generate HTTP response from CGI output
@@ -55,9 +55,9 @@ bool ProcessorImplCgiBinPhp::isCGIRequest(const std::string &uri)
 	return uri.find("/cgi-bin/") == 0;
 }
 
-std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request)
+std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request) // @suppress("Invalid template argument") // @suppress("Member declaration not found")
 {
-	std::map<std::string, std::string> env = std::map<std::string, std::string>();
+	std::map<std::string, std::string> env = std::map<std::string, std::string>(); // @suppress("Invalid template argument")
 
 	// Populate environment variables
 	env["REQUEST_METHOD"] = request->getMethod();
@@ -65,7 +65,7 @@ std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment
 	env["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
 	env["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
 
-//	TODO : il manque quelques variables ! 
+//	TODO : il manque quelques variables !
 //	fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
 //	fastcgi_param  QUERY_STRING       $query_string;
 //	fastcgi_param  REQUEST_METHOD     $request_method;
