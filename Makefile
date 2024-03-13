@@ -19,6 +19,8 @@ SRCS = \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
  	processor/Processor.cpp \
+	mimeType/MimeType.cpp \
+	mimeType/MimeTypeHelper.cpp \
     HttpServer.cpp \
     config.h \
     config/Config.cpp \
@@ -47,16 +49,32 @@ LFLAGS = #-lreadline
 
 RM = rm -rf
 
+GREEN		= \033[0;32m
+
+NAME		= webserv
+
 all: $(NAME)
 
 $(NAME):  
 
-	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@echo "$(GREEN)Executable $(NAME) is ready.$(RESET)"
 
 prof:
 	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
 	
 re: 
-	rm -f $(NAME) debug
-	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@rm -f $(NAME) debug
+	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
 
+clean:
+	@rm -f $(OBJS)
+	@echo "$(GREEN)Object files removed$(RESET)"
+	
+
+fclean: clean
+	@rm -f $(NAME)
+	@rm -f debug
+	@echo "$(YELLOW)Executable $(NAME) removed.$(RESET)"
+
+re: fclean all
