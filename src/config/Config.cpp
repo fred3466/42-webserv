@@ -7,7 +7,7 @@
 //int Config::idRef = 0;
 
 Config::Config() :
-		kv(), alias("")
+		kv()
 {
 //	if (idRef == NULL)
 //		idRef = 0;
@@ -60,26 +60,44 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 	return stringDefault;
 }
 
-//void Config::setId(std::string id)
-//{
-//	this->id = id;
-//}
-
-std::string Config::getAlias()
+std::map<std::string, std::string>* Config::getParamStrStartingWith(std::string paramPrefix)
 {
-	return getParamStr("alias", "");
+//	TODO un new par ici !
+	std::map<std::string, std::string> *ret = new std::map<std::string, std::string>();
+	for (std::map<std::string, std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	{
+		std::string key = ite->first;
+		if (key.find(paramPrefix) == 0)
+		{
+			std::string val = ite->second;
+			(*ret)[key] = val;
+		}
+	}
+	return ret;
 }
 
-Config::Config(Config &bis) :
-		kv(bis.kv)
+std::string
+Config::getAlias()
 {
-	this->kv = bis.kv;
+	return alias;
+}
+
+void Config::setAlias(std::string alias)
+{
+	this->alias = alias;
+}
+
+Config::Config(Config &bis)
+:
+		kv(bis.kv), alias(bis.alias)
+{
 	if (this != &bis)
 		*this = bis;
 }
 
 Config& Config::operator =(Config &bis)
 {
+	this->alias = bis.alias;
 	this->kv = bis.kv;
 	return bis;
 }

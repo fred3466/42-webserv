@@ -3,8 +3,9 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
+#include <map>
 
-HttpServer::HttpServer() : harl(), connector(), config()
+HttpServer::HttpServer() : harl(), connector(), config(), processorFactory(NULL)
 {
 }
 
@@ -12,11 +13,6 @@ HttpServer::~HttpServer()
 {
 }
 
-//bool HttpServer::operator==(const ConnectorListener &o) {
-////	if (o)
-//	return this->_soListen ==  o._soListen;
-////	return 0;
-//}
 void shutFd(int fd)
 {
 	if (fd >= 0)
@@ -29,10 +25,38 @@ void shutFd(int fd)
 void HttpServer::init(Config *c)
 {
 	netStruct ns;
+	StringUtil su = StringUtil();
+//	TODO new
+	ProcessorLocator *processorLocator = new ProcessorLocator();
+	processorFactory = ProcessorFactory(processorLocator);
 
 	// config = ConfigFactory().build(fileConf);
 	//	config.read("config.properties");
 	config = c;
+	std::map<std::string, std::string> *locations = config->getParamStrStartingWith("location@");
+	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
+	{
+		std::string key = ite->first;
+		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
+		std::string val = ite->second;
+		std::vector<std::string> toksVal = su.tokenize(val, ';');
+		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
+		{
+			std::string directive = *iteVal;
+			std::vector<std::string> toksDirective = su.tokenize(directive, ' ');
+			std::string dirName = su.getNthTokenIfExists(toksDirective, 0, "");
+			if (dirName == "SetHandler")
+			{
+				std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
+				std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
+				Processor *processor = processorFactory.build(processorName);
+				processor->setConfig(config);
+
+				processorLocator->addLocationToProcessor(urlpath, extension, processor);
+			}
+		}
+
+	}
 
 	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
 			c->getParamInt("port", 8080));
@@ -50,10 +74,11 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
-
 //	req->dump();
 
-	Processor *processor = ProcessorFactory().build(request);
+	std::vector<Processor*> *processorList = processorFactory.build(request);
+
+	Processor *processor = processorList->at(0);
 	processor->setConfig(config);
 	Response *resp = processor->process(request);
 
@@ -87,10 +112,6 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	char *cstrSave = cstr;
 	char **cstrPtr = &cstr;
 
-	//	std::strcpy(cstr, statusHeaderBody.c_str());
-
-	//	std::memcpy(cstr, statusHeaderBody.c_str(), length);
-
 	std::memcpy(*cstrPtr, statusLine.c_str(), statusLen);
 	*cstrPtr += statusLen + 0;
 	std::memcpy(*(cstrPtr), fieldsString.c_str(), headerLen);
@@ -119,3 +140,14 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	delete resp;
 
 }
+
+//ProcessorLocator HttpServer::getProcessorLocator()
+//{
+//	return processorLocator;
+//}
+//
+//void HttpServer::addLocationToProcessor(std::string ext, Processor *processor)
+//{
+//	processorLocator.addLocationToProcessor(ext, processor);
+//}
+

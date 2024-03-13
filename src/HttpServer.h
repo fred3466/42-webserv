@@ -29,6 +29,7 @@
 #include "request/factory/RequestFactory.h"
 #include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
+#include "location/ProcessorLocator.h"
 
 class HttpServer: public ConnectorListener
 {
@@ -38,6 +39,8 @@ private:
 	Connector *connector;
 	Config *config;
 	Harl harl;
+	ProcessorFactory processorFactory;
+	//	ProcessorLocator processorLocator;
 
 public:
 	HttpServer();
@@ -47,6 +50,9 @@ public:
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 
+//	ProcessorLocator getProcessorLocator();
+//	void addLocationToProcessor(std::string ext, Processor *processor);
+
 //	std::string readRequest(int clientFd);
 //	void sendResponse(int clientFd, const std::string &response);
 //	void closeClient(int clientFd);
@@ -55,5 +61,6 @@ public:
 //	std::string getScriptPath(const std::string &uri);
 //	std::string generateHttpResponse(const std::string &cgiOutput);
 //	int getClientFd(int clientId);
+
 };
 

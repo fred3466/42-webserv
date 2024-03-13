@@ -1,5 +1,4 @@
 #pragma once
-#include "ProcessorImplDirectFs.h"
 #include "Processor.h"
 
 #include "../Harl.h"
@@ -11,7 +10,7 @@
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 
-class ProcessorImplDirectFs : public Processor
+class ProcessorImplDirectFs: public Processor
 {
 private:
 	Config *config;
@@ -22,6 +21,6 @@ private:
 public:
 	ProcessorImplDirectFs();
 	~ProcessorImplDirectFs();
-	Response *process(Request *request);
+	Response* process(Request *request);
 	void setConfig(Config *conf);
 };

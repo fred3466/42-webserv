@@ -99,14 +99,16 @@ Response* ProcessorImplDirectFs::process(Request *request)
 	else
 	{
 		// error
+		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
 	}
-	//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
-	//    _response_content.append(statusCodeString(_code));
-	//    _response_content.append("\r\n");
+//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
+//    _response_content.append(statusCodeString(_code));
+//    _response_content.append("\r\n");
+//	TODO : adpater le code retour HTTP dans la réponse, au résultat de l'exécution de process()
 	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	resp->getHeader()->addField("\r\n");
-	//	resp->setBody("<html><body>" + body + "</body></html>");
-	//	resp->setBody(body);
+//	resp->setBody("<html><body>" + body + "</body></html>");
+//	resp->setBody(body);
 
 	delete fu;
 	return resp;

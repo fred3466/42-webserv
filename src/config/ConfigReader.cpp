@@ -8,13 +8,14 @@ ConfigReader::~ConfigReader()
 {
 }
 
-Config* findConfigByAlias(std::vector<Config*> v, std::string alias)
+Config* findConfigByAlias(std::vector<Config*> *v, std::string alias)
 {
 	Config *ret = NULL;
 	std::vector<Config*>::iterator ite;
-	for (ite = v.begin(); ite != v.end(); ite++)
+	for (ite = v->begin(); ite != v->end(); ite++)
 	{
-		if ((*ite)->getAlias() == alias)
+		std::string aliasTmp = (*ite)->getAlias();
+		if (alias.compare(aliasTmp) == 0)
 			ret = *ite;
 	}
 	return ret;
@@ -30,7 +31,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 	std::ifstream is(path.c_str());
 //	TODO et la factory alors?
 	ConfigValidator validator = ConfigValidator();
-	int lineNumber = 1;
+	int lineNumber = 0;
 	bool bValidated = true;
 
 	std::string line;
@@ -38,7 +39,10 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 	{
 		while (std::getline(is, line))
 		{
+			lineNumber++;
 			is.clear();
+			Config *c = NULL;
+			std::vector<std::string> toksFullKey;
 			if (is.peek() == '0' || line.empty()
 					//					|| line.length() == 0
 //					|| !line.c_str()
@@ -61,6 +65,23 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				continue;
 			}
 
+			if (std::string::npos != line.find('{'))
+			{
+				std::string lineTmp = "";
+				while (std::getline(is, lineTmp))
+				{
+					lineNumber++;
+					if (su.isCommented(lineTmp))
+						continue;
+					lineTmp = su.normalizeSpaces(lineTmp);
+					harl.info(lineTmp);
+					su.trim(line);
+					line += lineTmp;
+					if (std::string::npos != lineTmp.find('}'))
+						break;
+				}
+			}
+
 			std::stringstream ss(line);
 			std::getline(ss, fullKey, '=');
 			su.ltrim(fullKey);
@@ -70,7 +91,6 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				continue;
 			}
 			std::getline(ss, val, '=');
-			Config *c;
 //			std::string alias;
 			std::vector<std::string> toksVal = su.tokenize(val, ' ');
 			std::string key = "";
@@ -80,13 +100,8 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			if (fullKey == "server")
 			{
 				c = factory.build();
-				ret->push_back(c);
 
 //				toksVal = su.tokenize(val, ' ');
-
-				std::string name = su.getNthTokenIfExists(toksVal, 0, "");
-				c->addParam("name", name);
-				c->addParam("alias", su.getNthTokenIfExists(toksVal, 1, name));
 
 //				Validating
 				//alias must be unique
@@ -98,17 +113,24 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 							"Multiple occurrence of the same alias/name for [%s] in line %i",
 							alias.c_str(), lineNumber);
 				}
+				else
+				{
+					ret->push_back(c);
+					std::string name = su.getNthTokenIfExists(toksVal, 0, "");
+					c->addParam("name", name);
+					std::string alias = su.getNthTokenIfExists(toksVal, 1, name);
+					c->setAlias(alias);
+				}
 				continue;
 			}
 			else
 			{
 //				exemple : s1.listen=8080
-				std::vector<std::string> toksFullKey = su.tokenize(fullKey,
-						'.');
-				std::string aliasKey = su.getNthTokenIfExists(toksFullKey, 0,
-						"");
+				toksFullKey = su.tokenize(fullKey, '.');
+				std::string aliasKey = su.getNthTokenIfExists(toksFullKey, 0, "");
+				su.trim(aliasKey);
 				key = su.getNthTokenIfExists(toksFullKey, 1, "");
-				c = findConfigByAlias(*ret, aliasKey);
+				c = findConfigByAlias(ret, aliasKey);
 			}
 
 //			root
@@ -128,19 +150,18 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			{
 				std::string ip = su.getNthTokenIfExists(toksVal, 0, "127.0.0.1");
 				c->addParam("listen", ip);
-				std::string port = su.getNthTokenIfExists(toksVal, 1, "");
+				std::string port = su.getNthTokenIfExists(toksVal, 1, "8080");
 				c->addParam("port", port);
 			}
-			//			listen
-			if (key == "qs")
+
+//			listen
+			if (key == "location")
 			{
-				c->addParam("listen",
-						su.getNthTokenIfExists(toksVal, 0, "localhostttttt"));
-				c->addParam("port", su.getNthTokenIfExists(toksVal, 1, ""));
+				std::string urlPath = su.getNthTokenIfExists(toksFullKey, 2, "");
+				c->addParam("location@" + urlPath, val);
 			}
 
 			harl.trace("%s -> %s", key.c_str(), val.c_str());
-			lineNumber++;
 		}
 		is.close();
 	}
