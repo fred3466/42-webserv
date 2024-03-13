@@ -52,10 +52,6 @@ LFLAGS = #-lreadline
 
 RM = rm -rf
 
-GREEN		= \033[0;32m
-
-NAME		= webserv
-
 all: $(NAME)
 
 $(NAME):  
@@ -77,14 +73,5 @@ re:
 	@rm -f $(NAME) debug
 	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
 
-clean:
-	@rm -f $(OBJS)
-	@echo "$(GREEN)Object files removed$(RESET)"
-	
-
-fclean: clean
-	@rm -f $(NAME)
-	@rm -f debug
-	@echo "$(YELLOW)Executable $(NAME) removed.$(RESET)"
 
 re: fclean all
