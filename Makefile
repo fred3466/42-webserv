@@ -23,6 +23,8 @@ SRCS = \
  	processor/Processor.cpp \
  	location/LocationToProcessor.cpp \
  	location/ProcessorLocator.cpp \
+	mimeType/MimeType.cpp \
+	mimeType/MimeTypeHelper.cpp \
     HttpServer.cpp \
     config.h \
     config/Config.cpp \
@@ -54,7 +56,8 @@ all: $(NAME)
 
 $(NAME):  
 
-	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@echo "$(GREEN)Executable $(NAME) is ready.$(RESET)"
 
 prof:
 	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
@@ -67,6 +70,8 @@ fclean: clean
 	rm -f $(NAME)
 	rm -f debug
 re: 
-	rm -f $(NAME) debug
-	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+	@rm -f $(NAME) debug
+	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
 
+
+re: fclean all

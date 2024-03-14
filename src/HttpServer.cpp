@@ -71,7 +71,9 @@ void HttpServer::onIncomming(ConnectorEvent e)
 
 Response* HttpServer::runProcessorChain(std::vector<Processor*> *processorList, Request *request, Response *resp)
 {
-	for (std::vector<Processor*>::iterator ite = processorList->begin(); ite != processorList->end(); ite++)
+	for (std::vector<Processor*>::iterator ite = processorList->begin(); ite != processorList->end();
+			ite++
+			)
 	{
 		Processor *processor = *ite; //		processorList->at(0);
 		processor->setConfig(config);

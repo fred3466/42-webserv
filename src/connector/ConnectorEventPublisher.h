@@ -8,8 +8,8 @@ private:
 	~ConnectorEventPublisher();
 
 public:
-	virtual void registerIt(ConnectorListener l)=0;
-	virtual void unregisterIt(ConnectorListener l)=0;
+	virtual void registerIt(ConnectorListener l)=0; // @suppress("Abstract class cannot be instantiated")
+	virtual void unregisterIt(ConnectorListener l)=0; // @suppress("Abstract class cannot be instantiated")
 	virtual void publishAccepting(ConnectorEvent e)=0;
 	virtual void unregisterIt(ConnectorEvent e)=0;
 
