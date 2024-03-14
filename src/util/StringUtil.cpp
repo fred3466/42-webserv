@@ -36,10 +36,16 @@ void StringUtil::rtrim(std::string &s)
 		return;
 
 	std::string::iterator p;
-	for (p = s.end(); p != s.begin() && *--p == ' ';)
-		;
+	for (p = s.end(); p != s.begin()
+			&& (
+			*p == ' '
+					|| *p == '\t'
+					|| *p == '\n'
+			)
+			;)
+		p--;
 
-	if (*p != ' ')
+	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
 		p++;
 
 	if (p != s.end())
@@ -53,8 +59,18 @@ void StringUtil::ltrim(std::string &s)
 		return;
 
 	std::string::iterator p;
-	for (p = s.begin(); p != s.end() && *p == ' ';)
-		p++;
+	for (p = s.begin(); p != s.end()
+			&& (
+			*p == ' '
+					|| *p == '\t'
+					|| *p == '\n'
+			)
+			;)
+		;
+	p++;
+
+	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
+		p--;
 
 	if (p != s.begin())
 		s.erase(s.begin(), p);

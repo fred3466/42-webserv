@@ -9,3 +9,5 @@
 #define REQUEST_IMPL_CLASS  RequestHttp
 #define REQUEST_HEADER_IMPL_INC  "../RequestHttpHeader.h"
 #define REQUEST_HEADER_IMPL_CLASS  RequestHttpHeader
+#define REQUEST_HEADER_IMPL_INC_PHP  "ProcessorImplCgiBinPhp.h"
+#define REQUEST_HANDLER_IMPL_CLASS_PHP  ProcessorImplCgiBinPhp

@@ -7,13 +7,13 @@ RequestHttpHeader::~RequestHttpHeader()
 RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
 		statusLine(), fields()
 {
- 	std::stringstream lines;
- 	lines.str(rawRequest->c_str());
- 	char key[2048], val[2048], line[2048];
- 	while (lines)
- 	{
- 		lines.getline(line, 2048, '\n');
- 		std::stringstream lineSs;
+	std::stringstream lines;
+	lines.str(rawRequest->c_str());
+	char key[2048], val[2048], line[2048];
+	while (lines)
+	{
+		lines.getline(line, 2048, '\n');
+		std::stringstream lineSs;
 		lineSs.str(line);
 		std::string lineStr = lineSs.str();
 		if (!lineStr.compare(0, 3, "GET"))
@@ -28,6 +28,24 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
 			this->addField(std::string(val));
 		}
 	}
+}
+
+std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
+{
+	std::string ret = "";
+	StringUtil su = StringUtil();
+
+	for (std::list<std::string>::const_iterator ite = fields.begin(); ite != fields.end();
+			ite++)
+	{
+		std::string rawField = *ite;
+		std::vector<std::string> toks = su.tokenize(rawField, ':');
+		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		std::string val = su.getNthTokenIfExists(toks, 1, "");
+		if (name == fieldName)
+			return val;
+	}
+	return ret;
 }
 
 void RequestHttpHeader::addField(std::string f)

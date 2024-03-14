@@ -31,6 +31,14 @@ std::string ResponseHttp::getBody()
 {
 	return body;
 }
+int ResponseHttp::getTotalLength()
+{
+	return totalLength;
+}
+void ResponseHttp::setTotalLength(int len)
+{
+	totalLength = len;
+}
 int ResponseHttp::getBodyLength()
 {
 	return bodyLength;

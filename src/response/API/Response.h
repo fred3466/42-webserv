@@ -20,6 +20,8 @@ public:
 	virtual char* getBodyBin()=0;
 	virtual int getBodyLength()=0;
 	virtual void setBodyLength(int len)=0;
+	virtual int getTotalLength()=0;
+	virtual void setTotalLength(int len)=0;
 
 };
 

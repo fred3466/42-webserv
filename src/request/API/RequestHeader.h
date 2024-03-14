@@ -12,6 +12,7 @@ public:
 
 	virtual void addField(std::string f)=0;
 	virtual const std::list<std::string>& getFields() const =0;
+	virtual std::string getFieldValue(std::string fieldName) const =0;
 	virtual const std::string& getMethod() const =0;
 	virtual void setMethod(const std::string &method)=0;
 	virtual const std::string& getUri() const =0;
