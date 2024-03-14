@@ -113,3 +113,8 @@ bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 		ret = true;
 	return ret;
 }
+
+std::string RequestHttpHeader::getCookieString()
+{
+	return cookieHelper.getCookieString(cookies);
+}

@@ -33,4 +33,5 @@ public:
 	virtual Cookie getCookie(const std::string &cookieName);
 	virtual bool addCookie(const Cookie &cookie);
 	virtual bool removeCookie(const std::string &cookieName);
+	virtual std::string getCookieString();
 };

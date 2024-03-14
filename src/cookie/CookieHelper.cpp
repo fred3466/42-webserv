@@ -39,3 +39,14 @@ Cookie CookieHelper::getCookie(const std::list<Cookie> &cookies, const std::stri
 	}
 	return Cookie();
 }
+
+std::string CookieHelper::getCookieString(const std::list<Cookie> &cookies)
+{
+	std::string ret;
+	for (std::list<Cookie>::const_iterator it = cookies.begin(); it != cookies.end(); it++)
+	{
+		ret += it->getName() + "=" + it->getValue() + "; ";
+	}
+	ret.erase(ret.end() - 2, ret.end());
+	return ret;
+}
