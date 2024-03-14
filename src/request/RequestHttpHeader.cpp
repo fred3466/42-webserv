@@ -28,7 +28,6 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
 			this->addField(std::string(val));
 		}
 	}
-	this->cookies = CookieFactory().build(this);
 }
 
 std::string RequestHttpHeader::getFieldValue(std::string fieldName) const

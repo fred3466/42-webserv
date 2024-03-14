@@ -56,5 +56,5 @@ bool ResponseHttpHeader::removeCookie(const std::string &cookieName)
 
 std::string ResponseHttpHeader::getCookieString()
 {
-	return cookieHelper.getCookieString(cookies);
+	return cookieHelper.getCookieStringResponse(cookies);
 }

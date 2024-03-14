@@ -9,5 +9,5 @@ private:
 public:
 	CookieFactory();
 	~CookieFactory();
-	std::list<Cookie>* build(RequestHeader *header);
+	void build(RequestHeader *header);
 };

@@ -50,3 +50,19 @@ std::string CookieHelper::getCookieString(const std::list<Cookie> &cookies)
 	ret.erase(ret.end() - 2, ret.end());
 	return ret;
 }
+
+std::string CookieHelper::getCookieStringResponse(const std::list<Cookie> &cookies)
+{
+	std::string ret;
+	for (std::list<Cookie>::const_iterator it = cookies.begin(); it != cookies.end(); it++)
+	{
+		std::ostringstream oss;
+    	oss << it->getMaxAge();
+		ret += "Set-Cookie: ";
+		ret += it->getName() + "=" + it->getValue() + "; ";
+		ret += "Max-Age=" + oss.str() + "; "; 
+		ret += "Domain=" + it->getDomain() + "; ";
+		ret += "Path=" + it->getPath() + "\r\n";
+	}
+	return ret;
+}

@@ -8,9 +8,8 @@ CookieFactory::~CookieFactory()
 {
 }
 
-std::list<Cookie>* CookieFactory::build(RequestHeader *header)
+void CookieFactory::build(RequestHeader *header)
 {
-	std::list<Cookie> *cookies;
 	std::string cookieHeader = header->getFieldValue("Cookie");
 	if (!cookieHeader.empty())
 	{
@@ -24,8 +23,7 @@ std::list<Cookie>* CookieFactory::build(RequestHeader *header)
     		cookieHeader.erase(0, pos + 2);
 			c.setName(token.substr(0, token.find("=")));
 			c.setValue(token.substr(token.find("=") + 1));
-			cookies->push_back(c);
+			header->addCookie(c);
 		}
 	}
-	return cookies;
 }
