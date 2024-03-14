@@ -11,7 +11,7 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplCgiBinPhp::process(Request *request)
+Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -30,13 +30,13 @@ Response* ProcessorImplCgiBinPhp::process(Request *request)
 		CGIHandler cgiHandler;
 
 		// Prepare CGI environment variables
-		std::map<std::string, std::string> envVars = prepareCGIEnvironment(request); // @suppress("Invalid template argument")
+		std::map<std::string, std::string> envVars = prepareCGIEnvironment(request);
 
 		// Determine script path from the URI
 		std::string scriptPath = getScriptPath(request->getUri());
 
 		// Execute the CGI script and get output
-		std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(), // @suppress("Invalid arguments")
+		std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(),
 				request->getQueryString());
 
 		// Generate HTTP response from CGI output
@@ -55,9 +55,9 @@ bool ProcessorImplCgiBinPhp::isCGIRequest(const std::string &uri)
 	return uri.find("/cgi-bin/") == 0;
 }
 
-std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request) // @suppress("Invalid template argument") // @suppress("Member declaration not found")
+std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request)
 {
-	std::map<std::string, std::string> env = std::map<std::string, std::string>(); // @suppress("Invalid template argument")
+	std::map<std::string, std::string> env = std::map<std::string, std::string>();
 
 	// Populate environment variables
 	env["REQUEST_METHOD"] = request->getMethod();
@@ -167,6 +167,10 @@ std::string ProcessorImplCgiBinPhp::generateHttpResponse(const std::string &cgiO
 	return response;
 }
 
+std::string ProcessorImplCgiBinPhp::toString()
+{
+	return "ProcessorImplCgiBinPhp";
+}
 //int ProcessorImplCgiBinPhp::getClientFd(int clientId)
 //{
 //	std::map<int, int>::const_iterator it = _clients.find(clientId);

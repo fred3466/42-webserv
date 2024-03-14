@@ -8,6 +8,7 @@ class Processor
 public:
 	Processor();
 	virtual ~Processor();
-	virtual Response *process(Request *request) = 0;
+	virtual Response* process(Request *request, Response *response) = 0;
 	virtual void setConfig(Config *conf) = 0;
+	virtual std::string toString()=0;
 };

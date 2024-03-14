@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "LocationToProcessor.h"
+#include "../Harl.h"
 
 class ProcessorLocator
 {

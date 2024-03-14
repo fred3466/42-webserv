@@ -5,7 +5,7 @@
 #include <ostream>
 #include <map>
 
-HttpServer::HttpServer() : harl(), connector(), config(), processorFactory(NULL)
+HttpServer::HttpServer() : harl(), connector(), config(), processorLocator()
 {
 }
 
@@ -13,26 +13,26 @@ HttpServer::~HttpServer()
 {
 }
 
-void shutFd(int fd)
-{
-	if (fd >= 0)
-	{
-		shutdown(fd, SHUT_RDWR);
-		close(fd);
-		fd = -1;
-	}
-}
 void HttpServer::init(Config *c)
 {
 	netStruct ns;
-	StringUtil su = StringUtil();
-//	TODO new
-	ProcessorLocator *processorLocator = new ProcessorLocator();
-	processorFactory = ProcessorFactory(processorLocator);
 
-	// config = ConfigFactory().build(fileConf);
-	//	config.read("config.properties");
 	config = c;
+	instantiateProcessLocator();
+
+	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
+			c->getParamInt("port", 8080));
+	connector->registerIt(this);
+
+	connector->doListen();
+}
+
+void HttpServer::instantiateProcessLocator()
+{
+	StringUtil su = StringUtil();
+	//	TODO new
+	processorLocator = new ProcessorLocator();
+	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
 	std::map<std::string, std::string> *locations = config->getParamStrStartingWith("location@");
 	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
 	{
@@ -57,17 +57,12 @@ void HttpServer::init(Config *c)
 		}
 
 	}
-
-	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
-			c->getParamInt("port", 8080));
-	connector->registerIt(this);
-
-	connector->doListen();
 }
 
 void HttpServer::onIncomming(ConnectorEvent e)
 {
 }
+
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getTemp();
@@ -76,12 +71,41 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	request->setFdClient(e.getFdClient());
 //	req->dump();
 
+	Response *resp;
+	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
 	std::vector<Processor*> *processorList = processorFactory.build(request);
+	resp = runProcessorChain(processorList, request, resp);
 
-	Processor *processor = processorList->at(0);
-	processor->setConfig(config);
-	Response *resp = processor->process(request);
+	int fdSocket = e.getFdClient();
+	pushItIntoTheWire(fdSocket, request, resp);
 
+	cleanUp(e, request, resp);
+
+	//	if (bodyLen)
+	//	{
+	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
+	//		os.write(cstr, length);
+	//		os.close();
+	//	}
+
+}
+
+Response* HttpServer::runProcessorChain(std::vector<Processor*> *processorList, Request *request, Response *resp)
+{
+	for (std::vector<Processor*>::iterator ite = processorList->begin(); ite != processorList->end();
+			ite++
+			)
+	{
+		Processor *processor = *ite; //		processorList->at(0);
+		processor->setConfig(config);
+		resp = processor->process(request, resp);
+		delete processor;
+	}
+	return resp;
+}
+
+char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+{
 	StringUtil stringUtil;
 	std::string fieldsString = stringUtil.fromListToString(
 			resp->getHeader()->getFields());
@@ -97,15 +121,18 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int bodyLen = resp->getBodyLength();
 
 	int length = statusLen + headerLen + bodyLen;
+	resp->setTotalLength(length);
 
 	if (length <= 0)
 	{
 		delete request;
-		delete processor;
+//		delete processor;
 		delete resp->getHeader();
 		delete resp->getBodyBin();
 		delete resp;
-		return;
+//		TODO gérer ce cas
+		harl.warning("Response de taille nulle ?");
+		return NULL;
 	}
 
 	char *cstr = new char[length + 0]();
@@ -120,34 +147,35 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	cstr = cstrSave;
 
-	//	if (bodyLen)
-	//	{
-	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
-	//		os.write(cstr, length);
-	//		os.close();
-	//	}
+	return cstr;
+}
 
-	int fd = e.getFdClient();
-	if (request && fd && cstr && length)
-		send(fd, cstr, length, 0);
-	harl.debug("%d sent %d bytes through the wire", fd, length);
+void HttpServer::pushItIntoTheWire(int fdSocket, Request *request, Response *resp)
+{
+	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
+	int length = resp->getTotalLength();
+	if (request && fdSocket && cstr && length)
+		send(fdSocket, cstr, length, 0);
+	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
 	harl.trace("%s", cstr);
+}
 
+void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
+{
 	delete request;
-	delete processor;
 	delete resp->getHeader();
 	delete resp->getBodyBin();
 	delete resp;
 
 }
 
-//ProcessorLocator HttpServer::getProcessorLocator()
-//{
-//	return processorLocator;
-//}
-//
-//void HttpServer::addLocationToProcessor(std::string ext, Processor *processor)
-//{
-//	processorLocator.addLocationToProcessor(ext, processor);
-//}
+void shutFd(int fd)
+{
+	if (fd >= 0)
+	{
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
+		fd = -1;
+	}
+}
 

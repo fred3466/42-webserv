@@ -22,7 +22,7 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplDirectFs::process(Request *request)
+Response* ProcessorImplDirectFs::process(Request *request, Response *response)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -112,4 +112,9 @@ Response* ProcessorImplDirectFs::process(Request *request)
 
 	delete fu;
 	return resp;
+}
+
+std::string ProcessorImplDirectFs::toString()
+{
+	return "ProcessorImplDirectFs";
 }

@@ -22,5 +22,6 @@ public:
 	void setProcessor(Processor *processor);
 	std::string getUrlPath();
 	void setUrlPath(std::string urlPath);
+	virtual std::string toString();
 };
 

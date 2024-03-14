@@ -27,8 +27,9 @@ private:
 public:
 	ProcessorImplCgiBinPhp();
 	~ProcessorImplCgiBinPhp();
-	virtual Response* process(Request *request);
+	virtual Response* process(Request *request, Response *response);
 	virtual void setConfig(Config *conf);
+	virtual std::string toString();
 
 	std::string readRequest(int clientFd);
 	void sendResponse(int clientFd, const std::string &response);
