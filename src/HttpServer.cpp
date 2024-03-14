@@ -13,26 +13,26 @@ HttpServer::~HttpServer()
 {
 }
 
-void shutFd(int fd)
-{
-	if (fd >= 0)
-	{
-		shutdown(fd, SHUT_RDWR);
-		close(fd);
-		fd = -1;
-	}
-}
 void HttpServer::init(Config *c)
 {
 	netStruct ns;
+
+	config = c;
+	instantiateProcessLocator();
+
+	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
+			c->getParamInt("port", 8080));
+	connector->registerIt(this);
+
+	connector->doListen();
+}
+
+void HttpServer::instantiateProcessLocator()
+{
 	StringUtil su = StringUtil();
-//	TODO new
+	//	TODO new
 	processorLocator = new ProcessorLocator();
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-
-// config = ConfigFactory().build(fileConf);
-//	config.read("config.properties");
-	config = c;
 	std::map<std::string, std::string> *locations = config->getParamStrStartingWith("location@");
 	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
 	{
@@ -57,16 +57,37 @@ void HttpServer::init(Config *c)
 		}
 
 	}
-
-	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
-			c->getParamInt("port", 8080));
-	connector->registerIt(this);
-
-	connector->doListen();
 }
 
 void HttpServer::onIncomming(ConnectorEvent e)
 {
+}
+
+void HttpServer::onDataReceiving(ConnectorEvent e)
+{
+	std::string rawRequest = e.getTemp();
+	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+	Request *request = RequestFactory().build(reqHeader);
+	request->setFdClient(e.getFdClient());
+//	req->dump();
+
+	Response *resp;
+	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
+	std::vector<Processor*> *processorList = processorFactory.build(request);
+	resp = runProcessorChain(processorList, request, resp);
+
+	int fdSocket = e.getFdClient();
+	pushItIntoTheWire(fdSocket, request, resp);
+
+	cleanUp(e, request, resp);
+
+	//	if (bodyLen)
+	//	{
+	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
+	//		os.write(cstr, length);
+	//		os.close();
+	//	}
+
 }
 
 Response* HttpServer::runProcessorChain(std::vector<Processor*> *processorList, Request *request, Response *resp)
@@ -129,31 +150,14 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	return cstr;
 }
 
-void HttpServer::onDataReceiving(ConnectorEvent e)
+void HttpServer::pushItIntoTheWire(int fdSocket, Request *request, Response *resp)
 {
-	std::string rawRequest = e.getTemp();
-	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-	Request *request = RequestFactory().build(reqHeader);
-	request->setFdClient(e.getFdClient());
-//	req->dump();
-
-	Response *resp;
-	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<Processor*> *processorList = processorFactory.build(request);
-	resp = runProcessorChain(processorList, request, resp);
-
-	int fdSocket = e.getFdClient();
-	pushItIntoTheWire(fdSocket, request, resp);
-
-	cleanUp(e, request, resp);
-
-	//	if (bodyLen)
-	//	{
-	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
-	//		os.write(cstr, length);
-	//		os.close();
-	//	}
-
+	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
+	int length = resp->getTotalLength();
+	if (request && fdSocket && cstr && length)
+		send(fdSocket, cstr, length, 0);
+	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
+	harl.trace("%s", cstr);
 }
 
 void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
@@ -165,22 +169,13 @@ void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
 
 }
 
-void HttpServer::pushItIntoTheWire(int fdSocket, Request *request, Response *resp)
+void shutFd(int fd)
 {
-	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
-	int length = resp->getTotalLength();
-	if (request && fdSocket && cstr && length)
-		send(fdSocket, cstr, length, 0);
-	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
-	harl.trace("%s", cstr);
+	if (fd >= 0)
+	{
+		shutdown(fd, SHUT_RDWR);
+		close(fd);
+		fd = -1;
+	}
 }
-//ProcessorLocator HttpServer::getProcessorLocator()
-//{
-//	return processorLocator;
-//}
-//
-//void HttpServer::addLocationToProcessor(std::string ext, Processor *processor)
-//{
-//	processorLocator.addLocationToProcessor(ext, processor);
-//}
 
