@@ -1,5 +1,4 @@
 #include "RequestHttpHeader.h"
-#include <list>
 
 RequestHttpHeader::~RequestHttpHeader()
 {
@@ -23,26 +22,13 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
 			this->setUri(std::string(key));
-		} else if (!lineStr.compare(0, 6, "Cookie:"))
-		{
-			lineStr.erase(0, 7);
-			size_t pos = 0;
-			std::string token;
-			Cookie c;
-			while ((pos = lineStr.find("; ")) != std::string::npos)
-			{
-    			token = lineStr.substr(0, pos);
-    			lineStr.erase(0, pos + 2);
-				c.setName(token.substr(0, token.find("=")));
-				c.setValue(token.substr(token.find("=") + 1));
-				this->addCookie(c);
-			}
 		} else
 		{
 			lineSs.getline(val, 2048, '\n');
 			this->addField(std::string(val));
 		}
 	}
+	this->cookies = CookieFactory().build(this);
 }
 
 std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
@@ -106,15 +92,15 @@ void RequestHttpHeader::setVersion(const std::string &v)
 
 Cookie RequestHttpHeader::getCookie(const std::string &cookieName)
 {
-	return cookieHelper.getCookie(cookies, cookieName);
+	return cookieHelper.getCookie(*cookies, cookieName);
 }
 
 bool RequestHttpHeader::addCookie(const Cookie &cookie)
 {
 	bool ret = false;
-	int i = cookies.size();
-	cookies = cookieHelper.addCookie(cookies, cookie);
-	if (cookies.size() > i)
+	int i = cookies->size();
+	*cookies = cookieHelper.addCookie(*cookies, cookie);
+	if (cookies->size() > i)
 		ret = true;
 	return ret;
 }
@@ -122,14 +108,14 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 {
 	bool ret = false;
-	int i = cookies.size();
-	cookies = cookieHelper.removeCookie(cookies, cookieName);
-	if (cookies.size() < i)
+	int i = cookies->size();
+	*cookies = cookieHelper.removeCookie(*cookies, cookieName);
+	if (cookies->size() < i)
 		ret = true;
 	return ret;
 }
 
 std::string RequestHttpHeader::getCookieString()
 {
-	return cookieHelper.getCookieString(cookies);
+	return cookieHelper.getCookieString(*cookies);
 }

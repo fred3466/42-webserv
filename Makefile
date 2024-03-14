@@ -43,6 +43,7 @@ SRCS = \
     util/StringUtil.cpp \
 	cookie/Cookie.cpp \
 	cookie/CookieHelper.cpp \
+	cookie/factory/CookieFactory.cpp \
 	main.cpp 
 	
 OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)

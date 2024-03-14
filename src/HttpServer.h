@@ -30,6 +30,8 @@
 #include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"
+#include "cookie/Cookie.h"
+#include "cookie/factory/CookieFactory.h"
 
 class HttpServer: public ConnectorListener
 {
