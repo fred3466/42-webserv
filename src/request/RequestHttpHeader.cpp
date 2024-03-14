@@ -1,4 +1,5 @@
 #include "RequestHttpHeader.h"
+#include <list>
 
 RequestHttpHeader::~RequestHttpHeader()
 {
@@ -22,6 +23,20 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
 			this->setUri(std::string(key));
+		} else if (!lineStr.compare(0, 6, "Cookie:"))
+		{
+			lineStr.erase(0, 7);
+			size_t pos = 0;
+			std::string token;
+			Cookie c;
+			while ((pos = lineStr.find("; ")) != std::string::npos)
+			{
+    			token = lineStr.substr(0, pos);
+    			lineStr.erase(0, pos + 2);
+				c.setName(token.substr(0, token.find("=")));
+				c.setValue(token.substr(token.find("=") + 1));
+				this->addCookie(c);
+			}
 		} else
 		{
 			lineSs.getline(val, 2048, '\n');
