@@ -17,6 +17,8 @@ void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string e
 {
 //	TODO new ici
 	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor);
+	Harl harl = Harl();
+	harl.debug(lp->toString());
 	locationToProcessorVector.push_back(lp);
 }
 

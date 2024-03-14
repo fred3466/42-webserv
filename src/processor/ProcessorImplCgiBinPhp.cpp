@@ -167,6 +167,10 @@ std::string ProcessorImplCgiBinPhp::generateHttpResponse(const std::string &cgiO
 	return response;
 }
 
+std::string ProcessorImplCgiBinPhp::toString()
+{
+	return "ProcessorImplCgiBinPhp";
+}
 //int ProcessorImplCgiBinPhp::getClientFd(int clientId)
 //{
 //	std::map<int, int>::const_iterator it = _clients.find(clientId);

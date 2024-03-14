@@ -23,4 +23,5 @@ public:
 	~ProcessorImplDirectFs();
 	Response* process(Request *request, Response *response);
 	void setConfig(Config *conf);
+	virtual std::string toString();
 };

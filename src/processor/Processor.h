@@ -10,4 +10,5 @@ public:
 	virtual ~Processor();
 	virtual Response* process(Request *request, Response *response) = 0;
 	virtual void setConfig(Config *conf) = 0;
+	virtual std::string toString()=0;
 };

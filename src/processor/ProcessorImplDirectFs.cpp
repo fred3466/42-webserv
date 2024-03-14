@@ -113,3 +113,8 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response)
 	delete fu;
 	return resp;
 }
+
+std::string ProcessorImplDirectFs::toString()
+{
+	return "ProcessorImplDirectFs";
+}
