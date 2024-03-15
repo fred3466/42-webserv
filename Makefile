@@ -64,12 +64,12 @@ prof:
 	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
 	
 clean:
-	rm -f $(OBJS)
+	@rm -f $(OBJS)
 	
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f debug
+	@rm -f $(NAME)
+	@rm -f debug
 re: 
 	@rm -f $(NAME) debug
 	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
