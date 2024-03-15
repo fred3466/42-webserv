@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+
 #include "../processor/Processor.h"
 
 class LocationToProcessor
@@ -22,5 +23,6 @@ public:
 	void setProcessor(Processor *processor);
 	std::string getUrlPath();
 	void setUrlPath(std::string urlPath);
+	std::string toString();
 };
 

@@ -11,7 +11,8 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplCgiBinPhp::process(Request *request)
+Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -19,45 +20,44 @@ Response* ProcessorImplCgiBinPhp::process(Request *request)
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
-	std::string root = config->getParamStr("root", "root");
-	std::string path = root + request->getUri();
-	harl.info(request->getUri() + " -> " + path);
+	std::string base_path = config->getParamStr("base_path", "base_path_missing");
 	char *body;
 //
-	if (isCGIRequest(request->getUri()))
-	{
-		// It's a CGI request
-		CGIHandler cgiHandler;
+//	if (isCGIRequest(request->getUri()))
+//	{
+	// It's a CGI request
+	CGIHandler cgiHandler;
 
-		// Prepare CGI environment variables
-		std::map<std::string, std::string> envVars = prepareCGIEnvironment(request); // @suppress("Invalid template argument")
+	// Prepare CGI environment variables
+	std::map<std::string, std::string> envVars = prepareCGIEnvironment(request);
 
-		// Determine script path from the URI
-		std::string scriptPath = getScriptPath(request->getUri());
+	// Determine script path from the URI
+	std::string scriptPath = base_path + request->getUri();
+	harl.debug(toString() + ":\t" + request->getUri() + " -> " + scriptPath);
 
-		// Execute the CGI script and get output
-		std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(), // @suppress("Invalid arguments")
-				request->getQueryString());
+	// Execute the CGI script and get output
+	std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(),
+			request->getQueryString());
 
-		// Generate HTTP response from CGI output
-		std::string httpResponse = generateHttpResponse(cgiOutput);
+	// Generate HTTP response from CGI output
+	std::string httpResponse = generateHttpResponse(cgiOutput);
 
-		// Send HTTP response back to the client
+	// Send HTTP response back to the client
 //		sendResponse(e.getFdClient(), httpResponse);
-	}
+//	}
 //
 	return resp;
 }
 
-bool ProcessorImplCgiBinPhp::isCGIRequest(const std::string &uri)
-{
-	// Check if URI starts with /cgi-bin/
-	return uri.find("/cgi-bin/") == 0;
-}
+//bool ProcessorImplCgiBinPhp::isCGIRequest(const std::string &uri)
+//{
+//	// Check if URI starts with /cgi-bin/
+//	return uri.find("/cgi-bin/") == 0;
+//}
 
-std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request) // @suppress("Invalid template argument") // @suppress("Member declaration not found")
+std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request)
 {
-	std::map<std::string, std::string> env = std::map<std::string, std::string>(); // @suppress("Invalid template argument")
+	std::map<std::string, std::string> env = std::map<std::string, std::string>();
 
 	// Populate environment variables
 	env["REQUEST_METHOD"] = request->getMethod();
@@ -148,9 +148,19 @@ std::string ProcessorImplCgiBinPhp::getScriptPath(const std::string &uri)
 {
 	// adapt for correct path !
 	// std::string basePath = "/home/parallels/Desktop/Parallels Shared Folders/42/webserv/src";
-	std::string basePath = "/tmp";
+	std::string basePath = "cgi-bin/";
 
 	return basePath + uri;
+}
+
+std::string ProcessorImplCgiBinPhp::getBasePath()
+{
+	return config->getParamStr("base_path", "cgi-bin/toto/");
+}
+
+void ProcessorImplCgiBinPhp::setBasePath(std::string basePath)
+{
+	config->addParam("base_path", basePath);
 }
 
 std::string ProcessorImplCgiBinPhp::generateHttpResponse(const std::string &cgiOutput)
@@ -167,6 +177,15 @@ std::string ProcessorImplCgiBinPhp::generateHttpResponse(const std::string &cgiO
 	return response;
 }
 
+void ProcessorImplCgiBinPhp::addProperty(std::string name, std::string value)
+{
+	config->addParam(name, value);
+}
+
+std::string ProcessorImplCgiBinPhp::toString()
+{
+	return "ProcessorImplCgiBinPhp";
+}
 //int ProcessorImplCgiBinPhp::getClientFd(int clientId)
 //{
 //	std::map<int, int>::const_iterator it = _clients.find(clientId);

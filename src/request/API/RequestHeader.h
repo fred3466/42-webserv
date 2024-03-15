@@ -19,4 +19,5 @@ public:
 	virtual void setUri(const std::string &uri)=0;
 	virtual const std::string& getVersion() const =0;
 	virtual void setVersion(const std::string &version)=0;
+	virtual std::string toString()=0;
 };

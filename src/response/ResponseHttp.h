@@ -5,11 +5,11 @@
 class ResponseHttp: public Response
 {
 private:
-	std::string status_line;
 	ResponseHeader *header;
 	std::string body;
 	char *bodyBin;
 	int bodyLength;
+	int totalLength;
 
 public:
 	ResponseHttp(ResponseHeader *header);
@@ -27,5 +27,8 @@ public:
 	int getBodyLength();
 	void setBodyLength(int len);
 	ResponseHeader* getHeader();
+	virtual int getTotalLength();
+	virtual void setTotalLength(int len);
+
 };
 

@@ -1,8 +1,0 @@
-23:14:21 **** Incremental Build of configuration Default for project webserv ****
-make -k -j4 re 
-rm -f 
-rm -f webserv
-rm -f debug
-
-23:14:25 Build Finished. 0 errors, 0 warnings. (took 3s.908ms)
-

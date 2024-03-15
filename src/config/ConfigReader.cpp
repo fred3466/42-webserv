@@ -158,6 +158,13 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			if (key == "location")
 			{
 				std::string urlPath = su.getNthTokenIfExists(toksFullKey, 2, "");
+				std::size_t ite = val.find('{');
+				if (ite != std::string::npos)
+					val.erase(ite, 1);
+				ite = val.find('}');
+				if (ite != std::string::npos)
+					val.erase(ite, 1);
+
 				c->addParam("location@" + urlPath, val);
 			}
 

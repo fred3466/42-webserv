@@ -40,8 +40,15 @@ private:
 	Connector *connector;
 	Config *config;
 	Harl harl;
-	ProcessorFactory processorFactory;
+	//	ProcessorFactory processorFactory;
+	ProcessorLocator *processorLocator;
 	//	ProcessorLocator processorLocator;
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+			Response *resp);
+	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	void pushItIntoTheWire(int fdSocket, Request *request, Response *resp);
+	void cleanUp(ConnectorEvent e, Request *request, Response *resp);
+	void instantiateProcessLocator();
 
 public:
 	HttpServer();
