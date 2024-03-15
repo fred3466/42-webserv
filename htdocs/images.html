@@ -39,7 +39,24 @@
         p.paragraph-color {
             color: #a4e7f0;
         }
+        /* Styles for the image blocks */
+        .image-block {
+            margin-bottom: 20px; /* Adds space between the images */
+        }
 
+        .image-block img {
+            width: 100%; /* Adjust this to manage the size of the images */
+            max-width: 200px; /* Example max-width to keep images from being too large */
+            height: auto; /* Maintains aspect ratio */
+            display: block; /* For centering if needed */
+            margin: 0 auto; /* Center the image */
+        }
+
+        .image-caption {
+            color: #a4e7f0; /* Styling for the caption */
+            text-align: center; /* Center the caption text */
+            margin-top: 10px; /* Space between the image and its caption */
+        }
     </style>
     <title>About - Simple Website</title>
 </head>
@@ -52,15 +69,30 @@
         <ul>
             <li><a href="index.html" class="nav-link">Home</a></li>
             <li><a href="about.html" class="nav-link">About</a></li>
-            <li><a href="contact.html" class="nav-link">Contact</a></li>
+            <li><a href="images.html" class="nav-link">Images</a></li>
         </ul>
     </nav>
     <main class="container">
         <div class="grid">
             <section>
                 <!-- Customize your About page content here -->
-                <h2 class="title-color">Contact:</h2>
-                <p class="paragraph-color">Ecole 42, Perpignan.</p>
+                <h2 class="title-color">Images test:</h2>
+                <div class="image-block">
+                    <img src="jpeg.jpg" alt="JPG Image">
+                    <p class="image-caption">image JPG</p>
+                </div>
+                <div class="image-block">
+                    <img src="png.png" alt="PNG Image">
+                    <p class="image-caption">image PNG</p>
+                </div>
+                <div class="image-block">
+                    <img src="webp.webp" alt="WEBP Image">
+                    <p class="image-caption">image WEBP</p>
+                </div>
+                <div class="image-block">
+                    <img src="gif.gif" alt="GIF Image">
+                    <p class="image-caption">image GIF</p>
+                </div>
             </section>
         </div>
     </main>

@@ -4,8 +4,7 @@ RequestHttpHeader::~RequestHttpHeader()
 {
 }
 
-RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) :
-		statusLine(), fields()
+RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 {
 	std::stringstream lines;
 	lines.str(rawRequest->c_str());
@@ -48,6 +47,15 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 	return ret;
 }
 
+std::string RequestHttpHeader::toString()
+{
+	std::string ret = "";
+	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri() + "]\t[" + getVersion() + "]\n";
+
+	StringUtil su = StringUtil();
+	ret += su.dedoublonne(su.fromListToString(fields), "\n");
+	return ret;
+}
 void RequestHttpHeader::addField(std::string f)
 {
 	if (!f.empty())

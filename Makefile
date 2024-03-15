@@ -16,6 +16,7 @@ SRCS = \
 	request/RequestHttp.cpp \
 	request/factory/RequestFactory.cpp \
 	request/factory/RequestHeaderFactory.cpp \
+	parser/MultipartParser.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
 	processor/ProcessorImplCgiBinPhp.cpp \
@@ -23,6 +24,7 @@ SRCS = \
  	processor/Processor.cpp \
  	location/LocationToProcessor.cpp \
  	location/ProcessorLocator.cpp \
+	location/ProcessorAndLocationToProcessor.cpp \
 	mimeType/MimeType.cpp \
 	mimeType/MimeTypeHelper.cpp \
     HttpServer.cpp \
@@ -66,12 +68,12 @@ prof:
 	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
 	
 clean:
-	rm -f $(OBJS)
+	@rm -f $(OBJS)
 	
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f debug
+	@rm -f $(NAME)
+	@rm -f debug
 re: 
 	@rm -f $(NAME) debug
 	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g

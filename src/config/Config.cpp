@@ -99,5 +99,6 @@ Config& Config::operator =(Config &bis)
 {
 	this->alias = bis.alias;
 	this->kv = bis.kv;
-	return bis;
+
+	return *this;
 }

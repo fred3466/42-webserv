@@ -12,7 +12,7 @@ ResponseHttp::~ResponseHttp()
 
 void ResponseHttp::setStatusLine(std::string sline)
 {
-	status_line = sline;
+	header->setStatusLine(sline);
 }
 
 void ResponseHttp::setBody(std::string sline)
@@ -21,7 +21,7 @@ void ResponseHttp::setBody(std::string sline)
 }
 std::string ResponseHttp::getStatusLine()
 {
-	return status_line;
+	return header->getStatusLine();
 }
 ResponseHeader* ResponseHttp::getHeader()
 {

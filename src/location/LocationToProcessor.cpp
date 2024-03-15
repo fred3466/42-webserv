@@ -64,5 +64,5 @@ void LocationToProcessor::setUrlPath(std::string urlPath)
 
 std::string LocationToProcessor::toString()
 {
-	return "LocationToProcessor : [" + urlPath + "] \t [" + extension + "] \t [" + processor->toString() + "]";
+	return ("LocationToProcessor : [" + urlPath + "] \t [" + extension + "] \t [" + getProcessor()->toString() + "]").c_str();
 }

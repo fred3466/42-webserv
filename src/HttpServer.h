@@ -30,10 +30,10 @@
 #include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"
+#include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
-
-class HttpServer: public ConnectorListener
+class HttpServer : public ConnectorListener
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -44,7 +44,8 @@ private:
 	//	ProcessorFactory processorFactory;
 	ProcessorLocator *processorLocator;
 	//	ProcessorLocator processorLocator;
-	Response* runProcessorChain(std::vector<Processor*> *processorList, Request *request, Response *resp);
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+			Response *resp);
 	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	void pushItIntoTheWire(int fdSocket, Request *request, Response *resp);
 	void cleanUp(ConnectorEvent e, Request *request, Response *resp);
@@ -58,17 +59,15 @@ public:
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 
-//	ProcessorLocator getProcessorLocator();
-//	void addLocationToProcessor(std::string ext, Processor *processor);
+	//	ProcessorLocator getProcessorLocator();
+	//	void addLocationToProcessor(std::string ext, Processor *processor);
 
-//	std::string readRequest(int clientFd);
-//	void sendResponse(int clientFd, const std::string &response);
-//	void closeClient(int clientFd);
-//	int getListenFd();
-//	bool isCGIRequest(const std::string &uri);
-//	std::string getScriptPath(const std::string &uri);
-//	std::string generateHttpResponse(const std::string &cgiOutput);
-//	int getClientFd(int clientId);
-
+	//	std::string readRequest(int clientFd);
+	//	void sendResponse(int clientFd, const std::string &response);
+	//	void closeClient(int clientFd);
+	//	int getListenFd();
+	//	bool isCGIRequest(const std::string &uri);
+	//	std::string getScriptPath(const std::string &uri);
+	//	std::string generateHttpResponse(const std::string &cgiOutput);
+	//	int getClientFd(int clientId);
 };
-

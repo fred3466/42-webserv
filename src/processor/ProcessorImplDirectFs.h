@@ -21,7 +21,9 @@ private:
 public:
 	ProcessorImplDirectFs();
 	~ProcessorImplDirectFs();
-	Response* process(Request *request, Response *response);
+	Response* process(Request *request, Response *response,
+			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	void setConfig(Config *conf);
 	virtual std::string toString();
+	virtual void addProperty(std::string name, std::string value);
 };

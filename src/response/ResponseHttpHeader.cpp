@@ -14,17 +14,17 @@ void ResponseHttpHeader::addField(std::string f)
 	if (!f.empty())
 		fields.push_back(f);
 }
-const std::list<std::string>& ResponseHttpHeader::getFields() const
+std::list<std::string> ResponseHttpHeader::getFields()
 {
 	return fields;
 }
 
-const std::string& ResponseHttpHeader::getStatusLine() const
+std::string ResponseHttpHeader::getStatusLine()
 {
 	return statusLine;
 }
 
-void ResponseHttpHeader::setStatusLine(const std::string &statusLine)
+void ResponseHttpHeader::setStatusLine(std::string statusLine)
 {
 	this->statusLine = statusLine;
 }
