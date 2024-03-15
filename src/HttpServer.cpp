@@ -68,7 +68,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	std::string rawRequest = e.getTemp();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
 	//seg fault
-	//CookieFactory().build(reqHeader);
+	CookieFactory().build(reqHeader);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
 //	req->dump();

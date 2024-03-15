@@ -91,15 +91,15 @@ void RequestHttpHeader::setVersion(const std::string &v)
 
 Cookie RequestHttpHeader::getCookie(const std::string &cookieName)
 {
-	return cookieHelper.getCookie(*cookies, cookieName);
+	return cookieHelper.getCookie(cookies, cookieName);
 }
 
 bool RequestHttpHeader::addCookie(const Cookie &cookie)
 {
 	bool ret = false;
-	int i = cookies->size();
-	*cookies = cookieHelper.addCookie(*cookies, cookie);
-	if (cookies->size() > i)
+	int i = cookies.size();
+	cookies = cookieHelper.addCookie(cookies, cookie);
+	if (cookies.size() > i)
 		ret = true;
 	return ret;
 }
@@ -107,14 +107,14 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 {
 	bool ret = false;
-	int i = cookies->size();
-	*cookies = cookieHelper.removeCookie(*cookies, cookieName);
-	if (cookies->size() < i)
+	int i = cookies.size();
+	cookies = cookieHelper.removeCookie(cookies, cookieName);
+	if (cookies.size() < i)
 		ret = true;
 	return ret;
 }
 
 std::string RequestHttpHeader::getCookieString()
 {
-	return cookieHelper.getCookieString(*cookies);
+	return cookieHelper.getCookieString(cookies);
 }

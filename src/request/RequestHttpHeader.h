@@ -13,7 +13,7 @@ class RequestHttpHeader: public RequestHeader
 private:
 	std::string statusLine;
 	std::list<std::string> fields;
-	std::list<Cookie> *cookies;
+	std::list<Cookie> cookies;
 	CookieHelper cookieHelper;
 	std::string method;
 	std::string uri;
