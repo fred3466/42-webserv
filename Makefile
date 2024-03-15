@@ -24,6 +24,7 @@ SRCS = \
  	processor/Processor.cpp \
  	location/LocationToProcessor.cpp \
  	location/ProcessorLocator.cpp \
+	location/ProcessorAndLocationToProcessor.cpp \
 	mimeType/MimeType.cpp \
 	mimeType/MimeTypeHelper.cpp \
     HttpServer.cpp \
