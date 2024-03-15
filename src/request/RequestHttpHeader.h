@@ -8,7 +8,7 @@
 class RequestHttpHeader: public RequestHeader
 {
 private:
-	std::string statusLine;
+	//	std::string statusLine;
 	std::list<std::string> fields;
 	std::string method;
 	std::string uri;
@@ -27,4 +27,5 @@ public:
 	virtual void setUri(const std::string &uri);
 	virtual const std::string& getVersion() const;
 	virtual void setVersion(const std::string &version);
+	virtual std::string toString();
 };

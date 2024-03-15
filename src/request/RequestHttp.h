@@ -10,7 +10,6 @@
 class RequestHttp: public Request
 {
 private:
-	std::string uri, method;
 	RequestHeader *header;
 	int fdClient;
 

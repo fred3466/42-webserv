@@ -14,8 +14,8 @@ public:
 	virtual ~ResponseHttpHeader();
 
 	virtual void addField(std::string f);
-	virtual const std::list<std::string>& getFields() const;
-	virtual const std::string& getStatusLine() const;
-	virtual void setStatusLine(const std::string &statusLine);
+	virtual std::list<std::string> getFields();
+	virtual std::string getStatusLine();
+	virtual void setStatusLine(std::string statusLine);
 };
 

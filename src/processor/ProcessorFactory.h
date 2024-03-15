@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 
+#include "../config.h"
 #include "Processor.h"
-#include "ProcessorImplDirectFs.h"
 #include "../location/ProcessorLocator.h"
+#include "../location/ProcessorAndLocationToProcessor.h"
 #include "../util/StringUtil.h"
 #include REQUEST_HEADER_IMPL_INC_PHP
-
+#include REQUEST_HEADER_IMPL_INC_STATIC
 class ProcessorFactory
 {
 private:
@@ -16,5 +17,5 @@ private:
 	~ProcessorFactory();
 	ProcessorFactory(ProcessorLocator *pl);
 	Processor* build(std::string procName);
-	std::vector<Processor*>* build(Request *request);
+	std::vector<ProcessorAndLocationToProcessor*>* build(Request *request);
 };

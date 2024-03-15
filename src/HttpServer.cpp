@@ -37,22 +37,37 @@ void HttpServer::instantiateProcessLocator()
 	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
 	{
 		std::string key = ite->first;
+		su.trim(key);
 		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
 		std::string val = ite->second;
+		su.trim(val);
+
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
 		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
 		{
 			std::string directive = *iteVal;
+			su.trim(directive);
+			if (directive == "")
+				continue;
 			std::vector<std::string> toksDirective = su.tokenize(directive, ' ');
 			std::string dirName = su.getNthTokenIfExists(toksDirective, 0, "");
+			su.trim(dirName);
+			Processor *processor;
 			if (dirName == "SetHandler")
 			{
 				std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
 				std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
-				Processor *processor = processorFactory.build(processorName);
+				processor = processorFactory.build(processorName);
 				processor->setConfig(config);
 
 				processorLocator->addLocationToProcessor(urlpath, extension, processor);
+			}
+			else
+			{
+				std::string nameProperty = su.getNthTokenIfExists(toksDirective, 0, "");
+				std::string valProperty = su.getNthTokenIfExists(toksDirective, 1, "");
+				processor->addProperty(nameProperty, valProperty);
+
 			}
 		}
 
@@ -71,9 +86,12 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	request->setFdClient(e.getFdClient());
 //	req->dump();
 
+	harl.info("HttpServer::onDataReceiving : %s", request->getUri().c_str());
+	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
+
 	Response *resp;
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<Processor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 
 	int fdSocket = e.getFdClient();
@@ -81,25 +99,32 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	cleanUp(e, request, resp);
 
-	//	if (bodyLen)
-	//	{
-	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
-	//		os.write(cstr, length);
-	//		os.close();
-	//	}
+//	if (bodyLen)
+//	{
+//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
+//		os.write(cstr, length);
+//		os.close();
+//	}
 
 }
 
-Response* HttpServer::runProcessorChain(std::vector<Processor*> *processorList, Request *request, Response *resp)
+Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+		Response *resp)
 {
-	for (std::vector<Processor*>::iterator ite = processorList->begin(); ite != processorList->end();
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
 			ite++
 			)
 	{
-		Processor *processor = *ite; //		processorList->at(0);
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
+		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
+		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
 		processor->setConfig(config);
-		resp = processor->process(request, resp);
-		delete processor;
+
+		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
+				processor->toString().c_str());
+		resp = processor->process(request, resp, processorAndLocationToProcessor);
+//		delete processor;
 	}
 	return resp;
 }

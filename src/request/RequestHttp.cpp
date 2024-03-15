@@ -10,16 +10,6 @@ RequestHttp::RequestHttp(RequestHeader *head) :
 	header = head;
 }
 
-//void RequestHttp::dump() const
-//{
-//	std::map<std::string, std::string>::const_iterator ite = kv.begin();
-//	while (ite != kv.end())
-//	{
-//		std::cout << ite->first << " -> " << ite->second << std::endl;
-//		ite++;
-//	}
-//}
-
 RequestHeader* RequestHttp::getHeader() const
 {
 	return header;

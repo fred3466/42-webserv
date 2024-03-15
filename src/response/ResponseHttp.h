@@ -5,7 +5,6 @@
 class ResponseHttp: public Response
 {
 private:
-	std::string status_line;
 	ResponseHeader *header;
 	std::string body;
 	char *bodyBin;

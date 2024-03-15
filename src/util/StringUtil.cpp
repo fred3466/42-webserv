@@ -64,13 +64,12 @@ void StringUtil::ltrim(std::string &s)
 			*p == ' '
 					|| *p == '\t'
 					|| *p == '\n'
-			)
-			;)
+			); p++)
 		;
-	p++;
+//			p++;
 
-	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
-		p--;
+//	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
+//		p--;
 
 	if (p != s.begin())
 		s.erase(s.begin(), p);
@@ -111,6 +110,15 @@ bool StringUtil::isalnum(std::string s)
 	return i == s.length();
 }
 
+std::string StringUtil::dedoublonne(std::string s, std::string cherche)
+{
+	int chercheLen = cherche.length();
+	for (size_t ite = s.find(cherche + cherche); ite != std::string::npos; ite++)
+	{
+		s.erase(ite, chercheLen);
+	}
+	return s;
+}
 std::string StringUtil::normalizeSpaces(std::string s)
 {
 	int count = 0;

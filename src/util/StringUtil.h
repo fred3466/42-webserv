@@ -26,5 +26,6 @@ public:
 	std::vector<std::string> tokenize(std::string s, char sep);
 	std::string getNthTokenIfExists(std::vector<std::string> v, int index,
 			std::string defaultValue);
+	std::string dedoublonne(std::string s, std::string cherche);
 
 };
