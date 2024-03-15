@@ -1,4 +1,4 @@
-#include "Cookie.hpp"
+#include "Cookie.h"
 
 Cookie::Cookie()
 {

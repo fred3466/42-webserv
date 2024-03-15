@@ -1,79 +1,104 @@
-
-
-	#connector/ConnectorEventPublisher.cpp 
 NAME = webserv
-SRCS = \
-	Harl.cpp\
-	connector/Connector.cpp  \
-	connector/ConnectorEvent.cpp \
-	connector/ConnectorFactory.cpp \
-	connector/ConnectorListener.cpp \
-	connector/HttpConnector.cpp \
-	connector/TcpConnector.cpp \
-	request/API/Request.cpp \
-	request/API/RequestHeader.cpp \
-	request/RequestHttpHeader.cpp \
-	request/RequestHttp.cpp \
-	request/factory/RequestFactory.cpp \
-	request/factory/RequestHeaderFactory.cpp \
-	parser/MultipartParser.cpp \
-	processor/ProcessorFactory.cpp \
-	processor/ProcessorImplDirectFs.cpp \
-	processor/ProcessorImplCgiBinPhp.cpp \
-	processor/CGI/CGIHandler.cpp \
- 	processor/Processor.cpp \
- 	location/LocationToProcessor.cpp \
- 	location/ProcessorLocator.cpp \
-	location/ProcessorAndLocationToProcessor.cpp \
-	mimeType/MimeType.cpp \
-	mimeType/MimeTypeHelper.cpp \
-    HttpServer.cpp \
-    config.h \
-    config/Config.cpp \
-    config/ConfigFactory.cpp \
-   	config/ConfigReader.cpp \
-   	config/ConfigValidator.cpp \
-	response/API/Response.cpp \
-	response/API/ResponseHeader.cpp \
-	response/ResponseHttp.cpp \
-	response/ResponseHttpHeader.cpp \
- 	response/ResponseTools.cpp \
- 	response/factory/ResponseHeaderFactory.cpp \
-    response/factory/ResponseFactory.cpp \
-    util/FileUtil.cpp \
-    util/FileUtilFactory.cpp \
-    util/StringUtil.cpp \
-	main.cpp 
-	
-OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)
-INC  = 
 
-CC = g++
-CFLAGS =  -g -std=c++98  -pedantic-errors #-Wall -Wextra -Werror
-LFLAGS = #-lreadline 
+NAME		= webserv
+PROJECT		= webserver
+INCLUDE		= 
+SRC_DIR		= src/
+OBJ_DIR		= obj/
+CC			= g++
+CFLAGS		= -g -std=c++98 -pedantic-errors #-Wall -Wextra -Werror
+LFLAGS		= #-lreadline 
+RM			= rm -f
+AR			= ar rcs
 
-RM = rm -rf
+DEF_COLOR = \033[0;39m
+GRAY = \033[0;90m
+RED = \033[0;91m
+GREEN = \033[0;92m
+YELLOW = \033[0;93m
+BLUE = \033[0;94m
+MAGENTA = \033[0;95m
+CYAN = \033[0;96m
+WHITE = \033[0;97m
 
-all: $(NAME)
+SRC_FILES	= Harl\
+	connector/Connector  \
+	connector/ConnectorEvent \
+	connector/ConnectorFactory \
+	connector/ConnectorListener \
+	connector/HttpConnector \
+	connector/TcpConnector \
+	request/API/Request \
+	request/API/RequestHeader \
+	request/RequestHttpHeader \
+	request/RequestHttp \
+	request/factory/RequestFactory \
+	request/factory/RequestHeaderFactory \
+	parser/MultipartParser \
+	processor/ProcessorFactory \
+	processor/ProcessorImplDirectFs \
+	processor/ProcessorImplCgiBinPhp \
+	processor/CGI/CGIHandler \
+ 	processor/Processor \
+ 	location/LocationToProcessor \
+ 	location/ProcessorLocator \
+	location/ProcessorAndLocationToProcessor \
+	mimeType/MimeType \
+	mimeType/MimeTypeHelper \
+    HttpServer \
+    config/Config \
+    config/ConfigFactory \
+   	config/ConfigReader \
+   	config/ConfigValidator \
+	response/API/Response \
+	response/API/ResponseHeader \
+	response/ResponseHttp \
+	response/ResponseHttpHeader \
+ 	response/ResponseTools \
+ 	response/factory/ResponseHeaderFactory \
+    response/factory/ResponseFactory \
+    util/FileUtil \
+    util/FileUtilFactory \
+    util/StringUtil \
+	cookie/Cookie \
+	cookie/CookieHelper \
+	cookie/factory/CookieFactory \
+	main
 
-$(NAME):  
+SRC 		= 	$(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC_FILES)))
+OBJ 		= 	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
 
-	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
-	@echo "$(GREEN)Executable $(NAME) is ready.$(RESET)"
 
-prof:
-	$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME)_prof -g -pg
-	
+OBJF		=	.cache_exists
+
+all:		$(NAME)
+
+$(NAME):	$(OBJ)
+			@$(CC) $(OBJ) -o $(NAME)
+			@echo "$(GREEN)$(PROJECT) compiled!$(DEF_COLOR)"
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp | $(OBJF)
+			@mkdir -p $(OBJ_DIR)
+			@mkdir -p $(dir $(OBJ))
+			@echo "$(YELLOW)Compiling: $< $(DEF_COLOR)"
+			@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LFLAGS)
+
+$(OBJF):
+			@mkdir -p $(OBJ_DIR)
+			@mkdir -p $(dir $(OBJ))
+
 clean:
-	@rm -f $(OBJS)
-	
+			@$(RM) -rf $(OBJ_DIR)
+			@echo "$(BLUE)$(PROJECT) object files cleaned!$(DEF_COLOR)"
 
-fclean: clean
-	@rm -f $(NAME)
-	@rm -f debug
-re: 
-	@rm -f $(NAME) debug
-	@$(CC) ${INC} $(CFLAGS) $(addprefix src/,${SRCS}) $(LFLAGS) -o $(NAME) -g
+fclean:		clean
+			@$(RM) -f $(NAME)
+			@echo "$(CYAN)$(PROJECT) executable files cleaned!$(DEF_COLOR)"
 
+re:			fclean all
+			@echo "$(GREEN)Cleaned and rebuilt everything for $(PROJECT)!$(DEF_COLOR)"
 
-re: fclean all
+norm:
+			@norminette $(SRC) $(INCLUDE) $(LIBFT) | grep -v Norme -B1 || true
+
+.PHONY:		all clean fclean re norm

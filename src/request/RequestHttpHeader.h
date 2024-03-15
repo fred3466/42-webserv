@@ -3,6 +3,9 @@
 #include "API/Request.h"
 #include "API/RequestHeader.h"
 #include "../util/StringUtil.h"
+#include "../cookie/CookieHelper.h"
+#include "../cookie/factory/CookieFactory.h"
+#include <list>
 #include <map>
 
 class RequestHttpHeader: public RequestHeader
@@ -10,6 +13,8 @@ class RequestHttpHeader: public RequestHeader
 private:
 	//	std::string statusLine;
 	std::list<std::string> fields;
+	std::list<Cookie> cookies;
+	CookieHelper cookieHelper;
 	std::string method;
 	std::string uri;
 	std::string version;
@@ -28,4 +33,8 @@ public:
 	virtual const std::string& getVersion() const;
 	virtual void setVersion(const std::string &version);
 	virtual std::string toString();
+	virtual Cookie getCookie(const std::string &cookieName);
+	virtual bool addCookie(const Cookie &cookie);
+	virtual bool removeCookie(const std::string &cookieName);
+	virtual std::string getCookieString();
 };

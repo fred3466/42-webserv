@@ -1,12 +1,13 @@
-#include "../request/RequestHttpHeader.h"
-#include <ctime>
+#pragma once
+
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 class Cookie
 {
 private:
-	std::time_t _maxAge;
+	long _maxAge;
 	std::string _path;
 	std::string _domain;
 	std::string _secure;

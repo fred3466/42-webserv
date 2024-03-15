@@ -1,5 +1,7 @@
 webserv
 /Default/
+/obj/
+.vscode/
 .vscode/launch.json
 .vscode/targets.log
 out2.gif

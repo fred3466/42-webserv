@@ -29,6 +29,5 @@ public:
 	ResponseHeader* getHeader();
 	virtual int getTotalLength();
 	virtual void setTotalLength(int len);
-
 };
 
