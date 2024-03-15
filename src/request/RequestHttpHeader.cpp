@@ -27,6 +27,8 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 			this->addField(std::string(val));
 		}
 	}
+	//cookie set plusieurs fois ?
+	//CookieFactory().build(this);
 }
 
 std::string RequestHttpHeader::getFieldValue(std::string fieldName) const

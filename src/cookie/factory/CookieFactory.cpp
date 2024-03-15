@@ -33,4 +33,5 @@ void CookieFactory::build(RequestHeader *header)
 		c.setValue(token.substr(token.find("=") + 1));
 		header->addCookie(c);
 	}
+	Harl().debug(header->getCookieString());
 }

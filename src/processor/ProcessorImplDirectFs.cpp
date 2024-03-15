@@ -103,7 +103,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
 	}
 //---------------------testing cooking------------------
-	Cookie cookie;
+/*	Cookie cookie;
 	cookie.setName("TEST");
 	cookie.setValue("42");
 	long age = 3600;
@@ -126,14 +126,14 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	cookie.setMaxAge(age);
 	cookie.setDomain("localhost");
 	cookie.setPath("/");
-	resp->getHeader()->addCookie(cookie);
+	resp->getHeader()->addCookie(cookie);*/
 //-----------------------------------------------------
 //    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
 //    _response_content.append(statusCodeString(_code));
 //    _response_content.append("\r\n");
 //	TODO : adpater le code retour HTTP dans la réponse, au résultat de l'exécution de process()
 	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-	resp->getHeader()->addField(resp->getHeader()->getCookieString());
+//	resp->getHeader()->addField(resp->getHeader()->getCookieString());
 	resp->getHeader()->addField("\r\n");
 //	resp->setBody("<html><body>" + body + "</body></html>");
 //	resp->setBody(body);
