@@ -16,6 +16,7 @@ SRCS = \
 	request/RequestHttp.cpp \
 	request/factory/RequestFactory.cpp \
 	request/factory/RequestHeaderFactory.cpp \
+	parser/MultipartParser.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
 	processor/ProcessorImplCgiBinPhp.cpp \

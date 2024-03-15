@@ -26,7 +26,7 @@ void HttpServer::init(Config *c)
 {
 	netStruct ns;
 	StringUtil su = StringUtil();
-//	TODO new
+	//	TODO new
 	ProcessorLocator *processorLocator = new ProcessorLocator();
 	processorFactory = ProcessorFactory(processorLocator);
 
@@ -55,11 +55,10 @@ void HttpServer::init(Config *c)
 				processorLocator->addLocationToProcessor(urlpath, extension, processor);
 			}
 		}
-
 	}
 
 	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
-			c->getParamInt("port", 8080));
+										 c->getParamInt("port", 8080));
 	connector->registerIt(this);
 
 	connector->doListen();
@@ -68,15 +67,16 @@ void HttpServer::init(Config *c)
 void HttpServer::onIncomming(ConnectorEvent e)
 {
 }
+
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getTemp();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
-//	req->dump();
+	//	req->dump();
 
-	std::vector<Processor*> *processorList = processorFactory.build(request);
+	std::vector<Processor *> *processorList = processorFactory.build(request);
 
 	Processor *processor = processorList->at(0);
 	processor->setConfig(config);
@@ -84,13 +84,11 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	StringUtil stringUtil;
 	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields());
+		resp->getHeader()->getFields());
 	std::string statusLine = resp->getHeader()->getStatusLine();
 
-//Send Response
-	std::string statusHeaderBody = resp->getHeader()->getStatusLine()
-			+ fieldsString
-			+ std::string(resp->getBody());
+	// Send Response
+	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + std::string(resp->getBody());
 
 	int statusLen = statusLine.length();
 	int headerLen = fieldsString.length();
@@ -138,16 +136,109 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	delete resp->getHeader();
 	delete resp->getBodyBin();
 	delete resp;
-
 }
 
-//ProcessorLocator HttpServer::getProcessorLocator()
+// void HttpServer::onDataReceiving(ConnectorEvent e)
+// {
+// 	std::string rawRequest = e.getTemp();
+// 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+// 	Request *request = RequestFactory().build(reqHeader);
+// 	request->setFdClient(e.getFdClient());
+// 	//	req->dump();
+
+// 	RequestHttp *httpReq = dynamic_cast<RequestHttp *>(request);
+// 	if (httpReq != NULL)
+// 	{
+// 		std::string body = httpReq->getBody();
+// 		std::string contentType = httpReq->getHeaderFieldValue("Content-Type");
+// 		size_t boundaryPos = contentType.find("boundary=");
+
+// 		if (boundaryPos != std::string::npos && contentType.find("multipart/form-data") != std::string::npos)
+// 		{
+// 			std::string boundary = contentType.substr(boundaryPos + 9);
+// 			MultipartParser parser(boundary);
+// 			std::string targetDir = "./uploads"; // Target directory for file uploads
+
+// 			// Parse Multipart Data and save files
+// 			parser.parseMultipartData(body, targetDir);
+
+// 			// Generate and send response for successful file upload
+// 			std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nFiles uploaded successfully.\r\n";
+// 			send(e.getFdClient(), response.c_str(), response.length(), 0);
+
+// 			delete request;
+// 			return;
+// 		}
+
+// 		std::vector<Processor *> *processorList = processorFactory.build(request);
+
+// 		Processor *processor = processorList->at(0);
+// 		processor->setConfig(config);
+// 		Response *resp = processor->process(request);
+
+// 		StringUtil stringUtil;
+// 		std::string fieldsString = stringUtil.fromListToString(
+// 			resp->getHeader()->getFields());
+// 		std::string statusLine = resp->getHeader()->getStatusLine();
+
+// 		// Send Response
+// 		std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + std::string(resp->getBody());
+
+// 		int statusLen = statusLine.length();
+// 		int headerLen = fieldsString.length();
+// 		int bodyLen = resp->getBodyLength();
+
+// 		int length = statusLen + headerLen + bodyLen;
+
+// 		if (length <= 0)
+// 		{
+// 			delete request;
+// 			delete processor;
+// 			delete resp->getHeader();
+// 			delete resp->getBodyBin();
+// 			delete resp;
+// 			return;
+// 		}
+
+// 		char *cstr = new char[length + 0]();
+// 		char *cstrSave = cstr;
+// 		char **cstrPtr = &cstr;
+
+// 		std::memcpy(*cstrPtr, statusLine.c_str(), statusLen);
+// 		*cstrPtr += statusLen + 0;
+// 		std::memcpy(*(cstrPtr), fieldsString.c_str(), headerLen);
+// 		*cstrPtr += headerLen + 0;
+// 		std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
+
+// 		cstr = cstrSave;
+
+// 		//	if (bodyLen)
+// 		//	{
+// 		//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
+// 		//		os.write(cstr, length);
+// 		//		os.close();
+// 		//	}
+
+// 		int fd = e.getFdClient();
+// 		if (request && fd && cstr && length)
+// 			send(fd, cstr, length, 0);
+// 		harl.debug("%d sent %d bytes through the wire", fd, length);
+// 		harl.trace("%s", cstr);
+
+// 		delete request;
+// 		delete processor;
+// 		delete resp->getHeader();
+// 		delete resp->getBodyBin();
+// 		delete resp;
+// 	}
+// }
+
+// ProcessorLocator HttpServer::getProcessorLocator()
 //{
 //	return processorLocator;
-//}
+// }
 //
-//void HttpServer::addLocationToProcessor(std::string ext, Processor *processor)
+// void HttpServer::addLocationToProcessor(std::string ext, Processor *processor)
 //{
 //	processorLocator.addLocationToProcessor(ext, processor);
-//}
-
+// }

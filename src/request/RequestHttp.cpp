@@ -4,13 +4,12 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *head) :
-		fdClient(-1)
+RequestHttp::RequestHttp(RequestHeader *head) : fdClient(-1)
 {
 	header = head;
 }
 
-//void RequestHttp::dump() const
+// void RequestHttp::dump() const
 //{
 //	std::map<std::string, std::string>::const_iterator ite = kv.begin();
 //	while (ite != kv.end())
@@ -18,9 +17,9 @@ RequestHttp::RequestHttp(RequestHeader *head) :
 //		std::cout << ite->first << " -> " << ite->second << std::endl;
 //		ite++;
 //	}
-//}
+// }
 
-RequestHeader* RequestHttp::getHeader() const
+RequestHeader *RequestHttp::getHeader() const
 {
 	return header;
 }
@@ -59,7 +58,7 @@ void RequestHttp::addField(std::string rawField) const
 	getHeader()->addField(rawField);
 }
 
-const std::list<std::string>& RequestHttp::getFields() const
+const std::list<std::string> &RequestHttp::getFields() const
 {
 	return header->getFields();
 }
@@ -80,4 +79,14 @@ int RequestHttp::getFdClient() const
 void RequestHttp::setFdClient(int fd)
 {
 	fdClient = fd;
+}
+
+void RequestHttp::setBody(const std::string &b)
+{
+	body = b;
+}
+
+const std::string &RequestHttp::getBody() const
+{
+	return body;
 }
