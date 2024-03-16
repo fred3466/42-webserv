@@ -1,5 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/fbourgue/0-wsp/webserv'
-g++  -g -std=c++98  -pedantic-errors  src/Harl.cpp src/connector/Connector.cpp src/connector/ConnectorEvent.cpp src/connector/ConnectorFactory.cpp src/connector/ConnectorListener.cpp src/connector/HttpConnector.cpp src/request/Request.cpp src/request/RequestHttp.cpp src/request/RequestFactory.cpp src/processor/ProcessorFactory.cpp src/processor/ProcessorImplDirectFs.cpp src/processor/Processor.cpp src/HttpServer.cpp src/config.h src/config/Config.cpp src/config/ConfigFactory.cpp src/response/API/Response.cpp src/response/API/ResponseHeader.cpp src/response/ResponseHttp.cpp src/response/ResponseHttpHeader.cpp src/response/ResponseTools.cpp src/response/factory/ResponseHeaderFactory.cpp src/response/factory/ResponseFactory.cpp src/util/FileUtil.cpp src/util/FileUtilFactory.cpp src/util/StringUtil.cpp src/main.cpp  -o webserv -g
-make: Leaving directory '/home/fbourgue/0-wsp/webserv'
- 

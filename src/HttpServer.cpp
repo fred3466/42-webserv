@@ -4,6 +4,7 @@
 #include <iostream>
 #include <ostream>
 #include <map>
+#include <string>
 
 HttpServer::HttpServer() : harl(), connector(), config(), processorLocator()
 {
@@ -67,10 +68,8 @@ void HttpServer::instantiateProcessLocator()
 				std::string nameProperty = su.getNthTokenIfExists(toksDirective, 0, "");
 				std::string valProperty = su.getNthTokenIfExists(toksDirective, 1, "");
 				processor->addProperty(nameProperty, valProperty);
-
 			}
 		}
-
 	}
 }
 
@@ -82,9 +81,11 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getTemp();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+	//seg fault
+	CookieFactory().build(reqHeader);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
-//	req->dump();
+	//	req->dump();
 
 	harl.info("HttpServer::onDataReceiving : %s", request->getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
@@ -99,13 +100,12 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	cleanUp(e, request, resp);
 
-//	if (bodyLen)
-//	{
-//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
-//		os.write(cstr, length);
-//		os.close();
-//	}
-
+	//	if (bodyLen)
+	//	{
+	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
+	//		os.write(cstr, length);
+	//		os.close();
+	//	}
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
@@ -113,8 +113,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 {
 	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
 			ite != processorList->end();
-			ite++
-			)
+			ite++)
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
@@ -124,7 +123,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
 				processor->toString().c_str());
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
-//		delete processor;
+		//		delete processor;
 	}
 	return resp;
 }
@@ -136,10 +135,8 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 			resp->getHeader()->getFields()) + "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 
-//Send Response
-	std::string statusHeaderBody = resp->getHeader()->getStatusLine()
-			+ fieldsString
-			+ std::string(resp->getBody());
+	// Send Response
+	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + std::string(resp->getBody());
 
 	int statusLen = statusLine.length();
 	int headerLen = fieldsString.length();
@@ -151,11 +148,11 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	if (length <= 0)
 	{
 		delete request;
-//		delete processor;
+		//		delete processor;
 		delete resp->getHeader();
 		delete resp->getBodyBin();
 		delete resp;
-//		TODO gérer ce cas
+		//		TODO gérer ce cas
 		harl.warning("Response de taille nulle ?");
 		return NULL;
 	}
@@ -191,8 +188,39 @@ void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
 	delete resp->getHeader();
 	delete resp->getBodyBin();
 	delete resp;
-
 }
+
+// void HttpServer::onDataReceiving(ConnectorEvent e)
+// {
+// 	std::string rawRequest = e.getTemp();
+// 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+// 	Request *request = RequestFactory().build(reqHeader);
+// 	request->setFdClient(e.getFdClient());
+// 	//	req->dump();
+
+// 	RequestHttp *httpReq = dynamic_cast<RequestHttp *>(request);
+// 	if (httpReq != NULL)
+// 	{
+// 		std::string body = httpReq->getBody();
+// 		std::string contentType = httpReq->getHeaderFieldValue("Content-Type");
+// 		size_t boundaryPos = contentType.find("boundary=");
+
+// 		if (boundaryPos != std::string::npos && contentType.find("multipart/form-data") != std::string::npos)
+// 		{
+// 			std::string boundary = contentType.substr(boundaryPos + 9);
+// 			MultipartParser parser(boundary);
+// 			std::string targetDir = "./uploads"; // Target directory for file uploads
+
+// 			// Parse Multipart Data and save files
+// 			parser.parseMultipartData(body, targetDir);
+
+// 			// Generate and send response for successful file upload
+// 			std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nFiles uploaded successfully.\r\n";
+// 			send(e.getFdClient(), response.c_str(), response.length(), 0);
+
+// 			delete request;
+// 			return;
+// 		}
 
 void shutFd(int fd)
 {
@@ -203,4 +231,3 @@ void shutFd(int fd)
 		fd = -1;
 	}
 }
-

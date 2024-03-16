@@ -27,6 +27,8 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 			this->addField(std::string(val));
 		}
 	}
+	//cookie set plusieurs fois ?
+	//CookieFactory().build(this);
 }
 
 std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
@@ -95,4 +97,34 @@ const std::string& RequestHttpHeader::getVersion() const
 void RequestHttpHeader::setVersion(const std::string &v)
 {
 	version = v;
+}
+
+Cookie RequestHttpHeader::getCookie(const std::string &cookieName)
+{
+	return cookieHelper.getCookie(cookies, cookieName);
+}
+
+bool RequestHttpHeader::addCookie(const Cookie &cookie)
+{
+	bool ret = false;
+	int i = cookies.size();
+	cookies = cookieHelper.addCookie(cookies, cookie);
+	if (cookies.size() > i)
+		ret = true;
+	return ret;
+}
+
+bool RequestHttpHeader::removeCookie(const std::string &cookieName)
+{
+	bool ret = false;
+	int i = cookies.size();
+	cookies = cookieHelper.removeCookie(cookies, cookieName);
+	if (cookies.size() < i)
+		ret = true;
+	return ret;
+}
+
+std::string RequestHttpHeader::getCookieString()
+{
+	return cookieHelper.getCookieString(cookies);
 }
