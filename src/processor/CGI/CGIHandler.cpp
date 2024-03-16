@@ -217,16 +217,23 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 //		TODO SCRIPT_NAME
 //		(envMap)["SCRIPT_NAME"] = scriptPath;
 
-		const char *envp[envMap.size()];
+		char *envp[envMap.size()];
 		int i = 0;
 		for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
 		{
-			std::string toChar = ite->first + " : " + ite->second;
-			envp[i] = new char[toChar.length()];
+			std::string key = ite->first;
+			std::string val = ite->second;
+			std::string toChar = key + "=" + val;
 //			TODO leak
-			memcpy((char*) envp[i], toChar.c_str(), toChar.length());
+			envp[i] = new char[toChar.length()]();
+			memcpy((char*) envp[i], toChar.c_str(), toChar.length() + 1);
 			i++;
 		}
+//		std::string toChar = "toto=titi";
+//		//			TODO leak
+//		envp[i] = new char[toChar.length()];
+//		memcpy((char*) envp[i], toChar.c_str(), toChar.length());
+//		i++;
 		envp[i] = NULL;
 
 		harl.debug("CGIHandler::executeCGIScript [%s %s]", interpreterPath.c_str(), cmdLine.c_str());
@@ -234,17 +241,19 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
 //	execl(interpreterPath.c_str(), cmdLine.c_str(), (char*) NULL);
 
-		const char *argv[4];
-		argv[0] = interpreterPath.c_str();
-		argv[1] = "-f";
+		const char *argv[3];
+		i = 0;
+		argv[i++] = interpreterPath.c_str();
+		argv[i++] = "-f";
 		std::string stp = scriptPath;
 //		std::string stp = "\"" + scriptPath + "\"";
-		argv[2] = stp.c_str();
-		argv[3] = NULL;
+		argv[i++] = stp.c_str();
+		argv[i++] = NULL;
 
 		const char *execPath = interpreterPath.c_str();
 
 		execve(execPath, const_cast<char* const*>(argv), const_cast<char* const*>(envp));
+//		execv(execPath, const_cast<char* const*>(argv));
 		exit(EXIT_FAILURE); // execl only returns on error
 	}
 	else

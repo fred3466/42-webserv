@@ -17,9 +17,9 @@ print_r($arr);
 // phpinfo(8) fournirait les mêmes informations.
 //phpinfo(INFO_MODULES);
 
-echo "Path: " . $_ENV['Path'];
+//echo "Path: " . $_ENV['Path'];
 
- foreach ($_ENV as $k=>$v)
-   echo $k . " => " . $v . "<br>";
+// foreach ($_ENV as $k=>$v)
+//   echo $k . " => " . $v . "<br>";
 ?>
 
