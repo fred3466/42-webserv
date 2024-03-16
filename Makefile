@@ -42,8 +42,11 @@ SRCS = \
     util/FileUtil.cpp \
     util/FileUtilFactory.cpp \
     util/StringUtil.cpp \
-#    parser/MultipartParser \
+   	cookie/Cookie.cpp \
+	cookie/CookieHelper.cpp \
+	cookie/factory/CookieFactory.cpp \
     main.cpp 
+#    parser/MultipartParser \
 	
 OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)
 INC  = 
