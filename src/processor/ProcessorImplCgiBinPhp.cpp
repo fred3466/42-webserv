@@ -28,20 +28,37 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	// It's a CGI request
 	CGIHandler cgiHandler;
 
-	// Prepare CGI environment variables
-	std::map<std::string, std::string> envVars = prepareCGIEnvironment(request);
+	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
+	std::string patPath = locationToProcessor->getUrlPath();
+	int patPathLen = patPath.length();
+	std::string uri = request->getUri();
+//	std::string proto = "http:://";
+//	size_t itePostProtocole = proto.length();
+	size_t ite = uri.find(patPath);
+	if (ite == 0)
+	{
+		uri.erase(0, patPathLen);
+	}
 
 	// Determine script path from the URI
-	std::string scriptPath = base_path + request->getUri();
+	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
 	harl.debug(toString() + ":\t" + request->getUri() + " -> " + scriptPath);
 
 	// Execute the CGI script and get output
-	std::string cgiOutput = cgiHandler.executeCGIScript(scriptPath, envVars, request->getMethod(),
-			request->getQueryString());
-
+	std::string interpreterPath = config->getParamStr("php_exe", "");
+	std::string
+	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+	resp->setBodyLength(cgiOutput.length());
+	char *bodybin = new char[cgiOutput.length()];
+	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
+//	bodybin = const_cast<char*>(cgiOutput.data());
+	resp->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
-	std::string httpResponse = generateHttpResponse(cgiOutput);
+	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
+	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+//		resp->getHeader()->addField("\r\n");
 
+//	std::string httpResponse = generateHttpResponse(cgiOutput);
 	// Send HTTP response back to the client
 //		sendResponse(e.getFdClient(), httpResponse);
 //	}
@@ -54,44 +71,6 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 //	// Check if URI starts with /cgi-bin/
 //	return uri.find("/cgi-bin/") == 0;
 //}
-
-std::map<std::string, std::string> ProcessorImplCgiBinPhp::prepareCGIEnvironment(Request *request)
-{
-	std::map<std::string, std::string> env = std::map<std::string, std::string>();
-
-	// Populate environment variables
-	env["REQUEST_METHOD"] = request->getMethod();
-	env["QUERY_STRING"] = request->getQueryString();
-	env["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
-	env["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
-
-//	TODO : il manque quelques variables !
-//	fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-//	fastcgi_param  QUERY_STRING       $query_string;
-//	fastcgi_param  REQUEST_METHOD     $request_method;
-//	fastcgi_param  CONTENT_TYPE       $content_type;
-//	fastcgi_param  CONTENT_LENGTH     $content_length;
-//
-//	fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
-//	fastcgi_param  REQUEST_URI        $request_uri;
-//	fastcgi_param  DOCUMENT_URI       $document_uri;
-//	fastcgi_param  DOCUMENT_ROOT      $document_root;
-//	fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-//	fastcgi_param  REQUEST_SCHEME     $scheme;
-//	fastcgi_param  HTTPS              $https if_not_empty;
-//
-//	fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-//	fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-//
-//	fastcgi_param  REMOTE_ADDR        $remote_addr;
-//	fastcgi_param  REMOTE_PORT        $remote_port;
-//	fastcgi_param  REMOTE_USER        $remote_user;
-//	fastcgi_param  SERVER_ADDR        $server_addr;
-//	fastcgi_param  SERVER_PORT        $server_port;
-//	fastcgi_param  SERVER_NAME        $server_name;
-
-	return env;
-}
 
 std::string ProcessorImplCgiBinPhp::readRequest(int clientFd)
 {
@@ -117,11 +96,6 @@ std::string ProcessorImplCgiBinPhp::readRequest(int clientFd)
 	}
 
 	return requestText;
-}
-
-void ProcessorImplCgiBinPhp::sendResponse(int clientFd, const std::string &response)
-{
-	send(clientFd, response.c_str(), response.size(), 0);
 }
 
 //void ProcessorImplCgiBinPhp::closeClient(int clientFd)

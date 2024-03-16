@@ -100,6 +100,9 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			if (fullKey == "server")
 			{
 				c = factory.build();
+				char webservPath[1024];
+				getcwd(webservPath, 1024);
+				c->addParam("ROOT_PATH", webservPath);
 
 //				toksVal = su.tokenize(val, ' ');
 
@@ -138,15 +141,15 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			{
 				c->addParam("root", su.getNthTokenIfExists(toksVal, 0, ""));
 			}
-//			server_name
-			if (key == "server_name")
+			//			server_name
+			else if (key == "server_name")
 			{
 				c->addParam("server_name",
 						su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 
 //			listen
-			if (key == "listen")
+			else if (key == "listen")
 			{
 				std::string ip = su.getNthTokenIfExists(toksVal, 0, "127.0.0.1");
 				c->addParam("listen", ip);
@@ -155,7 +158,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			}
 
 //			listen
-			if (key == "location")
+			else if (key == "location")
 			{
 				std::string urlPath = su.getNthTokenIfExists(toksFullKey, 2, "");
 				std::size_t ite = val.find('{');
@@ -166,6 +169,10 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 					val.erase(ite, 1);
 
 				c->addParam("location@" + urlPath, val);
+			}
+			else
+			{
+				c->addParam(key, val);
 			}
 
 			harl.trace("%s -> %s", key.c_str(), val.c_str());

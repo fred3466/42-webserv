@@ -16,12 +16,13 @@ SRCS = \
 	request/RequestHttp.cpp \
 	request/factory/RequestFactory.cpp \
 	request/factory/RequestHeaderFactory.cpp \
+ 	processor/Processor.cpp \
 	processor/ProcessorFactory.cpp \
 	processor/ProcessorImplDirectFs.cpp \
 	processor/ProcessorImplCgiBinPhp.cpp \
 	processor/CGI/CGIHandler.cpp \
- 	processor/Processor.cpp \
  	location/LocationToProcessor.cpp \
+ 	location/ProcessorAndLocationToProcessor.cpp \
  	location/ProcessorLocator.cpp \
 	mimeType/MimeType.cpp \
 	mimeType/MimeTypeHelper.cpp \
@@ -47,7 +48,7 @@ OBJS = $($(addprefix src/,${SRCS}):.cpp=.o)
 INC  = 
 
 CC = g++
-CFLAGS =  -g -std=c++98  -pedantic-errors #-Wall -Wextra -Werror
+CFLAGS = -g -std=c++98  #-pedantic-errors #-Wall -Wextra -Werror
 LFLAGS = #-lreadline 
 
 RM = rm -rf

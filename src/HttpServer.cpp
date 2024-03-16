@@ -133,7 +133,7 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 {
 	StringUtil stringUtil;
 	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields());
+			resp->getHeader()->getFields()) + "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 
 //Send Response
