@@ -13,4 +13,6 @@ public:
     ~MimeTypeHelper();
     void addMapping(const std::string &extension, const std::string &mimeType);
     std::string findMimeType(const std::string &extension) const;
+    void reloadMappingsFromFile(const std::string &filePath);
+    size_t numberOfMappings() const;
 };

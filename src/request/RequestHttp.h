@@ -27,6 +27,8 @@ public:
 	virtual void setFdClient(int fd);
 	virtual int getFdClient() const;
 	virtual std::string getQueryString() const;
+	std::string getPath() const;
+	std::string getHost() const;
 	virtual RequestHeader* getHeader() const;
 	virtual std::string getFileExtension() const;
 	virtual std::string getFileName() const;
