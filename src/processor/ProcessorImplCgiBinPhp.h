@@ -1,16 +1,20 @@
 #pragma once
 
 #include <map>
-#include "Processor.h"
 #include "../Harl.h"
 #include "../response/API/ResponseHeader.h"
 #include "../response/factory/ResponseHeaderFactory.h"
-
+#include "Processor.h"
 #include "../util/FileUtilFactory.h"
 #include "../util/StringUtil.h"
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 #include "CGI/CGIHandler.h"
+//#include "../location/LocationToProcessor.h"
+#include "../location/ProcessorAndLocationToProcessor.h"
+
+//class ProcessorAndLocationToProcessor;
+class LocationToProcessor;
 
 class ProcessorImplCgiBinPhp: public Processor
 {
@@ -21,8 +25,7 @@ private:
 	StringUtil stringUtil;
 	//	std::map<std::string, std::string> env;
 
-	std::map<std::string, std::string> prepareCGIEnvironment(Request *request);
-	protected:
+protected:
 
 public:
 	ProcessorImplCgiBinPhp();
@@ -34,7 +37,6 @@ public:
 	void addProperty(std::string name, std::string value);
 
 	std::string readRequest(int clientFd);
-	void sendResponse(int clientFd, const std::string &response);
 	//	void closeClient(int clientFd);
 	//	int getListenFd();
 //	bool isCGIRequest(const std::string &uri);

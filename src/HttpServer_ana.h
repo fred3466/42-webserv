@@ -11,6 +11,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+
 #include "HttpServer.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
@@ -20,10 +27,10 @@
 #include "Harl.h"
 #include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
-#include "request/API/Request.h"
-#include "request/factory/RequestFactory.h"
-#include "request/API/RequestHeader.h"
-#include "request/factory/RequestHeaderFactory.h"
+#include "request/Request.h"
+#include "request/HttpRequest.h"
+#include "request/RequestFactory.h"
+#include "processor/CGI/CGIHandler.h"
 
 class HttpServer: public ConnectorListener
 {
@@ -33,11 +40,22 @@ private:
 	Connector *connector;
 	Config *config;
 	Harl harl;
-	public:
+	std::map<int, int> _clients;
+	std::map<std::string, std::string> env;
+	std::map<std::string, std::string> prepareCGIEnvironment(const HttpRequest &request);
+
+	//	void _process_ready_for_read(int fwPort, int _soListen, netStruct NS);
+	//	void _listen(int _soListen, netStruct ns);
+	//	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
+	//			int &end_server, int &nfds);
+	//	bool _onDataReceiving(struct pollfd &curentPollFd, int &close_conn);
+	//
+	//	int _newClient(int _soListen, netStruct NS);
+public:
 	HttpServer();
 	~HttpServer();
 
-	virtual void init(Config conf);
+	virtual void init(std::string ipStr, int port);
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 	//	virtual bool operator==(const ConnectorListener &other);

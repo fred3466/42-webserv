@@ -3,32 +3,35 @@
 #include <string>
 #include <map>
 
+#include "../../request/API/Request.h"
+#include "../../response/API/Response.h"
+#include "../../Harl.h"
+
 class CGIHandler
 {
 private:
-    // Parses the CGI script output
-    void parseOutput(const std::string &output);
+	Harl harl;
+	// Parses the CGI script output
+	void parseOutput(const std::string &output);
 
-    std::string responseBody;
-    std::map<std::string, std::string> responseHeaders;
-    void setupEnvironmentVariables(const std::map<std::string, std::string> &requestHeaders,
-                                   const std::string &requestMethod,
-                                   const std::string &queryString);
+	std::string responseBody;
+	std::map<std::string, std::string> responseHeaders;
+	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request,
+			Response *response);
 
-    std::string captureScriptOutput(int fileDescriptor);
+	std::string captureScriptOutput(int fileDescriptor);
 
 public:
-    CGIHandler();
-    virtual ~CGIHandler();
+	CGIHandler();
+	virtual ~CGIHandler();
 
-    // Executes the CGI script and returns the result
-    std::string executeCGI(const std::string &scriptPath, const std::map<std::string, std::string> &envVariables);
-    void logError(const std::string &message);
-    void logSuccess(const std::string &message);
-    //    std::string executeCGIScript(const std::string &scriptPath);
-    std::string executeCGIScript(const std::string &scriptPath,
-                                 const std::map<std::string, std::string> &requestHeaders,
-                                 const std::string &requestMethod, const std::string &queryString);
+	// Executes the CGI script and returns the result
+	std::string executeCGI(const std::string &scriptPath, const std::map<std::string, std::string> &envVariables);
+	void logError(const std::string &message);
+	void logSuccess(const std::string &message);
+	//    std::string executeCGIScript(const std::string &scriptPath);
+	std::string executeCGIScript(std::string interpreterPath, std::string &scriptPath,
+			Request *request, Response *response);
 };
 
 // export REQUEST_METHOD=GET
