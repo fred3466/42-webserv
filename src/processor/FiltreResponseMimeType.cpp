@@ -26,23 +26,27 @@ std::string FiltreResponseMimeType::getResponseMimeType(const std::string &fileP
 Response *FiltreResponseMimeType::process(Request *request, Response *response,
                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-    RequestHttp *httpReq = static_cast<RequestHttp *>(request);
-    ResponseHttp *httpResp = static_cast<ResponseHttp *>(response);
+    ResponseHeader *header = ResponseHeaderFactory().build();
+    Response *resp = ResponseFactory().build(header);
 
-    if (!httpReq || !httpResp)
-        return response;
-
-    std::string path = httpReq->getPath();
+    std::string path;
+    if (RequestHttp *httpReq = dynamic_cast<RequestHttp *>(request))
+    {
+        path = httpReq->getPath();
+    }
+    else
+    {
+        return resp;
+    }
 
     // Extracting MIME type using the file path
     std::string mimeType = getResponseMimeType(path);
 
-    ResponseHeader *respHeader = httpResp->getHeader();
-    if (respHeader)
+    // Add MIME type to the response header
+    if (header)
     {
-        // Construct the Content-Type header string
         std::string contentTypeHeader = "Content-Type: " + mimeType;
-        respHeader->addField(contentTypeHeader);
+        header->addField(contentTypeHeader);
     }
 
     return response;
@@ -104,3 +108,28 @@ void FiltreResponseMimeType::reloadConfigurations()
         mimeTypeHelper.reloadMappingsFromFile(mimeTypesFilePath);
     }
 }
+
+// Response *FiltreResponseMimeType::process(Request *request, Response *response,
+//                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+// {
+//     RequestHttp *httpReq = static_cast<RequestHttp *>(request);
+//     ResponseHttp *httpResp = static_cast<ResponseHttp *>(response);
+
+//     if (!httpReq || !httpResp)
+//         return response;
+
+//     std::string path = httpReq->getPath();
+
+//     // Extracting MIME type using the file path
+//     std::string mimeType = getResponseMimeType(path);
+
+//     ResponseHeader *respHeader = httpResp->getHeader();
+//     if (respHeader)
+//     {
+//         // Construct the Content-Type header string
+//         std::string contentTypeHeader = "Content-Type: " + mimeType;
+//         respHeader->addField(contentTypeHeader);
+//     }
+
+//     return response;
+// }

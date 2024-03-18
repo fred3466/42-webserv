@@ -22,7 +22,7 @@ void HttpServer::init(Config *c)
 	instantiateProcessLocator();
 
 	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
-			c->getParamInt("port", 8080));
+										 c->getParamInt("port", 8080));
 	connector->registerIt(this);
 
 	connector->doListen();
@@ -81,7 +81,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getTemp();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-	//seg fault
+	// seg fault
 	CookieFactory().build(reqHeader);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
@@ -92,7 +92,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	Response *resp;
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 
 	int fdSocket = e.getFdClient();
@@ -108,12 +108,12 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	//	}
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-		Response *resp)
+Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+										Response *resp)
 {
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
@@ -121,18 +121,19 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
-				processor->toString().c_str());
+				   processor->toString().c_str());
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 		//		delete processor;
 	}
 	return resp;
 }
 
-char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields()) + "\r\n";
+								   resp->getHeader()->getFields()) +
+							   "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 
 	// Send Response

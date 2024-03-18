@@ -2,6 +2,8 @@
 #include "../mimeType/MimeTypeHelper.h"
 #include "../request/RequestHttp.h"
 #include "../response/ResponseHttp.h"
+#include "../response/factory/ResponseHeaderFactory.h"
+#include "../response/factory/ResponseFactory.h"
 #include "Processor.h"
 #include <sstream>
 
