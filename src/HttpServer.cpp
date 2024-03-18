@@ -78,7 +78,10 @@ void HttpServer::instantiateProcessLocator()
 		}
 
 	}
-	processorLocator->addLocationToProcessor("/", ".", processorFactory.build("STATIC_PROCESSOR"), host);
+	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
+	Config *configProc = config->clone();
+	defaultProcessor->setConfig(configProc);
+	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
 }
 //void addLocationToProcessor(
 //std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
