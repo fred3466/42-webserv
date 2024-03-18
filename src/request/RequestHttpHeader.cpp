@@ -40,9 +40,12 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 			ite++)
 	{
 		std::string rawField = *ite;
-		std::vector<std::string> toks = su.tokenize(rawField, ':');
+		int nbSeparatorsToProcess = 1;
+		std::vector<std::string> toks = su.tokenize(rawField, ':', nbSeparatorsToProcess);
 		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		name = su.trim(name);
 		std::string val = su.getNthTokenIfExists(toks, 1, "");
+		val = su.trim(val);
 		if (name == fieldName)
 			return val;
 	}

@@ -23,4 +23,5 @@ public:
 	//	void setId(int id);
 	std::string getAlias();
 	void setAlias(std::string alias);
+	Config* clone();
 };

@@ -31,6 +31,11 @@ void HttpServer::init(Config *c)
 void HttpServer::instantiateProcessLocator()
 {
 	StringUtil su = StringUtil();
+	std::string port = config->getParamStr("port", "");
+	if (port != "" && port != "80")
+		port = ":" + port;
+	std::string host = config->getParamStr("server_name", "") + port;
+
 	//	TODO new
 	processorLocator = new ProcessorLocator();
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
@@ -38,30 +43,31 @@ void HttpServer::instantiateProcessLocator()
 	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
 	{
 		std::string key = ite->first;
-		su.trim(key);
+		key = su.trim(key);
 		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
 		std::string val = ite->second;
-		su.trim(val);
+		val = su.trim(val);
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
 		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
 		{
 			std::string directive = *iteVal;
-			su.trim(directive);
+			directive = su.trim(directive);
 			if (directive == "")
 				continue;
 			std::vector<std::string> toksDirective = su.tokenize(directive, ' ');
 			std::string dirName = su.getNthTokenIfExists(toksDirective, 0, "");
-			su.trim(dirName);
+			dirName = su.trim(dirName);
 			Processor *processor;
 			if (dirName == "SetHandler")
 			{
 				std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
 				std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
 				processor = processorFactory.build(processorName);
-				processor->setConfig(config);
+				Config *configProc = config->clone();
+				processor->setConfig(configProc);
 
-				processorLocator->addLocationToProcessor(urlpath, extension, processor);
+				processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 			}
 			else
 			{
@@ -70,9 +76,19 @@ void HttpServer::instantiateProcessLocator()
 				processor->addProperty(nameProperty, valProperty);
 			}
 		}
-	}
-}
 
+	}
+	processorLocator->addLocationToProcessor("/", ".", processorFactory.build("STATIC_PROCESSOR"), host);
+}
+//void addLocationToProcessor(
+//std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
+//std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
+//processor = processorFactory.build(processorName);
+//processor->setConfig(config);
+//
+//processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
+//
+//}
 void HttpServer::onIncomming(ConnectorEvent e)
 {
 }
@@ -95,34 +111,43 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 
+	if (!resp)
+	{
+		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().c_str());
+	}
+
 	int fdSocket = e.getFdClient();
 	pushItIntoTheWire(fdSocket, request, resp);
 
 	cleanUp(e, request, resp);
-
-	//	if (bodyLen)
-	//	{
-	//		std::ofstream os("out2.html", std::ios::binary | std::ios::out);
-	//		os.write(cstr, length);
-	//		os.close();
-	//	}
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
 		Response *resp)
 {
+	bool contentDone = false;
 	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
 			ite != processorList->end();
 			ite++)
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
-		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
-		processor->setConfig(config);
+		if (contentDone && processor->getType() == CONTENT_MODIFIER)
+		{
+			harl.debug("HttpServer::runProcessorChain : contentDone==true, skipping [%s]", processor->toString().c_str());
+			continue;
+		}
+
+//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
+//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
 				processor->toString().c_str());
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
+		if (!contentDone && processor->getType() == CONTENT_MODIFIER)
+		{
+			contentDone = true;
+		}
 		//		delete processor;
 	}
 	return resp;
@@ -131,12 +156,28 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
+
+//	std::ostringstream oss;
+//	oss << resp->getBodyLength();
+//	std::string sizeStr = oss.str();
+//
+//	resp->getHeader()->addField("Content-Length", sizeStr);
+
+	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
+	{
+		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().c_str());
+	}
+
 	std::string fieldsString = stringUtil.fromListToString(
 			resp->getHeader()->getFields()) + "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
+	std::string body = "";
+	char *bodyBin = resp->getBodyBin();
+	if (bodyBin)
+		body = std::string(bodyBin);
 
 	// Send Response
-	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + std::string(resp->getBody());
+	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + body;
 
 	int statusLen = statusLine.length();
 	int headerLen = fieldsString.length();
@@ -168,7 +209,12 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
 
 	cstr = cstrSave;
-
+	if (length)
+	{
+		std::ofstream os("out.html", std::ios::binary | std::ios::out);
+		os.write(cstr, length);
+		os.close();
+	}
 	return cstr;
 }
 
@@ -176,6 +222,7 @@ void HttpServer::pushItIntoTheWire(int fdSocket, Request *request, Response *res
 {
 	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
 	int length = resp->getTotalLength();
+
 	if (request && fdSocket && cstr && length)
 		send(fdSocket, cstr, length, 0);
 	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
@@ -189,38 +236,6 @@ void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
 	delete resp->getBodyBin();
 	delete resp;
 }
-
-// void HttpServer::onDataReceiving(ConnectorEvent e)
-// {
-// 	std::string rawRequest = e.getTemp();
-// 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-// 	Request *request = RequestFactory().build(reqHeader);
-// 	request->setFdClient(e.getFdClient());
-// 	//	req->dump();
-
-// 	RequestHttp *httpReq = dynamic_cast<RequestHttp *>(request);
-// 	if (httpReq != NULL)
-// 	{
-// 		std::string body = httpReq->getBody();
-// 		std::string contentType = httpReq->getHeaderFieldValue("Content-Type");
-// 		size_t boundaryPos = contentType.find("boundary=");
-
-// 		if (boundaryPos != std::string::npos && contentType.find("multipart/form-data") != std::string::npos)
-// 		{
-// 			std::string boundary = contentType.substr(boundaryPos + 9);
-// 			MultipartParser parser(boundary);
-// 			std::string targetDir = "./uploads"; // Target directory for file uploads
-
-// 			// Parse Multipart Data and save files
-// 			parser.parseMultipartData(body, targetDir);
-
-// 			// Generate and send response for successful file upload
-// 			std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nFiles uploaded successfully.\r\n";
-// 			send(e.getFdClient(), response.c_str(), response.length(), 0);
-
-// 			delete request;
-// 			return;
-// 		}
 
 void shutFd(int fd)
 {

@@ -21,13 +21,16 @@ private:
 	Harl harl;
 	StringUtil stringUtil;
 	std::map<std::string, std::string> prepareCGIEnvironment(Request *request);
-	protected:
+	ProcessorTypeEnum type;
+
+protected:
 
 public:
-	ProcessorImplCgiPython();
+	ProcessorImplCgiPython(ProcessorTypeEnum type);
 	~ProcessorImplCgiPython();
 	virtual Response* process(Request *request);
 	virtual void setConfig(Config *conf);
+	virtual ProcessorTypeEnum getType();
 
 	std::string readRequest(int clientFd);
 	void sendResponse(int clientFd, const std::string &response);

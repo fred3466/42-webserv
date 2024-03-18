@@ -23,17 +23,19 @@ private:
 	FileUtil fileUtil;
 	Harl harl;
 	StringUtil stringUtil;
+	ProcessorTypeEnum type;
 	//	std::map<std::string, std::string> env;
 
 protected:
 
 public:
-	ProcessorImplCgiBinPhp();
+	ProcessorImplCgiBinPhp(ProcessorTypeEnum type);
 	~ProcessorImplCgiBinPhp();
 	virtual Response* process(Request *request, Response *response,
 			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	virtual void setConfig(Config *conf);
 	virtual std::string toString();
+	virtual ProcessorTypeEnum getType();
 	void addProperty(std::string name, std::string value);
 
 	std::string readRequest(int clientFd);

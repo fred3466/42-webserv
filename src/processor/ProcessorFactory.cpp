@@ -2,12 +2,11 @@
 
 std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
 {
-//	TODO new à gogo!
 	Processor *proc;
-	std::string ext = request->getFileExtension();
-	std::string uri = request->getUri();
+//	std::string ext = request->getFileExtension();
+//	std::string uri = request->getUri();
 
-	std::vector<ProcessorAndLocationToProcessor*> *procs = processorLocator->listOrderedProcessorForUrlAndExt(uri, ext);
+	std::vector<ProcessorAndLocationToProcessor*> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
 //	procs->insert(procs->begin(), new ProcessorImplDirectFs());
 
 //	StringUtil stringUtil;
@@ -31,15 +30,16 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 Processor* ProcessorFactory::build(std::string procName)
 {
 //	TODO new
+	ProcessorTypeEnum type = CONTENT_MODIFIER;
 	if (procName == "PHP_PROCESSOR")
 	{
-		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP();
+		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(type);
 		return proc;
 	}
 	else if (procName == "STATIC_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_STATIC();
+		return new REQUEST_HANDLER_IMPL_CLASS_STATIC(type);
 //	TODO doit être configurable
-	return new ProcessorImplDirectFs();
+	return new ProcessorImplDirectFs(type);
 }
 
 ProcessorFactory::ProcessorFactory() : processorLocator()

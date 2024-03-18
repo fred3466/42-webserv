@@ -19,10 +19,10 @@ public:
 
 	void setStatusLine(std::string sline);
 	void setHeader(std::string sline);
-	void setBody(std::string sline);
+	//	std::string getBody();
+//	void setBody(std::string sline);
 	void setBodyBin(char *bytess);
 	std::string getStatusLine();
-	std::string getBody();
 	char* getBodyBin();
 	int getBodyLength();
 	void setBodyLength(int len);

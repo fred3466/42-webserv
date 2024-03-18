@@ -21,10 +21,13 @@ private:
 	//	virtual void dump() const =0;
 	virtual void setFdClient(int fd)=0;
 	virtual int getFdClient() const =0;
-	virtual std::string getQueryString() const =0;
 	virtual void addField(std::string rawField) const =0;
 	virtual RequestHeader* getHeader() const =0;
-	virtual std::string getFileExtension() const =0;
 
+	virtual std::string getQueryString() const =0;
+	virtual std::string getFileExtension() const =0;
+	virtual std::string getFileName() const =0;
+	virtual std::string getPath() const =0;
+	virtual std::string getHost() const =0;
 };
 

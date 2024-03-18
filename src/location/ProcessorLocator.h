@@ -15,8 +15,7 @@ public:
 	ProcessorLocator();
 	~ProcessorLocator();
 	std::vector<LocationToProcessor*> getLocationToProcessorVector();
-	void addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor);
-	std::vector<ProcessorAndLocationToProcessor*>* listOrderedProcessorForUrlAndExt(std::string urlPath,
-			std::string ext);
+	void addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor, std::string host);
+	std::vector<ProcessorAndLocationToProcessor*>* listOrderedProcessorForUrlAndExt(Request *request);
 };
 

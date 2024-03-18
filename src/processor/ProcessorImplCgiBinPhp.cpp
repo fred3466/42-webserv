@@ -1,6 +1,8 @@
 #include "ProcessorImplCgiBinPhp.h"
-ProcessorImplCgiBinPhp::ProcessorImplCgiBinPhp() : harl(), stringUtil(), config()
+
+ProcessorImplCgiBinPhp::ProcessorImplCgiBinPhp(ProcessorTypeEnum type) : harl(), stringUtil(), config()
 {
+	this->type = type;
 }
 ProcessorImplCgiBinPhp::~ProcessorImplCgiBinPhp()
 {
@@ -21,7 +23,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	char *body;
+//	char *body;
 //
 //	if (isCGIRequest(request->getUri()))
 //	{
@@ -66,67 +68,6 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	return resp;
 }
 
-//bool ProcessorImplCgiBinPhp::isCGIRequest(const std::string &uri)
-//{
-//	// Check if URI starts with /cgi-bin/
-//	return uri.find("/cgi-bin/") == 0;
-//}
-
-std::string ProcessorImplCgiBinPhp::readRequest(int clientFd)
-{
-	char buffer[BUF_SIZE];
-	std::string requestText;
-	int nbytes;
-
-	while ((nbytes = recv(clientFd, buffer, sizeof(buffer), 0)) > 0)
-	{
-		requestText.append(buffer, nbytes);
-	}
-
-	// Check for socket closed or error
-	if (nbytes == 0)
-	{
-		// Connection closed
-		std::cout << "Client disconnected." << std::endl;
-	}
-	else if (nbytes < 0)
-	{
-		// Error occurred
-		std::cerr << "recv() error: " << strerror(errno) << std::endl;
-	}
-
-	return requestText;
-}
-
-//void ProcessorImplCgiBinPhp::closeClient(int clientFd)
-//{
-//	shutFd(clientFd);
-//}
-
-//int ProcessorImplCgiBinPhp::getListenFd()
-//{
-//	TcpConnector *tcpConnector = dynamic_cast<TcpConnector*>(connector);
-//	if (tcpConnector)
-//	{
-//		return tcpConnector->getListenFd();
-//	}
-//	else
-//	{
-//		std::cerr << "Connector is not properly initialized or wrong type."
-//				<< std::endl;
-//		return -1;
-//	}
-//}
-
-std::string ProcessorImplCgiBinPhp::getScriptPath(const std::string &uri)
-{
-	// adapt for correct path !
-	// std::string basePath = "/home/parallels/Desktop/Parallels Shared Folders/42/webserv/src";
-	std::string basePath = "cgi-bin/";
-
-	return basePath + uri;
-}
-
 std::string ProcessorImplCgiBinPhp::getBasePath()
 {
 	return config->getParamStr("base_path", "cgi-bin/toto/");
@@ -135,20 +76,6 @@ std::string ProcessorImplCgiBinPhp::getBasePath()
 void ProcessorImplCgiBinPhp::setBasePath(std::string basePath)
 {
 	config->addParam("base_path", basePath);
-}
-
-std::string ProcessorImplCgiBinPhp::generateHttpResponse(const std::string &cgiOutput)
-{
-	std::string response;
-
-	// Parse CGI output for headers and body
-	size_t pos = cgiOutput.find("\r\n\r\n");
-	std::string headers = cgiOutput.substr(0, pos);
-	std::string body = cgiOutput.substr(pos + 4);
-
-	// Construct HTTP response
-	response = "HTTP/1.1 200 OK\r\n" + headers + "\r\n\r\n" + body;
-	return response;
 }
 
 void ProcessorImplCgiBinPhp::addProperty(std::string name, std::string value)
@@ -160,15 +87,8 @@ std::string ProcessorImplCgiBinPhp::toString()
 {
 	return "ProcessorImplCgiBinPhp";
 }
-//int ProcessorImplCgiBinPhp::getClientFd(int clientId)
-//{
-//	std::map<int, int>::const_iterator it = _clients.find(clientId);
-//	if (it != _clients.end())
-//	{
-//		return it->second; // Return the file descriptor for the client
-//	}
-//	else
-//	{
-//		return -1; // Indicate that the client was not found
-//	}
-//}
+
+ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()
+{
+	return type;
+}

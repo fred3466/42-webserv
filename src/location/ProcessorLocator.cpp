@@ -13,39 +13,50 @@ std::vector<LocationToProcessor*> ProcessorLocator::getLocationToProcessorVector
 	return locationToProcessorVector;
 }
 
-void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor)
+void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor, std::string host)
 {
 //	TODO new ici
-	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor);
+	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor, host);
 	harl.debug("ROUTE : %s", lp->toString().c_str());
 	locationToProcessorVector.push_back(lp);
 }
 
-std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProcessorForUrlAndExt(std::string urlPath,
-		std::string ext)
+std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProcessorForUrlAndExt(Request *request)
 {
+	std::string pathReq = request->getPath();
+	std::string extReq = request->getFileExtension();
+//	std::string hostReq = request->getHost();
+	std::string hostReq = request->getHeaderFieldValue("Host");
 	//TODO fuite mémoire : new
-	std::vector<ProcessorAndLocationToProcessor*> *ret = new std::vector<ProcessorAndLocationToProcessor*>();
+	std::vector<ProcessorAndLocationToProcessor*>
+	*ret = new std::vector<ProcessorAndLocationToProcessor*>();
 	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
 			ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
 		std::string extension = lp->getExtension();
-		std::string urlPathIte = lp->getUrlPath();
-//		TODO : matcher le plus long urlPathIte sur l'url
+		std::string urlPath = lp->getUrlPath();
+		std::string host = lp->getHost();
+
+		if ((hostReq != "" || host != "") && (host != hostReq))
+		{
+			continue;
+		}
+
+//		TODO : matcher le plus long urlPathIte sur l'url =>classer les motifs url par ordre décroissant de taille
 		int pos = 0;
-		int len = urlPathIte.length();
-		int nbCharMatching = urlPath.compare(pos, len, urlPathIte);
+		int len = urlPath.length();
+		int nbCharMatching = pathReq.compare(pos, len, urlPath);
 		bool bUrlPatternMatchEntirely = (nbCharMatching == 0);
 
 		if (bUrlPatternMatchEntirely
-				&& ("." == extension || ext == extension))
+				&& ("." == extension || extReq == extension))
 		{
 			Processor *p = lp->getProcessor();
 			if (p)
 			{
-				const char *urlPathIteChar = urlPathIte.c_str();
+				const char *urlPathIteChar = urlPath.c_str();
 				const char *extensionChar = extension.c_str();
 				const char *pChar = "NULL";
 

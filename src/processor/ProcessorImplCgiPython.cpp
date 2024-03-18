@@ -1,7 +1,8 @@
 #include "ProcessorImplCgiPython.h"
 
-ProcessorImplCgiPython::ProcessorImplCgiPython() : harl(), stringUtil(), config()
+ProcessorImplCgiPython::ProcessorImplCgiPython(ProcessorTypeEnum type) : harl(), stringUtil(), config()
 {
+	this->type = type;
 }
 
 ProcessorImplCgiPython::~ProcessorImplCgiPython()
@@ -19,8 +20,8 @@ Response* ProcessorImplCgiPython::process(Request *request)
 	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
-	std::string root = config->getParamStr("root", "root");
-	std::string path = root + request->getUri();
+	std::string basePath = config->getParamStr("base_path", "base_path");
+	std::string path = basePath + request->getUri();
 	harl.info(request->getUri() + " -> " + path);
 	char *body;
 
@@ -59,7 +60,7 @@ std::map<std::string, std::string> ProcessorImplCgiPython::prepareCGIEnvironment
 	env["PATH_INFO"] = request->getUri();
 	env["REMOTE_ADDR"] = "";
 	env["REMOTE_HOST"] = "";
-	env["SCRIPT_FILENAME"] = getScriptPath(request->getUri());
+	env["SCRIPT_FILENAME"] = getScriptPath(request->getFileName());
 	env["SCRIPT_NAME"] = "";
 	env["SERVER_NAME"] = "";
 	env["SERVER_SOFTWARE"] = "Webserv/1.0";
@@ -87,4 +88,9 @@ std::string readRequest(int clientFd)
 	}
 
 	return requestText;
+}
+
+ProcessorTypeEnum ProcessorImplCgiPython::getType()
+{
+	return type;
 }

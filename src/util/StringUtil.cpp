@@ -30,40 +30,42 @@ std::string StringUtil::fromListToString(std::list<std::string> l)
 }
 
 //supprime les espaces en fin de chaine
-void StringUtil::rtrim(std::string &s)
+std::string StringUtil::rtrim(std::string &s)
 {
 	if (s.empty())
-		return;
+		return "";
+	;
 
 	std::string::iterator p;
-	for (p = s.end(); p != s.begin()
+	for (p = s.end() - 1; p != s.begin()
 			&& (
 			*p == ' '
 					|| *p == '\t'
-					|| *p == '\n'
+					|| *p == '\n' || *p == '\r'
 			)
 			;)
 		p--;
 
-	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
+	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' && *p != '\0')
 		p++;
 
 	if (p != s.end())
 		s.erase(p, s.end());
+	return s;
 }
 
 //supprime les espaces en début de chaine
-void StringUtil::ltrim(std::string &s)
+std::string StringUtil::ltrim(std::string &s)
 {
 	if (s.empty())
-		return;
+		return "";
 
 	std::string::iterator p;
 	for (p = s.begin(); p != s.end()
 			&& (
 			*p == ' '
 					|| *p == '\t'
-					|| *p == '\n'
+					|| *p == '\n' || *p == '\r'
 			); p++)
 		;
 //			p++;
@@ -73,13 +75,14 @@ void StringUtil::ltrim(std::string &s)
 
 	if (p != s.begin())
 		s.erase(s.begin(), p);
+	return s;
 }
 
 //supprime les espaces en début et fin de chaine
-void StringUtil::trim(std::string &s)
+std::string StringUtil::trim(std::string &s)
 {
-	ltrim(s);
-	rtrim(s);
+	std::string rtrimmed = rtrim(s);
+	return ltrim(rtrimmed);
 }
 
 bool StringUtil::isSpace(char c)
@@ -162,14 +165,33 @@ std::vector<std::string> StringUtil::tokenize(std::string s)
 
 std::vector<std::string> StringUtil::tokenize(std::string s, char sep)
 {
+	return tokenize(s, sep, -1);
+}
+
+std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSeparatorsToProcessParam)
+{
 	std::vector<std::string> ret = std::vector<std::string>();
 	std::stringstream ss(s);
 	std::string word;
-	while (!ss.eof())
+	if (nbSeparatorsToProcessParam < 1)
 	{
-		getline(ss, word, sep);
+		while (!ss.eof())
+		{
+			getline(ss, word, sep);
+			ret.push_back(word);
+		}
+	} else
+	{
+		int nbSeparatorsToProcess = nbSeparatorsToProcessParam;
+		while (!ss.eof() && nbSeparatorsToProcess--)
+		{
+			getline(ss, word, sep);
+			ret.push_back(word);
+		}
+		getline(ss, word);
 		ret.push_back(word);
 	}
+
 	return ret;
 }
 

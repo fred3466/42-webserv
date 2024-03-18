@@ -89,8 +89,14 @@ void Config::setAlias(std::string alias)
 
 Config::Config(Config &bis)
 :
-		kv(bis.kv), alias(bis.alias)
+		alias(bis.alias)
 {
+	for (std::map<std::string, std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
+	{
+		std::string key = ite->first;
+		std::string val = ite->second;
+		kv[key] = val;
+	}
 	if (this != &bis)
 		*this = bis;
 }
@@ -98,7 +104,28 @@ Config::Config(Config &bis)
 Config& Config::operator =(Config &bis)
 {
 	this->alias = bis.alias;
-	this->kv = bis.kv;
 
+	for (std::map<std::string, std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
+	{
+		std::string key = ite->first;
+		std::string val = ite->second;
+		kv[key] = val;
+	}
+//	this->kv = bis.kv;
 	return *this;
+}
+
+Config* Config::clone()
+{
+	Config *ret = new Config();
+	ret->alias = alias;
+
+	for (std::map<std::string, std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	{
+		std::string key = ite->first;
+		std::string val = ite->second;
+		ret->kv[key] = val;
+	}
+//	this->kv = bis.kv;
+	return ret;
 }

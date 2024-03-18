@@ -75,7 +75,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 						continue;
 					lineTmp = su.normalizeSpaces(lineTmp);
 					harl.info(lineTmp);
-					su.trim(line);
+					line = su.trim(line);
 					line += lineTmp;
 					if (std::string::npos != lineTmp.find('}'))
 						break;
@@ -136,10 +136,10 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				c = findConfigByAlias(ret, aliasKey);
 			}
 
-//			root
-			if (key == "root")
+//			base_path
+			if (key == "base_path")
 			{
-				c->addParam("root", su.getNthTokenIfExists(toksVal, 0, ""));
+				c->addParam("base_path", su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 			//			server_name
 			else if (key == "server_name")
