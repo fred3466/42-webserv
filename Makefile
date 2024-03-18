@@ -40,6 +40,7 @@ SRC_FILES	= Harl\
 	processor/ProcessorImplCgiBinPhp \
 	processor/CGI/CGIHandler \
  	processor/Processor \
+	processor/FiltreResponseMimeType \
  	location/LocationToProcessor \
  	location/ProcessorLocator \
 	location/ProcessorAndLocationToProcessor \
