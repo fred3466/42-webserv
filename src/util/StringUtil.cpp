@@ -8,7 +8,7 @@ StringUtil::~StringUtil()
 {
 }
 
-std::string StringUtil::strUpper(std::string s)
+std::string StringUtil::strUpperCase(std::string s)
 {
 	std::string ret = s;
 	for (std::string::iterator ite = ret.begin(); ite != ret.end(); ite++)
