@@ -3,7 +3,7 @@ PROJECT		= webserver
 INCLUDE		= 
 SRC_DIR		= src/
 OBJ_DIR		= obj/
-CC			= g++
+CC			= c++
 CFLAGS		= -g -std=c++98 -pedantic-errors #-Wall -Wextra -Werror
 LFLAGS		= #-lreadline 
 RM			= rm -f

@@ -34,7 +34,7 @@ std::string RequestHttp::getFileName() const
 }
 
 //https://httpd.apache.org/docs/current/vhosts/name-based.html
-std::string RequestHttp::getHost() const
+std::string RequestHttp::getHost()
 {
 	std::string uri = getUri();
 
@@ -48,7 +48,7 @@ std::string RequestHttp::getHost() const
 	return path;
 }
 //https://httpd.apache.org/docs/current/vhosts/name-based.html
-std::string RequestHttp::getPath() const
+std::string RequestHttp::getPath()
 {
 	std::string uri = getUri();
 //	TODO Pas vraiment un URL ou un URI...
