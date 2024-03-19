@@ -76,15 +76,23 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 			std::string fileExt = path.substr(
 					path.rfind(".", std::string::npos));
 
-			if (stringUtil.strUpper(fileExt) == ".GIF")
+			if (stringUtil.strUpperCase(fileExt) == ".GIF")
 			{
 				resp->getHeader()->addField("Content-Type", "image/gif");
+			}
+			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
+			{
+				resp->getHeader()->addField("Content-Type", "text/html");
+			}
+			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
+			{
+				resp->getHeader()->addField("Content-Type", "text/html");
 			}
 			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
 			//			{
 			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
 			//			}
-			else if (stringUtil.strUpper(fileExt) == ".JPEG" || stringUtil.strUpper(fileExt) == ".JPG")
+			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
 			{
 				resp->getHeader()->addField("Content-Type", "image/jpeg");
 			}

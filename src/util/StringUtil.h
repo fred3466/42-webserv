@@ -13,7 +13,7 @@ public:
 	StringUtil();
 	~StringUtil();
 
-	std::string strUpper(std::string s);
+	std::string strUpperCase(std::string s);
 	std::string fromListToString(std::list<std::string> l);
 	bool isSpace(char c);
 	bool isalnum(std::string s);

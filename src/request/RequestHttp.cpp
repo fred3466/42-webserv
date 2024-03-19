@@ -21,7 +21,7 @@ std::string RequestHttp::getFileExtension() const
 	std::string fileExt = uri.substr(uri.rfind(".", std::string::npos));
 	if (!fileExt.empty())
 	{
-		return su.strUpper(fileExt);
+		return su.strUpperCase(fileExt);
 	}
 	return "";
 }
@@ -34,6 +34,37 @@ std::string RequestHttp::getFileName() const
 }
 
 //https://httpd.apache.org/docs/current/vhosts/name-based.html
+//std::string RequestHttp::getHost() const
+//{
+//	std::string uri = getUri();
+//	std::string host = ""; // Initialize host to an empty string
+//
+//	// Find the position of "://"
+//	size_t schemeEndPos = uri.find("://");
+//	if (schemeEndPos != std::string::npos)
+//	{
+//		// Find the start of the host by skipping the "://"
+//		size_t hostStart = schemeEndPos + 3;
+//
+//		// Find the end of the host, which could be the start of the path or query string
+//		size_t hostEnd = uri.find('/', hostStart);
+//		size_t queryStart = uri.find('?', hostStart);
+//
+//		// stop at the earliest of the path or query string
+//		if (hostEnd == std::string::npos)
+//			hostEnd = queryStart;
+//		if (queryStart != std::string::npos && queryStart < hostEnd)
+//			hostEnd = queryStart;
+//
+//		// If there's no path or query string, the host runs till the end of the URI
+//		if (hostEnd == std::string::npos)
+//			hostEnd = uri.length();
+//
+//		// Extract the host
+//		host = uri.substr(hostStart, hostEnd - hostStart);
+//	}
+//	return host;
+//}
 std::string RequestHttp::getHost() const
 {
 	std::string uri = getUri();
@@ -48,28 +79,16 @@ std::string RequestHttp::getHost() const
 	return path;
 }
 //https://httpd.apache.org/docs/current/vhosts/name-based.html
-std::string RequestHttp::getPath() const
-{
-	std::string uri = getUri();
-//	TODO Pas vraiment un URL ou un URI...
-	size_t posFirstSlash = uri.find("/");
-	size_t posLastSlash = uri.rfind("/");
-//	TODO avec ou sans  / ?
-	std::string path = uri.substr(posFirstSlash, posLastSlash - posFirstSlash + 1);
-	return path;
-}
-
-std::string RequestHttp::getQueryString() const
-{
-	std::string queryString = ""; // Initialize queryString to an empty string
-	std::string uri = getUri();
-	size_t queryPos = uri.find('?');
-	if (queryPos != std::string::npos)
-	{
-		queryString = uri.substr(queryPos + 1);
-	}
-	return queryString;
-}
+//std::string RequestHttp::getPath() const
+//{
+//	std::string uri = getUri();
+////	TODO Pas vraiment un URL ou un URI...
+//	size_t posFirstSlash = uri.find("/");
+//	size_t posLastSlash = uri.rfind("/");
+////	TODO avec ou sans  / ?
+//	std::string path = uri.substr(posFirstSlash, posLastSlash - posFirstSlash + 1);
+//	return path;
+//}
 
 std::string RequestHttp::getPath() const
 {
@@ -82,36 +101,16 @@ std::string RequestHttp::getPath() const
 	return uri; // Return the full URI if there is no query string
 }
 
-std::string RequestHttp::getHost() const
+std::string RequestHttp::getQueryString() const
 {
+	std::string queryString = ""; // Initialize queryString to an empty string
 	std::string uri = getUri();
-	std::string host = ""; // Initialize host to an empty string
-
-	// Find the position of "://"
-	size_t schemeEndPos = uri.find("://");
-	if (schemeEndPos != std::string::npos)
+	size_t queryPos = uri.find('?');
+	if (queryPos != std::string::npos)
 	{
-		// Find the start of the host by skipping the "://"
-		size_t hostStart = schemeEndPos + 3;
-
-		// Find the end of the host, which could be the start of the path or query string
-		size_t hostEnd = uri.find('/', hostStart);
-		size_t queryStart = uri.find('?', hostStart);
-
-		// stop at the earliest of the path or query string
-		if (hostEnd == std::string::npos)
-			hostEnd = queryStart;
-		if (queryStart != std::string::npos && queryStart < hostEnd)
-			hostEnd = queryStart;
-
-		// If there's no path or query string, the host runs till the end of the URI
-		if (hostEnd == std::string::npos)
-			hostEnd = uri.length();
-
-		// Extract the host
-		host = uri.substr(hostStart, hostEnd - hostStart);
+		queryString = uri.substr(queryPos + 1);
 	}
-	return host;
+	return queryString;
 }
 
 std::string RequestHttp::getHeaderFieldValue(std::string fieldName) const
