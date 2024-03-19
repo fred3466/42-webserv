@@ -30,8 +30,8 @@ public:
 	virtual RequestHeader* getHeader() const;
 	virtual std::string getFileExtension() const;
 	virtual std::string getFileName() const;
-	virtual std::string getPath() const;
-	virtual std::string getHost() const;
+	virtual std::string getPath();
+	virtual std::string getHost();
 
 	void setBody(const std::string &b);
 	const std::string& getBody() const;

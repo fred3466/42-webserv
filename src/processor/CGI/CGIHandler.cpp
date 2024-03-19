@@ -145,7 +145,7 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 //		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
 		(envMap)["SCRIPT_NAME"] = scriptPath;
 
-		char *envp[envMap.size()];
+		char **envp = new char*[envMap.size()]; //need to be delete() after it is used, or else it will cause memory leak
 		int i = 0;
 		for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
 		{

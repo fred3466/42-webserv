@@ -33,39 +33,7 @@ std::string RequestHttp::getFileName() const
 	return fileName;
 }
 
-//https://httpd.apache.org/docs/current/vhosts/name-based.html
-//std::string RequestHttp::getHost() const
-//{
-//	std::string uri = getUri();
-//	std::string host = ""; // Initialize host to an empty string
-//
-//	// Find the position of "://"
-//	size_t schemeEndPos = uri.find("://");
-//	if (schemeEndPos != std::string::npos)
-//	{
-//		// Find the start of the host by skipping the "://"
-//		size_t hostStart = schemeEndPos + 3;
-//
-//		// Find the end of the host, which could be the start of the path or query string
-//		size_t hostEnd = uri.find('/', hostStart);
-//		size_t queryStart = uri.find('?', hostStart);
-//
-//		// stop at the earliest of the path or query string
-//		if (hostEnd == std::string::npos)
-//			hostEnd = queryStart;
-//		if (queryStart != std::string::npos && queryStart < hostEnd)
-//			hostEnd = queryStart;
-//
-//		// If there's no path or query string, the host runs till the end of the URI
-//		if (hostEnd == std::string::npos)
-//			hostEnd = uri.length();
-//
-//		// Extract the host
-//		host = uri.substr(hostStart, hostEnd - hostStart);
-//	}
-//	return host;
-//}
-std::string RequestHttp::getHost() const
+std::string RequestHttp::getHost()
 {
 	std::string uri = getUri();
 
@@ -78,28 +46,27 @@ std::string RequestHttp::getHost() const
 	std::string path = uri.substr(posFirstSlash, endIndex - posFirstSlash + 1);
 	return path;
 }
-//https://httpd.apache.org/docs/current/vhosts/name-based.html
+
+std::string RequestHttp::getPath()
+{
+	std::string uri = getUri();
+//	TODO Pas vraiment un URL ou un URI...
+	size_t posFirstSlash = uri.find("/");
+	size_t posLastSlash = uri.rfind("/");
+//	TODO avec ou sans  / ?
+	std::string path = uri.substr(posFirstSlash, posLastSlash - posFirstSlash + 1);
+	return path;
+}
 //std::string RequestHttp::getPath() const
 //{
-//	std::string uri = getUri();
-////	TODO Pas vraiment un URL ou un URI...
-//	size_t posFirstSlash = uri.find("/");
-//	size_t posLastSlash = uri.rfind("/");
-////	TODO avec ou sans  / ?
-//	std::string path = uri.substr(posFirstSlash, posLastSlash - posFirstSlash + 1);
-//	return path;
+//	std::string uri = header->getUri();
+//	size_t queryPos = uri.find('?');
+//	if (queryPos != std::string::npos)
+//	{
+//		return uri.substr(0, queryPos); // Return the URI path without the query string
+//	}
+//	return uri; // Return the full URI if there is no query string
 //}
-
-std::string RequestHttp::getPath() const
-{
-	std::string uri = header->getUri();
-	size_t queryPos = uri.find('?');
-	if (queryPos != std::string::npos)
-	{
-		return uri.substr(0, queryPos); // Return the URI path without the query string
-	}
-	return uri; // Return the full URI if there is no query string
-}
 
 std::string RequestHttp::getQueryString() const
 {
