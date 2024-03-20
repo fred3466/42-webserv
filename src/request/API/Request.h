@@ -27,7 +27,7 @@ private:
 	virtual std::string getQueryString() const =0;
 	virtual std::string getFileExtension() const =0;
 	virtual std::string getFileName() const =0;
-	virtual std::string getPath() const =0;
-	virtual std::string getHost() const =0;
+	virtual std::string getPath() =0;
+	virtual std::string getHost() =0;
 };
 
