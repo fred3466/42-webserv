@@ -9,7 +9,7 @@ RequestHttp::RequestHttp(RequestHeader *head) : fdClient(-1)
 	header = head;
 }
 
-RequestHeader* RequestHttp::getHeader() const
+RequestHeader *RequestHttp::getHeader() const
 {
 	return header;
 }
@@ -33,28 +33,28 @@ std::string RequestHttp::getFileName() const
 	return fileName;
 }
 
-//https://httpd.apache.org/docs/current/vhosts/name-based.html
-std::string RequestHttp::getHost() const
+// https://httpd.apache.org/docs/current/vhosts/name-based.html
+std::string RequestHttp::getHost()
 {
 	std::string uri = getUri();
 
 	size_t posFirstSlash = uri.find("/");
 	size_t posSecondSlash = uri.find("/", posFirstSlash + 1);
-//	TODO à améliorer
+	//	TODO à améliorer
 	size_t posFirstColon = uri.find(":");
 	size_t endIndex = ((posFirstColon != std::string::npos) && posFirstColon < posSecondSlash ? posFirstColon : posSecondSlash);
-//	TODO avec ou sans  / ?
+	//	TODO avec ou sans  / ?
 	std::string path = uri.substr(posFirstSlash, endIndex - posFirstSlash + 1);
 	return path;
 }
-//https://httpd.apache.org/docs/current/vhosts/name-based.html
-std::string RequestHttp::getPath() const
+// https://httpd.apache.org/docs/current/vhosts/name-based.html
+std::string RequestHttp::getPath()
 {
 	std::string uri = getUri();
-//	TODO Pas vraiment un URL ou un URI...
+	//	TODO Pas vraiment un URL ou un URI...
 	size_t posFirstSlash = uri.find("/");
 	size_t posLastSlash = uri.rfind("/");
-//	TODO avec ou sans  / ?
+	//	TODO avec ou sans  / ?
 	std::string path = uri.substr(posFirstSlash, posLastSlash - posFirstSlash + 1);
 	return path;
 }
@@ -125,7 +125,7 @@ void RequestHttp::addField(std::string rawField) const
 	getHeader()->addField(rawField);
 }
 
-const std::list<std::string>& RequestHttp::getFields() const
+const std::list<std::string> &RequestHttp::getFields() const
 {
 	return header->getFields();
 }

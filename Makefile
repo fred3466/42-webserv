@@ -45,6 +45,7 @@ SRCS = \
    	cookie/Cookie.cpp \
 	cookie/CookieHelper.cpp \
 	cookie/factory/CookieFactory.cpp \
+	codeHelper/HttpReturnCodeHelper.cpp \
     main.cpp 
 #    parser/MultipartParser \
 	
