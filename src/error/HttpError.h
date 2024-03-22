@@ -5,14 +5,14 @@
 class HttpError
 {
 private:
-    int code;
-    std::string description;
+	int code;
+	std::string description;
 
 public:
-    HttpError(/* args */);
-    ~HttpError();
+	HttpError(/* args */);
+	~HttpError();
 
-    ResponseHttp *generateErrorResponse(int errorCode, const std::string &errorMessage);
-    std::string loadErrorPageTemplate();
-    void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);
+	ResponseHttp* generateErrorResponse(int errorCode, const std::string &errorMessage);
+	std::string loadErrorPageTemplate();
+	void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);
 };

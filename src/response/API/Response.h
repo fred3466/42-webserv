@@ -2,6 +2,7 @@
 #include <string>
 
 #include "../API/ResponseHeader.h"
+//#include "../../error/HttpError.h"
 
 class Response
 {
@@ -22,6 +23,13 @@ public:
 	virtual void setBodyLength(int len)=0;
 	virtual int getTotalLength()=0;
 	virtual void setTotalLength(int len)=0;
+	virtual bool isCgi()=0;
+	virtual bool isError()=0;
+	//	virtual HttpError* getError()=0;
 
+	virtual void setCgi(bool cgi)=0;
+	//	virtual void setError(HttpError *error)=0;
+	//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
+	virtual void setIsError(bool isError)=0;
 };
 

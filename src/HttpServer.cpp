@@ -122,7 +122,8 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int *fdSocket = e.getFdClient();
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
-	if (!request->isConnectionKeepAlive() || (nbSent == resp->getTotalLength()))
+//	TODO Fred keepalive
+	if (!request->isConnectionKeepAlive() || resp->isCgi() || (nbSent == resp->getTotalLength()))
 	{
 		connector->closeConnection(fdSocket);
 	}
@@ -134,9 +135,9 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
-		 ite != processorList->end();
-		 ite++)
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
+			ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
