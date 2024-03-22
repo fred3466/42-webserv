@@ -30,16 +30,21 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 Processor* ProcessorFactory::build(std::string procName)
 {
 //	TODO new
-	ProcessorTypeEnum type = CONTENT_MODIFIER;
+	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
+	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
 	if (procName == "PHP_PROCESSOR")
 	{
-		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(type);
+		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
 		return proc;
 	}
 	else if (procName == "STATIC_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_STATIC(type);
+		return new REQUEST_HANDLER_IMPL_CLASS_STATIC(typeContentModifier);
+	else if (procName == "MIMETYPE_FILTER")
+		return new REQUEST_HANDLER_IMPL_CLASS_MIMETYPE(typeHeaderModifier);
+	else if (procName == "COMMON_FILTER")
+		return new REQUEST_HANDLER_IMPL_CLASS_COMMON(typeHeaderModifier);
 //	TODO doit être configurable
-	return new ProcessorImplDirectFs(type);
+	return new ProcessorImplDirectFs(typeContentModifier);
 }
 
 ProcessorFactory::ProcessorFactory() : processorLocator()

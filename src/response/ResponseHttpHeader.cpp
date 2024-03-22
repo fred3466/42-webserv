@@ -11,6 +11,9 @@ ResponseHttpHeader::~ResponseHttpHeader()
 
 void ResponseHttpHeader::addField(std::string headerName, std::string headerValue)
 {
+	if (headerValue == "" || headerName == "")
+		return;
+
 	std::string keyValue = su.trim(headerName) + ": " + su.trim(headerValue) + "\r\n";
 	if (!keyValue.empty())
 		fields.push_back(keyValue);

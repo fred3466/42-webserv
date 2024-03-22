@@ -27,7 +27,7 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["REQUEST_METHOD"] = request->getMethod();
 //	The query string, if any, via which the page was accessed.
 	(*envMap)["QUERY_STRING"] = request->getQueryString();
-	(*envMap)["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
+//	(*envMap)["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
 
 //   The Content-Length entity-header field indicates the size of the
 //   entity-body, in decimal number of OCTETs, sent to the recipient or,
@@ -61,7 +61,7 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 //	Set to a non-empty value if the script was queried through the HTTPS protocol.
 	(*envMap)["HTTPS"] = ""; //TODO a voir
 //	Server identification string, given in the headers when responding to requests.
-	(*envMap)["SERVER_SOFTWARE"] = "webserv/Anastasia Jean-Baptiste Frédéric";
+	(*envMap)["SERVER_SOFTWARE"] = request->getHeaderFieldValue("Server"); //"webserv/Anastasia Jean-Baptiste Frédéric";
 //	The IP address from which the user is viewing the current page.
 	(*envMap)["REMOTE_ADDR"] = ""; //TODO a voir
 //	The port being used on the user's machine to communicate with the web server.
@@ -72,6 +72,8 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["SERVER_ADDR"] = ""; //TODO a voir
 //	The port on the server machine being used by the web server for communication. For default setups, this will be '80'; using SSL, for instance, will change this to whatever your defined secure HTTP port is.
 	(*envMap)["SERVER_PORT"] = ""; //TODO a voir
+	(*envMap)["PATH_INFO"] = ""; //TODO a voir
+
 //	The name of the server host under which the current script is executing. If the script is running on a virtual host, this will be the value defined for that virtual host.
 	(*envMap)["SERVER_NAME"] = "mon serveur web"; //TODO a voir
 	(*envMap)["SERVER_PORT"] = ""; //TODO a voir

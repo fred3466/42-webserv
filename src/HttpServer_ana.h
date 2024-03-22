@@ -27,9 +27,9 @@
 #include "Harl.h"
 #include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
-#include "request/Request.h"
-#include "request/HttpRequest.h"
-#include "request/RequestFactory.h"
+#include "request/API/Request.h"
+#include "request/RequestHttp.h"
+#include "request/factory/RequestFactory.h"
 #include "processor/CGI/CGIHandler.h"
 
 class HttpServer: public ConnectorListener

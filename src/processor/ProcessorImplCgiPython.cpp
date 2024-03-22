@@ -16,8 +16,6 @@ void ProcessorImplCgiPython::setConfig(Config *conf)
 
 Response* ProcessorImplCgiPython::process(Request *request)
 {
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
 	std::string basePath = config->getParamStr("base_path", "base_path");
@@ -39,7 +37,7 @@ Response* ProcessorImplCgiPython::process(Request *request)
 		std::string httpResponse = generateHttpResponse(cgiOutput);
 	}
 
-	return resp;
+	return response;
 }
 
 bool ProcessorImplCgiPython::isCGIRequest(const std::string &uri)
