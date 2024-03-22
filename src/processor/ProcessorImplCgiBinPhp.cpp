@@ -16,11 +16,9 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
-	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
+//	resp->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
 //	char *body;
@@ -50,14 +48,14 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	std::string interpreterPath = config->getParamStr("php_exe", "");
 	std::string
 	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
-	resp->setBodyLength(cgiOutput.length());
+	response->setBodyLength(cgiOutput.length());
 	char *bodybin = new char[cgiOutput.length()];
 	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
 //	bodybin = const_cast<char*>(cgiOutput.data());
-	resp->setBodyBin(bodybin);
+	response->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 //		resp->getHeader()->addField("\r\n");
 
 //	std::string httpResponse = generateHttpResponse(cgiOutput);
@@ -65,7 +63,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 //		sendResponse(e.getFdClient(), httpResponse);
 //	}
 //
-	return resp;
+	return response;
 }
 
 std::string ProcessorImplCgiBinPhp::getBasePath()

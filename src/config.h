@@ -13,3 +13,8 @@
 #define REQUEST_HANDLER_IMPL_CLASS_PHP ProcessorImplCgiBinPhp
 #define REQUEST_HEADER_IMPL_INC_STATIC "ProcessorImplDirectFs.h"
 #define REQUEST_HANDLER_IMPL_CLASS_STATIC ProcessorImplDirectFs
+#define REQUEST_HEADER_IMPL_INC_MIMETYPE "FiltreResponseMimeType.h"
+#define REQUEST_HANDLER_IMPL_CLASS_MIMETYPE FiltreResponseMimeType
+#define REQUEST_HEADER_IMPL_INC_COMMON "FiltreResponseCommon.h"
+#define REQUEST_HANDLER_IMPL_CLASS_COMMON FiltreResponseCommon
+

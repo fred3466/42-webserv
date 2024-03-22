@@ -37,6 +37,8 @@ SRC_FILES	= \
 	processor/ProcessorFactory \
 	processor/ProcessorImplDirectFs \
 	processor/ProcessorImplCgiBinPhp \
+	processor/FiltreResponseMimeType \
+	processor/FiltreResponseCommon \
 	processor/CGI/CGIHandler \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \

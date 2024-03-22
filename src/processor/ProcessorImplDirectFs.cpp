@@ -26,8 +26,6 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 										 ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
 	FileUtil *fu = FileUtilFactory().build();
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
@@ -67,7 +65,7 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 
 				bodyStr += sending;
 			}
-			resp->setBodyLength(bodyStr.size());
+			response->setBodyLength(bodyStr.size());
 			bodyStr.copy(body, bodyStr.size(), 0);
 			//			body = bodyStr.c_str();
 		}
@@ -76,31 +74,31 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 			std::string fileExt = path.substr(
 				path.rfind(".", std::string::npos));
 
-			if (stringUtil.strUpperCase(fileExt) == ".GIF")
-			{
-				resp->getHeader()->addField("Content-Type", "image/gif");
-			}
-			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
-			{
-				resp->getHeader()->addField("Content-Type", "text/html");
-			}
-			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
-			{
-				resp->getHeader()->addField("Content-Type", "text/html");
-			}
-			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
-			//			{
-			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
-			//			}
-			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
-			{
-				resp->getHeader()->addField("Content-Type", "image/jpeg");
-			}
+//			if (stringUtil.strUpperCase(fileExt) == ".GIF")
+//			{
+//				response->getHeader()->addField("Content-Type", "image/gif");
+//			}
+//			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
+//			{
+//				response->getHeader()->addField("Content-Type", "text/html");
+//			}
+//			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
+//			{
+//				response->getHeader()->addField("Content-Type", "text/html");
+//			}
+//			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
+//			//			{
+//			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
+//			//			}
+//			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
+//			{
+//				response->getHeader()->addField("Content-Type", "image/jpeg");
+//			}
 
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
-			resp->setBodyLength(len);
-			resp->setBodyBin(bodyBin);
+			response->setBodyLength(len);
+			response->setBodyBin(bodyBin);
 
 			// std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
 			// out.write(bodyBin, len);
@@ -123,13 +121,13 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 			// something else
 		}
 		//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-		resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+		response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	}
 	else
 	{
 		// error
 		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
-		resp->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
 	}
 	//---------------------testing cooking------------------
 	/*	Cookie cookie;
@@ -165,7 +163,7 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 	////	resp->setBody("<html><body>" + body + "</body></html>");
 	//	resp->setBody(body);
 	delete fu;
-	return resp;
+	return response;
 }
 
 void ProcessorImplDirectFs::addProperty(std::string name, std::string value)

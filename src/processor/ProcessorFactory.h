@@ -8,6 +8,8 @@
 #include "../util/StringUtil.h"
 #include REQUEST_HEADER_IMPL_INC_PHP
 #include REQUEST_HEADER_IMPL_INC_STATIC
+#include REQUEST_HEADER_IMPL_INC_MIMETYPE
+#include REQUEST_HEADER_IMPL_INC_COMMON
 class ProcessorFactory
 {
 private:

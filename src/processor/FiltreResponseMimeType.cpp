@@ -1,9 +1,9 @@
 #include "FiltreResponseMimeType.h"
 #include <algorithm>
 
-FiltreResponseMimeType::FiltreResponseMimeType(MimeTypeHelper &mimeTypeHelper)
-: mimeTypeHelper(mimeTypeHelper)
+FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : type(type)
 {
+	mimeTypeHelper = new MimeTypeHelper();
 }
 
 std::string FiltreResponseMimeType::getResponseMimeType(const std::string &filePath) const
@@ -21,18 +21,16 @@ std::string FiltreResponseMimeType::getResponseMimeType(const std::string &fileP
 	std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
 	// Use the MimeTypeHelper to find the MIME type
-	return mimeTypeHelper.findMimeType(extension);
+	return mimeTypeHelper->findMimeType(extension);
 }
 
 // Modify the Response object to include the correct MIME type header
 Response* FiltreResponseMimeType::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
-
+	ResponseHeader *header = response->getHeader();
 	std::string path;
-	path = request->getPath();
+	path = request->getUri();
 
 	// Extracting MIME type using the file path
 	std::string mimeType = getResponseMimeType(path);
@@ -40,7 +38,8 @@ Response* FiltreResponseMimeType::process(Request *request, Response *response,
 	// Add MIME type to the response header
 	if (header)
 	{
-		header->addField("Content-Type", mimeType);
+		header->addField("Content-Type", mimeType + ";");
+		header->addField("X-FiltreResponseMimeType-Content-Type", mimeType + ";");
 	}
 
 	return response;
@@ -52,7 +51,7 @@ void FiltreResponseMimeType::setConfig(Config *conf)
 	std::string mimeTypesFilePath = conf->getParamStr("mimeTypesFilePath", "example/mime.types");
 	if (!mimeTypesFilePath.empty())
 	{
-		mimeTypeHelper.reloadMappingsFromFile(mimeTypesFilePath);
+		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
 	}
 }
 
@@ -60,7 +59,7 @@ std::string FiltreResponseMimeType::toString()
 {
 	std::ostringstream oss;
 	oss << "FiltreResponseMimeType Processor with ";
-	oss << mimeTypeHelper.numberOfMappings();
+	oss << mimeTypeHelper->numberOfMappings();
 	oss << " MIME type mappings.";
 	return oss.str(); // Convert the ostringstream to string and return it
 }
@@ -96,13 +95,17 @@ void FiltreResponseMimeType::addProperty(std::string name, std::string value)
 
 void FiltreResponseMimeType::reloadConfigurations()
 {
-	std::string mimeTypesFilePath = getProperty("example/mime.types");
+	std::string mimeTypesFilePath = getProperty("exemple/mime.types");
 	if (!mimeTypesFilePath.empty())
 	{
-		mimeTypeHelper.reloadMappingsFromFile(mimeTypesFilePath);
+		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
 	}
 }
 
+ProcessorTypeEnum FiltreResponseMimeType::getType()
+{
+	return type;
+}
 // Response *FiltreResponseMimeType::process(Request *request, Response *response,
 //                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 // {
