@@ -53,7 +53,7 @@ void HttpServer::onIncomming(ConnectorEvent e)
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	// Retrieve the request from the event
-	std::string rawRequest = e.getTemp();
+	std::string rawRequest = e.getByteBuffer();
 	HttpRequest httpRequest(rawRequest);
 
 	// Extract the request method and query string

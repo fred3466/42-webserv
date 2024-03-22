@@ -56,7 +56,13 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
 	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-//		resp->getHeader()->addField("\r\n");
+//	response->setHttpError(HttpErrorFactory.build(200));
+//
+//	
+//	Dans filtre:
+//	response->getHttpError()
+
+	//		resp->getHeader()->addField("\r\n");
 
 //	std::string httpResponse = generateHttpResponse(cgiOutput);
 	// Send HTTP response back to the client

@@ -6,6 +6,7 @@
 #include "../response/factory/ResponseFactory.h"
 #include "Processor.h"
 #include <sstream>
+#include <map>
 
 class FiltreResponseMimeType: public Processor
 {

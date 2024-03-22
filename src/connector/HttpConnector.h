@@ -22,6 +22,7 @@
 #include "ConnectorListener.h"
 #include "Connector.h"
 #include "../Harl.h"
+#include "../config/Config.h"
 
 struct netStruct
 {
@@ -30,7 +31,7 @@ struct netStruct
 	std::string ipServer;
 };
 
-class HttpConnector : public Connector
+class HttpConnector: public Connector
 {
 private:
 	Harl harl;
@@ -39,19 +40,22 @@ private:
 	//	std::list<ConnectorListener> connectorListenerList;
 	ConnectorListener *connectorListener;
 	std::list<int> _allSockets;
+	Config *config;
 
 	//	HttpConnector(const HttpConnector &o);
 	//	HttpConnector& operator=(const HttpConnector &o);
 
 	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
-							int &end_server, int &nfds);
-	virtual bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
-	virtual void _listen(int _soListen, netStruct ns);
+			int &end_server, int &nfds);
+	bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
+	void _listen(int _soListen, netStruct ns);
+	//	void reorganiseFdTab(struct pollfd *fdTab[], int *fdTabSize);
+	void reorganiseFdTab(pollfd **fdTab, int *fdTabSize);
 
 public:
 	HttpConnector();
 	~HttpConnector();
-	HttpConnector(std::string stIp, int port);
+	HttpConnector(std::string stIp, int port, Config *c);
 
 protected:
 	void init(ConnectorListener &l);
@@ -61,4 +65,5 @@ protected:
 	virtual void unregisterIt(ConnectorListener *l);
 	virtual void publishAccepting(ConnectorEvent e);
 	virtual void publishDataReceiving(ConnectorEvent e);
+	virtual void closeConnection(int *fd);
 };

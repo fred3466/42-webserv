@@ -3,13 +3,13 @@
 
 #include "Connector.h"
 #include "HttpConnector.h"
+#include "../config/Config.h"
 
 class ConnectorFactory
 {
 private:
-public:
+	public:
 	ConnectorFactory();
 	~ConnectorFactory();
-	Connector *build(std::string ip);
-	Connector *build(std::string ip, int port);
+	Connector* build(std::string ip, int port, Config *c);
 };

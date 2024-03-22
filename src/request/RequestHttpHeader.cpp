@@ -9,18 +9,23 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 	std::stringstream lines;
 	lines.str(rawRequest->c_str());
 	char key[2048], val[2048], line[2048];
+	bool firstLine = true;
+
 	while (lines)
 	{
 		lines.getline(line, 2048, '\n');
 		std::stringstream lineSs;
 		lineSs.str(line);
 		std::string lineStr = lineSs.str();
-		if (!lineStr.compare(0, 3, "GET"))
+
+		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
-			this->setMethod("GET");
+			std::string method = lineStr.substr(0, 3);
+			this->setMethod(method);
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
 			this->setUri(std::string(key));
+			firstLine = false;
 		} else
 		{
 			lineSs.getline(val, 2048, '\n');
@@ -35,6 +40,7 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 {
 	std::string ret = "";
 	StringUtil su = StringUtil();
+	std::string fieldNameUpper = su.strUpperCase(fieldName);
 
 	for (std::list<std::string>::const_iterator ite = fields.begin(); ite != fields.end();
 			ite++)
@@ -43,10 +49,10 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 		int nbSeparatorsToProcess = 1;
 		std::vector<std::string> toks = su.tokenize(rawField, ':', nbSeparatorsToProcess);
 		std::string name = su.getNthTokenIfExists(toks, 0, "");
-		name = su.trim(name);
+		name = su.strUpperCase(su.trim(name));
 		std::string val = su.getNthTokenIfExists(toks, 1, "");
 		val = su.trim(val);
-		if (name == fieldName)
+		if (name == fieldNameUpper)
 			return val;
 	}
 	return ret;

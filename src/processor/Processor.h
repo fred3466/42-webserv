@@ -2,6 +2,7 @@
 #include "../config/Config.h"
 #include "../request/API/Request.h"
 #include "../response/API/Response.h"
+#include <iterator>
 
 class ProcessorAndLocationToProcessor;
 

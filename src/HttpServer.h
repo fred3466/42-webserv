@@ -33,7 +33,7 @@
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
-class HttpServer : public ConnectorListener
+class HttpServer: public ConnectorListener
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -44,10 +44,10 @@ private:
 	//	ProcessorFactory processorFactory;
 	ProcessorLocator *processorLocator;
 	//	ProcessorLocator processorLocator;
-	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
-								Response *resp);
-	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
-	void pushItIntoTheWire(int fdSocket, Request *request, Response *resp);
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+			Response *resp);
+	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(ConnectorEvent e, Request *request, Response *resp);
 	void instantiateProcessLocator();
 

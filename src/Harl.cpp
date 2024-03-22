@@ -75,6 +75,18 @@ void Harl::error(std::string msg, ...)
 		Harl::_write("ERROR", formatedChars);
 	}
 }
+void Harl::except(std::string msg, ...)
+{
+	char formatedChars[2000];
+	va_list args;
+	if (HARL_LEVEL >= -1)
+	{
+		va_start(args, msg);
+		int nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
+		va_end(args);
+		Harl::_write("EXCEPT.", formatedChars);
+	}
+}
 
 void Harl::_write(std::string level, std::string msg)
 {

@@ -28,5 +28,6 @@ public:
 	std::string getNthTokenIfExists(std::vector<std::string> v, int index,
 			std::string defaultValue);
 	std::string dedoublonne(std::string s, std::string cherche);
+	bool isStrictlyEqual(std::string s1, std::string s2);
 
 };

@@ -21,8 +21,7 @@ void HttpServer::init(Config *c)
 	config = c;
 	instantiateProcessLocator();
 
-	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"),
-			c->getParamInt("port", 8080));
+	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"), c->getParamInt("port", 8080), c);
 	connector->registerIt(this);
 
 	connector->doListen();
@@ -98,7 +97,7 @@ void HttpServer::onIncomming(ConnectorEvent e)
 
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
-	std::string rawRequest = e.getTemp();
+	std::string rawRequest = e.getByteBuffer();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
 	// seg fault
 	CookieFactory().build(reqHeader);
@@ -106,7 +105,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	request->setFdClient(e.getFdClient());
 	//	req->dump();
 
-	harl.info("HttpServer::onDataReceiving : %s", request->getUri().c_str());
+	harl.except("HttpServer::onDataReceiving : %s", request->getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
 
 	ResponseHeader *header = ResponseHeaderFactory().build();
@@ -121,8 +120,13 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().c_str());
 	}
 
-	int fdSocket = e.getFdClient();
-	pushItIntoTheWire(fdSocket, request, resp);
+	int *fdSocket = e.getFdClient();
+	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
+
+	if (!request->isConnectionKeepAlive() || (nbSent == resp->getTotalLength()))
+	{
+		connector->closeConnection(fdSocket);
+	}
 
 	cleanUp(e, request, resp);
 }
@@ -225,15 +229,16 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	return cstr;
 }
 
-void HttpServer::pushItIntoTheWire(int fdSocket, Request *request, Response *resp)
+int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
 {
 	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
 	int length = resp->getTotalLength();
 
 	if (request && fdSocket && cstr && length)
-		send(fdSocket, cstr, length, 0);
+		send(*fdSocket, cstr, length, 0);
 	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
 	harl.trace("%s", cstr);
+	return length;
 }
 
 void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)

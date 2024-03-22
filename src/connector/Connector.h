@@ -1,4 +1,5 @@
 #pragma once
+#include "ConnectorListener.h"
 #include "ConnectorEventPublisher.h"
 
 class Connector /*: public ConnectorEventPublisher*/
@@ -17,6 +18,6 @@ public:
 	virtual void unregisterIt(ConnectorListener *l)=0;
 	virtual void publishAccepting(ConnectorEvent e)=0;
 	virtual void publishDataReceiving(ConnectorEvent e)=0;
-
+	virtual void closeConnection(int *fd)=0;
 };
 

@@ -4,12 +4,12 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *head) : fdClient(-1)
+RequestHttp::RequestHttp(RequestHeader *head) : fdClient(NULL)
 {
 	header = head;
 }
 
-RequestHeader *RequestHttp::getHeader() const
+RequestHeader* RequestHttp::getHeader() const
 {
 	return header;
 }
@@ -91,7 +91,7 @@ void RequestHttp::addField(std::string rawField) const
 	getHeader()->addField(rawField);
 }
 
-const std::list<std::string> &RequestHttp::getFields() const
+const std::list<std::string>& RequestHttp::getFields() const
 {
 	return header->getFields();
 }
@@ -105,11 +105,26 @@ std::string RequestHttp::getMethod() const
 	return header->getMethod();
 }
 
-int RequestHttp::getFdClient() const
+int* RequestHttp::getFdClient() const
 {
 	return fdClient;
 }
-void RequestHttp::setFdClient(int fd)
+void RequestHttp::setFdClient(int *fd)
 {
 	fdClient = fd;
+}
+bool RequestHttp::isConnectionKeepAlive() throw (char*)
+{
+	bool ret = false;
+	StringUtil su = StringUtil();
+	RequestHeader *header = getHeader();
+	if (header->getFields().empty())
+	{
+		throw "IllegalStateException : Request::getHeader().getFields() est vide !";
+	} else
+	{
+		std::string connectionVal = header->getFieldValue("Connection");
+		ret = su.isStrictlyEqual(connectionVal, "keep-alive");
+	}
+	return ret;
 }

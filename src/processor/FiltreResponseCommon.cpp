@@ -31,7 +31,7 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	path = request->getUri();
 
 //	PHP
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Fr%E9d%E9ric");
+	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frédéric");
 //	TODO date de la requête, pour un jpg par exemple
 	header->addField("Date", "");
 //	Voir filtre MimeType
@@ -39,7 +39,8 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 //	TODO on s'en fout
 	header->addField("Transfer-Encoding", "");	//chunked
 //	le contraire de keep-alive
-	header->addField("Connection", "close");
+	bool isKeepAlive = request->isConnectionKeepAlive();
+	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
 
 //	html jpg
 //	TODO à implémenter ! fred

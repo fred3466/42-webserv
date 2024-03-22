@@ -205,3 +205,7 @@ std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
 		return defaultValue;
 }
 
+bool StringUtil::isStrictlyEqual(std::string s1, std::string s2)
+{
+	return strUpperCase(s1) == strUpperCase(s2);
+}

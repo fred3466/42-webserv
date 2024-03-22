@@ -9,7 +9,7 @@ class Harl
 {
 private:
 	void _write(std::string level, std::string msg);
-public:
+	public:
 	Harl();
 	~Harl();
 	void trace(std::string msg, ...);
@@ -17,5 +17,6 @@ public:
 	void info(std::string msg, ...);
 	void warning(std::string msg, ...);
 	void error(std::string msg, ...);
+	void except(std::string msg, ...);
 
 };
