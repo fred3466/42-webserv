@@ -12,8 +12,9 @@
 #include "../util/StringUtil.h"
 #include "../config/Config.h"
 #include "CGI/CGIHandler.h"
+#include "../location/ProcessorAndLocationToProcessor.h"
 
-class ProcessorImplCgiPython: public Processor
+class ProcessorImplCgiSh: public Processor
 {
 private:
 	Config *config;
@@ -26,9 +27,10 @@ private:
 protected:
 
 public:
-	ProcessorImplCgiPython(ProcessorTypeEnum type);
-	~ProcessorImplCgiPython();
-	virtual Response* process(Request *request);
+	ProcessorImplCgiSh(ProcessorTypeEnum type);
+	~ProcessorImplCgiSh();
+	virtual Response* process(Request *request, Response *response,
+			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	virtual void setConfig(Config *conf);
 	virtual ProcessorTypeEnum getType();
 
