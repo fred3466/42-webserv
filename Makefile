@@ -3,7 +3,7 @@ PROJECT		= webserver
 INCLUDE		= 
 SRC_DIR		= src/
 OBJ_DIR		= obj/
-CC			= c++
+CC			= g++
 CFLAGS		= -g -std=c++98 -pedantic-errors #-Wall -Wextra -Werror
 LFLAGS		= #-lreadline 
 RM			= rm -f
@@ -63,6 +63,7 @@ SRC_FILES	= \
    	cookie/Cookie \
 	cookie/CookieHelper \
 	cookie/factory/CookieFactory \
+	codeHelper/HttpReturnCodeHelper \
     main 
 #    parser/MultipartParser \
 
@@ -76,12 +77,12 @@ all:		$(NAME)
 
 $(NAME):	$(OBJ)
 			@$(CC) $(OBJ) -o $(NAME)
-			@echo "$(GREEN)$(PROJECT) compiled!$(DEF_COLOR)"
+			@echo "\033[K$(GREEN)$(PROJECT) compiled!$(DEF_COLOR)"
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp | $(OBJF)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp | $(OBJF)		
+			@printf "\033[K$(YELLOW)Compiling: $< $(DEF_COLOR)\r"
 			@mkdir -p $(OBJ_DIR)
 			@mkdir -p $(dir $(OBJ))
-			@echo "$(YELLOW)Compiling: $< $(DEF_COLOR)"
 			@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ $(LFLAGS)
 
 $(OBJF):

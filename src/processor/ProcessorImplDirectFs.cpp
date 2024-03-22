@@ -23,17 +23,17 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplDirectFs::process(Request *request, Response *response,
-		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response *ProcessorImplDirectFs::process(Request *request, Response *response,
+										 ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	FileUtil *fu = FileUtilFactory().build();
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
 
 	std::string basePath = config->getParamStr("base_path", "base_path");
-//	std::string path = root + request->getUri();
+	//	std::string path = root + request->getUri();
 
-//	TODO factoriser
+	//	TODO factoriser
 	std::string uri = request->getUri();
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
@@ -72,7 +72,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 		else if (s.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
-					path.rfind(".", std::string::npos));
+				path.rfind(".", std::string::npos));
 
 //			if (stringUtil.strUpperCase(fileExt) == ".GIF")
 //			{
@@ -129,7 +129,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
 		response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
 	}
-//---------------------testing cooking------------------
+	//---------------------testing cooking------------------
 	/*	Cookie cookie;
 	 cookie.setName("TEST");
 	 cookie.setValue("42");
@@ -154,14 +154,14 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	 cookie.setDomain("localhost");
 	 cookie.setPath("/");
 	 resp->getHeader()->addCookie(cookie);*/
-//-----------------------------------------------------
-//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
-//    _response_content.append(statusCodeString(_code));
-//    _response_content.append("\r\n");
-////	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-//	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-////	resp->setBody("<html><body>" + body + "</body></html>");
-//	resp->setBody(body);
+	//-----------------------------------------------------
+	//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
+	//    _response_content.append(statusCodeString(_code));
+	//    _response_content.append("\r\n");
+	////	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
+	//	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+	////	resp->setBody("<html><body>" + body + "</body></html>");
+	//	resp->setBody(body);
 	delete fu;
 	return response;
 }
