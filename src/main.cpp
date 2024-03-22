@@ -2,6 +2,7 @@
 #include "config/ConfigReader.h"
 #include "HttpServer.h"
 #include "util/FileUtil.h"
+#include "Uri/Uri.h"
 
 // void bye(){
 
@@ -13,6 +14,7 @@ int main(int ac, char **av)
 	FileUtil fu = FileUtil();
 	HttpServer server;
 	// TODO gestion des erreurs
+
 	if (ac == 2)
 	{
 		std::string path = std::string(av[1]);

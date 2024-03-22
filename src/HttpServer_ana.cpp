@@ -209,7 +209,7 @@ void HttpServer::closeClient(int clientFd)
 
 int HttpServer::getListenFd()
 {
-	TcpConnector *tcpConnector = dynamic_cast<TcpConnector*>(connector);
+	TcpConnector *tcpConnector = dynamic_cast<TcpConnector *>(connector);
 	if (tcpConnector)
 	{
 		return tcpConnector->getListenFd();
@@ -217,7 +217,7 @@ int HttpServer::getListenFd()
 	else
 	{
 		std::cerr << "Connector is not properly initialized or wrong type."
-				<< std::endl;
+				  << std::endl;
 		return -1;
 	}
 }
@@ -282,5 +282,34 @@ int HttpServer::getClientFd(int clientId)
 	else
 	{
 		return -1; // Indicate that the client was not found
+	}
+}
+
+void HttpServer::sendErrorResponse(int errorCode, const std::string &errorDesc, Request *request)
+{
+	std::string errorPageContent = loadErrorPageTemplate(); // Load the default error page template
+
+	// Replace placeholders with actual error code and description
+	replaceAll(errorPageContent, "[HTTP_ERROR_CODE]", std::to_string(errorCode));
+	replaceAll(errorPageContent, "[HTTP_ERROR_DESC]", errorDesc);
+
+	// Prepare the HTTP response
+	Response response;
+	response.setCode(errorCode);
+	response.setDescription(errorDesc);
+	response.setBody(errorPageContent);
+	response.setHeader("Content-Type", "text/html");
+
+	// Send the response
+	sendResponse(request->getFdClient(), response);
+}
+
+void replaceAll(std::string &str, const std::string &from, const std::string &to)
+{
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
 	}
 }
