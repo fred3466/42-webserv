@@ -61,7 +61,8 @@ SRC_FILES	= \
    	cookie/Cookie \
 	cookie/CookieHelper \
 	cookie/factory/CookieFactory \
-	codeHelper/HttpReturnCodeHelper \
+	error/HttpError \
+	error/HttpReturnCodeHelper \
     main 
 #    parser/MultipartParser \
 

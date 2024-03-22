@@ -76,22 +76,21 @@ void HttpServer::instantiateProcessLocator()
 				processor->addProperty(nameProperty, valProperty);
 			}
 		}
-
 	}
 	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
 	Config *configProc = config->clone();
 	defaultProcessor->setConfig(configProc);
 	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
 }
-//void addLocationToProcessor(
-//std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
-//std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
-//processor = processorFactory.build(processorName);
-//processor->setConfig(config);
+// void addLocationToProcessor(
+// std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
+// std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
+// processor = processorFactory.build(processorName);
+// processor->setConfig(config);
 //
-//processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
+// processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 //
-//}
+// }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
 }
@@ -129,9 +128,9 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 										Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -142,8 +141,8 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			continue;
 		}
 
-//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
-//		processor->setConfig(config);
+		//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
+		//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
 				   processor->toString().c_str());
@@ -161,11 +160,11 @@ char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 {
 	StringUtil stringUtil;
 
-//	std::ostringstream oss;
-//	oss << resp->getBodyLength();
-//	std::string sizeStr = oss.str();
-//
-//	resp->getHeader()->addField("Content-Length", sizeStr);
+	//	std::ostringstream oss;
+	//	oss << resp->getBodyLength();
+	//	std::string sizeStr = oss.str();
+	//
+	//	resp->getHeader()->addField("Content-Length", sizeStr);
 
 	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
 	{
