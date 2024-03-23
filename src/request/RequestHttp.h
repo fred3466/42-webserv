@@ -21,17 +21,17 @@ public:
 	virtual const std::list<std::string>& getFields() const;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const;
 	virtual void addField(std::string rawField) const;
-	virtual std::string getUri() const;
-	virtual std::string getMethod() const;
+	virtual const std::string& getUri() const;
+	virtual const std::string& getMethod() const;
 	//	virtual void dump() const;
 	virtual void setFdClient(int *fd);
 	virtual int* getFdClient() const;
-	virtual std::string getQueryString() const;
+	virtual const std::string& getQueryString() const;
 	virtual RequestHeader* getHeader() const;
-	virtual std::string getFileExtension() const;
-	virtual std::string getFileName() const;
-	virtual std::string getPath();
-	virtual std::string getHost();
+	virtual const std::string getFileExtension() const;
+	virtual const std::string getFileName() const;
+	virtual const std::string& getPath();
+	virtual const std::string getHost();
 
 	void setBody(const std::string &b);
 	const std::string& getBody() const;

@@ -5,6 +5,7 @@
 #include "../util/StringUtil.h"
 #include "../cookie/CookieHelper.h"
 #include "../cookie/factory/CookieFactory.h"
+#include "../Uri/Uri.h"
 #include <list>
 #include <map>
 
@@ -16,7 +17,7 @@ private:
 	std::list<Cookie> cookies;
 	CookieHelper cookieHelper;
 	std::string method;
-	std::string uri;
+	Uri uri;
 	std::string version;
 
 public:
@@ -37,4 +38,8 @@ public:
 	virtual bool addCookie(const Cookie &cookie);
 	virtual bool removeCookie(const std::string &cookieName);
 	virtual std::string getCookieString();
+	virtual const std::string& getQueryString() const;
+	virtual const std::string getFileExtension() const;
+	virtual const std::string getFileName() const;
+	virtual const std::string& getPath() const;
 };

@@ -88,16 +88,6 @@ void RequestHttpHeader::setMethod(const std::string &m)
 	method = m;
 }
 
-const std::string& RequestHttpHeader::getUri() const
-{
-	return uri;
-}
-
-void RequestHttpHeader::setUri(const std::string &u)
-{
-	uri = u;
-}
-
 const std::string& RequestHttpHeader::getVersion() const
 {
 	return version;
@@ -136,4 +126,34 @@ bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 std::string RequestHttpHeader::getCookieString()
 {
 	return cookieHelper.getCookieString(cookies);
+}
+
+const std::string& RequestHttpHeader::getUri() const
+{
+	return uri.getUri();
+}
+
+void RequestHttpHeader::setUri(const std::string &u)
+{
+	uri = Uri(u);
+}
+
+const std::string& RequestHttpHeader::getQueryString() const
+{
+	return uri.getQuery();
+}
+
+const std::string RequestHttpHeader::getFileExtension() const
+{
+	return uri.getFileExtension();
+}
+
+const std::string RequestHttpHeader::getFileName() const
+{
+	return uri.getFileName();
+}
+
+const std::string& RequestHttpHeader::getPath() const
+{
+	return uri.getPath();
 }

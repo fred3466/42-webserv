@@ -1,12 +1,5 @@
 #include "UriValidator.h"
 
-bool UriValidator::checkScheme(const std::string &scheme)
-{
-	if (scheme == "http")
-		return true;
-	return false;
-}
-
 std::string UriValidator::formatPath(const std::string &path)
 {
 	std::string formattedPath;

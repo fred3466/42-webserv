@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include "../../cookie/Cookie.h"
+#include "../../Uri/Uri.h"
 
 class RequestHeader
 {
@@ -25,4 +26,8 @@ public:
 	virtual bool addCookie(const Cookie &cookie)=0;
 	virtual bool removeCookie(const std::string &cookieName)=0;
 	virtual std::string getCookieString()=0;
+	virtual const std::string& getQueryString() const =0;
+	virtual const std::string getFileExtension() const =0;
+	virtual const std::string getFileName() const =0;
+	virtual const std::string& getPath() const=0;
 };
