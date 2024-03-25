@@ -79,7 +79,7 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : connector
 			sizeof(on));
 	if (rc < 0)
 	{
-		harl.error("setsockopt() failed");
+		harl.error("HttpConnector::HttpConnector : setsockopt() failed");
 		close(_soListen);
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
@@ -92,7 +92,7 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : connector
 	rc = ioctl(_soListen, FIONBIO, (char*) &on);
 	if (rc < 0)
 	{
-		harl.error("ioctl() failed");
+		harl.error("HttpConnector::HttpConnector : ioctl() failed");
 		close(_soListen);
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
@@ -107,7 +107,7 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : connector
 	if (bind(_soListen, (struct sockaddr*) &sockaddrStruct,
 			sizeof(sockaddrStruct)) == -1)
 	{
-		harl.error("bind error : [%s], bye !", strerror(errno));
+		harl.error("HttpConnector::HttpConnector : bind error : [%s], bye !", strerror(errno));
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
 	}
@@ -118,7 +118,7 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : connector
 	//	----------------------------------------------------------------------
 	if (_soListen < 0)
 	{
-		harl.error("bind error : [%s], bye !", strerror(errno));
+		harl.error("HttpConnector::HttpConnector : bind error : [%s], bye !", strerror(errno));
 
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
@@ -154,12 +154,12 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 //	char **envp = new char*[envMap.size()]
 	int fdTabSize = 1, current_size = 0, i, j;
 
-	harl.info("Ecoute sur %s:%i", ns.ipServer.c_str(), ns.portServer);
+	harl.info("HttpConnector::_listen : Ecoute sur %s:%i", ns.ipServer.c_str(), ns.portServer);
 
 	rc = listen(_soListen, 5);
 	if (rc < 0)
 	{
-		harl.error("listen() failed [%s]", strerror(errno));
+		harl.error("HttpConnector::_listen : failed [%s]", strerror(errno));
 		close(_soListen);
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
@@ -191,16 +191,16 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 		/***********************************************************/
 		/* Call poll() and wait 3 minutes for it to complete.      */
 		/***********************************************************/
-		harl.debug("Waiting on poll()...%i", _allSockets.size());
+		harl.debug("HttpConnector::_listen : Waiting on poll()...%i", _allSockets.size());
 		rc = poll(*fdTab, fdTabSize, timeout);
 		if (rc < 0)
 		{
-			harl.error("poll error : [%s]", strerror(errno));
+			harl.error("HttpConnector::_listen : poll error : [%s]", strerror(errno));
 			break;
 		}
 		else if (rc == 0)
 		{
-			harl.error("poll() timed out : [%s]", strerror(errno));
+			harl.error("HttpConnector::_listen : poll() timed out : [%s]", strerror(errno));
 			break;
 		}
 
@@ -226,7 +226,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 			/*********************************************************/
 			if (curentPollFd->revents != POLLIN)
 			{
-				harl.error(" %d Error! revents = %d", curentPollFd->fd,
+				harl.error("HttpConnector::_listen :  %d Error! revents = %d", curentPollFd->fd,
 						curentPollFd->revents);
 				//				end_server = 1;
 				//				break;
@@ -236,7 +236,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 				/*******************************************************/
 				/* Listening descriptor is readable.                   */
 				/*******************************************************/
-				harl.debug("++++ %d  Listening socket is readable", _soListen);
+				harl.debug("++++ HttpConnector::_listen :  %d  Listening socket is readable", _soListen);
 
 				/*******************************************************/
 				/* Accept all incoming connections that are            */
@@ -253,7 +253,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 
 			else
 			{
-				harl.debug("**** %d Descriptor is readable", curentPollFd->fd);
+				harl.debug("**** HttpConnector::_listen : %d Descriptor is readable", curentPollFd->fd);
 				close_conn = 0;
 				/*******************************************************/
 				/* Receive all incoming data on this socket            */
@@ -350,14 +350,14 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		{
 			if (errno != EWOULDBLOCK)
 			{
-				harl.error("  accept() failed");
+				harl.error("HttpConnector::_acceptIncomingCon : accept() failed");
 				end_server = 1;
 			}
 			break;
 		}
 		if (fcntl(new_sd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
 		{
-			harl.error("  fcntl() failed");
+			harl.error("HttpConnector::_acceptIncomingCon : fcntl() failed");
 			close(new_sd);
 			break;
 		}
@@ -365,7 +365,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* Add the new incoming connection to the            */
 		/* pollfd structure                                  */
 		/*****************************************************/
-		harl.debug("---- %d  New incoming connection", new_sd);
+		harl.debug("---- %d HttpConnector::_acceptIncomingCon : New incoming connection", new_sd);
 		fdTab[nfds].fd = new_sd;
 		fdTab[nfds].events = POLLIN;
 		nfds++;
@@ -402,7 +402,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		{
 			if (errno != EWOULDBLOCK)
 			{
-				harl.error(" %d recv() failed [%s]", curentPollFd->fd,
+				harl.error(" %d HttpConnector::_onDataReceiving : recv() failed [%s]", curentPollFd->fd,
 						strerror(errno));
 				close_conn = 1;
 			}
@@ -411,7 +411,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		}
 		else if (rc == 0)
 		{
-			harl.error(" %d  Connection closed [%s]", curentPollFd->fd,
+			harl.error(" %d HttpConnector::_onDataReceiving : Connection closed [%s]", curentPollFd->fd,
 					strerror(errno));
 //			close_conn = 1;
 			break;
@@ -422,7 +422,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			/* Data was received                                 */
 			/*****************************************************/
 			int len = rc;
-			harl.debug(" %d  %d bytes received", curentPollFd->fd, len);
+			harl.debug(" %d HttpConnector::_onDataReceiving : %d bytes received", curentPollFd->fd, len);
 			//					std::cout << buffer << std::endl;
 			//					/*****************************************************/
 			//					/* Echo the data back to the client                  */

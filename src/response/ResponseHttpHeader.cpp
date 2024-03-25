@@ -8,19 +8,61 @@ ResponseHttpHeader::ResponseHttpHeader() :
 ResponseHttpHeader::~ResponseHttpHeader()
 {
 }
+int ResponseHttpHeader::getFieldAsInt(std::string param, int intDefault)
+{
+	try
+	{
+		std::string res = fields[param];
+		if (!res.empty())
+		{
+			int resInt = su.intFromStr(res);
+			return resInt;
+		}
+	}
+	catch (const std::out_of_range &oor)
+	{
+		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	}
+	return intDefault;
+}
+
+std::string ResponseHttpHeader::getFieldAsStr(std::string param, std::string stringDefault)
+{
+	try
+	{
+		std::string res = fields[param];
+		if (!res.empty())
+		{
+			return res;
+		}
+	}
+	catch (const std::out_of_range &oor)
+	{
+		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	}
+	return stringDefault;
+}
 
 void ResponseHttpHeader::addField(std::string headerName, std::string headerValue)
 {
 	if (headerValue == "" || headerName == "")
 		return;
-
-	std::string keyValue = su.trim(headerName) + ": " + su.trim(headerValue) + "\r\n";
-	if (!keyValue.empty())
-		fields.push_back(keyValue);
+	fields[headerName] = headerValue;
 }
-std::list<std::string> ResponseHttpHeader::getFields()
+
+std::list<std::string>* ResponseHttpHeader::getFields()
 {
-	return fields;
+//	TODO new par ici
+	std::list<std::string> *l = new std::list<std::string>();
+	l->resize(fields.size());
+
+	for (std::map<std::string, std::string>::iterator ite = fields.begin(); ite != fields.end(); ite++)
+	{
+		std::string keyVal = ite->first + ": " + ite->second + "\r\n";
+		;
+		l->push_back(keyVal);
+	}
+	return l;
 }
 
 std::string ResponseHttpHeader::getStatusLine()

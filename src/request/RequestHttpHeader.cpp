@@ -64,7 +64,7 @@ std::string RequestHttpHeader::toString()
 	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri() + "]\t[" + getVersion() + "]\n";
 
 	StringUtil su = StringUtil();
-	ret += su.dedoublonne(su.fromListToString(fields), "\n");
+	ret += su.dedoublonne(su.fromListToString(&fields), "\n");
 	return ret;
 }
 void RequestHttpHeader::addField(std::string f)

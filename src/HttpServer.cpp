@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-HttpServer::HttpServer() : harl(), connector(), config(), processorLocator()
+HttpServer::HttpServer() : harl(), connector(), config(), processorLocator(), su()
 {
 }
 
@@ -178,6 +178,8 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().c_str());
 	}
 
+	addUltimateHeaders(resp);
+
 	std::string fieldsString = stringUtil.fromListToString(
 			resp->getHeader()->getFields()) +
 			"\r\n";
@@ -227,6 +229,29 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 		os.close();
 	}
 	return cstr;
+}
+
+void HttpServer::addUltimateHeaders(Response *resp)
+{
+	ResponseHeader *header = resp->getHeader();
+
+	std::string transferEncoding = header->getFieldAsStr("Transfer-Encoding", "");
+	int contentLengthHeader = header->getFieldAsInt("Content-Length", -1);
+	int contentLengthResponse = resp->getBodyLength();
+
+	if (transferEncoding != "" && contentLengthHeader != -1)
+	{
+		harl.error("HttpServer::addUltimateHeaders: présence des entêtes incompatibles\nTransfer-Encoding = [%s]\nContent-Length=[%i]", transferEncoding, contentLengthHeader);
+	}
+	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
+	{
+		harl.error(
+				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+				contentLengthHeader, contentLengthResponse);
+	}
+	if (transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)

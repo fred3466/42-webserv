@@ -25,6 +25,7 @@ int Config::getParamInt(std::string param, int intDefault)
 		std::string res = kv[param];
 		if (!res.empty())
 		{
+//			TODO remplacer par la méthode de StringUtil
 			std::stringstream ss(res);
 			int resInt;
 			ss >> resInt;

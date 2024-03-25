@@ -21,4 +21,5 @@ public:
 	std::vector<std::string> listDir(std::string path);
 	bool fileExists(std::string path);
 	bool writeFile(std::string path, char *data, size_t dataSize);
+	std::string getLastModification(std::string fpath, std::string strFormat);
 };

@@ -11,6 +11,26 @@ FileUtil::~FileUtil()
 {
 }
 
+std::string FileUtil::getLastModification(std::string fpath, std::string strFormat /*EX: "%a, %d %b %Y %H:%M:%S %Z*/)
+{
+	struct stat sb;
+	if (stat(fpath.c_str(), &sb) == -1)
+	{
+		return "ERROR stat";
+
+//		har("stat");
+//		TODO exit interdit
+//		exit(-1);
+	}
+	char buf[1000];
+	time_t mtime = sb.st_mtime;
+	struct tm tmm = *gmtime(&mtime);
+	strftime(buf, sizeof buf, strFormat.c_str(), &tmm);
+	std::string ret = std::string(buf);
+
+	return ret;
+}
+
 int FileUtil::readFile(std::string path, char *emptyBodyBin[])
 {
 	std::ifstream is(path.c_str(), std::ios::binary | std::ios::in);

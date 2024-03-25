@@ -2,6 +2,7 @@
 
 #include "Processor.h"
 #include "../Harl.h"
+#include "../config.h"
 
 #include "../util/FileUtilFactory.h"
 #include "../util/StringUtil.h"

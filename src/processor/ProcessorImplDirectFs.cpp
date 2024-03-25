@@ -23,8 +23,8 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response *ProcessorImplDirectFs::process(Request *request, Response *response,
-										 ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* ProcessorImplDirectFs::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	FileUtil *fu = FileUtilFactory().build();
 
@@ -72,33 +72,18 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 		else if (s.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
-				path.rfind(".", std::string::npos));
-
-//			if (stringUtil.strUpperCase(fileExt) == ".GIF")
-//			{
-//				response->getHeader()->addField("Content-Type", "image/gif");
-//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
-//			{
-//				response->getHeader()->addField("Content-Type", "text/html");
-//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
-//			{
-//				response->getHeader()->addField("Content-Type", "text/html");
-//			}
-//			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
-//			//			{
-//			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
-//			//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
-//			{
-//				response->getHeader()->addField("Content-Type", "image/jpeg");
-//			}
+					path.rfind(".", std::string::npos));
 
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
 			response->setBodyLength(len);
 			response->setBodyBin(bodyBin);
+
+			if (!response->isCgi() && fu->fileExists(path))
+			{
+				std::string dateLastModification = fu->getLastModification(path, RFC_1123_DATE_FORMAT);
+				response->getHeader()->addField("Last-Modified", dateLastModification);
+			}
 
 			// std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
 			// out.write(bodyBin, len);

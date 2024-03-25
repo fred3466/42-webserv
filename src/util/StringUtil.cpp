@@ -18,10 +18,10 @@ std::string StringUtil::strUpperCase(std::string s)
 	return ret;
 }
 
-std::string StringUtil::fromListToString(std::list<std::string> l)
+std::string StringUtil::fromListToString(std::list<std::string> *l)
 {
 	std::string ret;
-	for (std::list<std::string>::iterator ite = l.begin(); ite != l.end();
+	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end();
 			ite++)
 	{
 		ret += *ite;
@@ -208,4 +208,33 @@ std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
 bool StringUtil::isStrictlyEqual(std::string s1, std::string s2)
 {
 	return strUpperCase(s1) == strUpperCase(s2);
+}
+
+std::string StringUtil::strFromInt(int i)
+{
+	std::string ret;
+	std::stringstream ss;
+	ss << i;
+	ss >> ret;
+
+	return ret;
+
+}
+int StringUtil::intFromStr(std::string s)
+{
+	std::stringstream ss(s);
+	int resInt;
+	ss >> resInt;
+
+	return resInt;
+
+}
+
+std::string StringUtil::formatDate(time_t mtime, std::string strFormat)
+{
+	char buf[1000];
+	struct tm tmm = *gmtime(&mtime);
+	strftime(buf, sizeof buf, strFormat.c_str(), &tmm);
+	std::string ret = std::string(buf);
+	return ret;
 }
