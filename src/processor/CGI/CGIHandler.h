@@ -11,13 +11,12 @@ class CGIHandler
 {
 private:
 	Harl harl;
-	// Parses the CGI script output
-	void parseOutput(const std::string &output);
-
 	std::string responseBody;
 	std::map<std::string, std::string> responseHeaders;
-	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request,
-			Response *response);
+
+	// Parses the CGI script output
+	void parseOutput(const std::string &output);
+	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response);
 
 	std::string captureScriptOutput(int fileDescriptor);
 

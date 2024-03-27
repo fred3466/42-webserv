@@ -13,9 +13,9 @@
 class FiltreResponseCommon: public Processor
 {
 private:
+	Harl harl;
 	Config *config;
 	FileUtil fileUtil;
-	Harl harl;
 	StringUtil stringUtil;
 	ProcessorTypeEnum type;
 

@@ -18,8 +18,7 @@ LocationToProcessor::~LocationToProcessor()
 
 }
 
-LocationToProcessor::LocationToProcessor(LocationToProcessor &bis) : extension(bis.extension), processor(bis.processor), urlPath(
-		bis.urlPath), host(bis.host)
+LocationToProcessor::LocationToProcessor(LocationToProcessor &bis) : urlPath(bis.urlPath), extension(bis.extension), processor(bis.processor), host(bis.host)
 {
 	*this = bis;
 }

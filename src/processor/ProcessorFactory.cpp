@@ -2,7 +2,6 @@
 
 std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
 {
-	Processor *proc;
 //	std::string ext = request->getFileExtension();
 //	std::string uri = request->getUri();
 

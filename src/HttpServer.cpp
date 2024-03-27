@@ -76,10 +76,10 @@ void HttpServer::instantiateProcessLocator()
 			}
 		}
 	}
-	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
-	Config *configProc = config->clone();
-	defaultProcessor->setConfig(configProc);
-	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
+//	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
+//	Config *configProc = config->clone();
+//	defaultProcessor->setConfig(configProc);
+//	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
 }
 // void addLocationToProcessor(
 // std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
@@ -92,6 +92,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
+	(void) e;
 }
 
 void HttpServer::onDataReceiving(ConnectorEvent e)
@@ -104,7 +105,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	request->setFdClient(e.getFdClient());
 	//	req->dump();
 
-	harl.except("HttpServer::onDataReceiving : %s", request->getUri().c_str());
+	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
 
 	ResponseHeader *header = ResponseHeaderFactory().build();
@@ -123,12 +124,13 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
 //	TODO Fred keepalive
-	if (!request->isConnectionKeepAlive() || resp->isCgi() || (nbSent == resp->getTotalLength()))
+	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
+		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().c_str());
 		connector->closeConnection(fdSocket);
 	}
 
-	cleanUp(e, request, resp);
+	cleanUp(request, resp);
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
@@ -261,12 +263,12 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 
 	if (request && fdSocket && cstr && length)
 		send(*fdSocket, cstr, length, 0);
-	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
+	harl.debug("%d sent %d bytes through the wire", *fdSocket, length);
 	harl.trace("%s", cstr);
 	return length;
 }
 
-void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
+void HttpServer::cleanUp(Request *request, Response *resp)
 {
 	delete request;
 	delete resp->getHeader();

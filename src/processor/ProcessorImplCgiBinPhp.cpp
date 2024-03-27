@@ -1,6 +1,6 @@
 #include "ProcessorImplCgiBinPhp.h"
 
-ProcessorImplCgiBinPhp::ProcessorImplCgiBinPhp(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+ProcessorImplCgiBinPhp::ProcessorImplCgiBinPhp(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
@@ -16,8 +16,6 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	FileUtil *fu = FileUtilFactory().build();
-
 //	resp->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");

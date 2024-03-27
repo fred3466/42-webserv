@@ -28,6 +28,7 @@ std::string FiltreResponseMimeType::getResponseMimeType(const std::string &fileP
 Response* FiltreResponseMimeType::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
+	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
 	path = request->getUri();

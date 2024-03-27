@@ -1,6 +1,6 @@
 #include "FiltreResponseCommon.h"
 
-FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil()
 {
 	this->type = type;
 }
@@ -26,13 +26,13 @@ std::string FiltreResponseCommon::toString()
 
 Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
+	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
 	path = request->getUri();
 
 //	PHP
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frédéric");
-//	TODO date de la requête
+	header->addField("Server", "webserv/Anastasia Jean-Baptiste Fr%E9d%E9ric");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
 	header->addField("Date", date);
 //	Voir filtre MimeType

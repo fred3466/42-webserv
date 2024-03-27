@@ -108,7 +108,7 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 	bool ret = false;
 	int i = cookies.size();
 	cookies = cookieHelper.addCookie(cookies, cookie);
-	if (cookies.size() > i)
+	if ((int) cookies.size() > i)
 		ret = true;
 	return ret;
 }
@@ -116,9 +116,9 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 {
 	bool ret = false;
-	int i = cookies.size();
+	int i = (int) cookies.size();
 	cookies = cookieHelper.removeCookie(cookies, cookieName);
-	if (cookies.size() < i)
+	if ((int) cookies.size() < i)
 		ret = true;
 	return ret;
 }

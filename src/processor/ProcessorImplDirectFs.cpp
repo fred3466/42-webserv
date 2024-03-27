@@ -10,7 +10,7 @@
 #include <ostream>
 #include <cstring>
 
-ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
@@ -50,12 +50,14 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	//	TODO FIN factoriser
 
 	harl.info(request->getUri() + " -> " + path);
-	char *body;
 
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
 	{
 		std::string bodyStr = "";
+		int bodyStrSize = bodyStr.size();
+		char *body = new char[bodyStrSize];
+
 		if (s.st_mode & S_IFDIR)
 		{
 			std::vector<std::string> files = fu->listDir(path);
@@ -65,8 +67,8 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 
 				bodyStr += sending;
 			}
-			response->setBodyLength(bodyStr.size());
-			bodyStr.copy(body, bodyStr.size(), 0);
+			response->setBodyLength(bodyStrSize);
+			bodyStr.copy(body, bodyStrSize, 0);
 			//			body = bodyStr.c_str();
 		}
 		else if (s.st_mode & S_IFREG)

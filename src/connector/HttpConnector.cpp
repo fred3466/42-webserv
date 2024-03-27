@@ -1,6 +1,6 @@
 #include "HttpConnector.h"
 
-HttpConnector::HttpConnector() : harl(), connectorListener(NULL), _soListen(-1)
+HttpConnector::HttpConnector() : harl(), ns(), _soListen(-1), connectorListener(NULL), config(), fdTab(NULL), fdTabSize(0)
 {
 }
 
@@ -28,6 +28,7 @@ void HttpConnector::registerIt(ConnectorListener *l)
 void HttpConnector::unregisterIt(ConnectorListener *l)
 {
 	//	connectorListenerList.remove(*l);
+	(void) l;
 	connectorListener = NULL;
 }
 void HttpConnector::init(ConnectorListener &l)
@@ -55,7 +56,7 @@ void HttpConnector::publishDataReceiving(ConnectorEvent e)
 	connectorListener->onDataReceiving(e);
 }
 
-HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : connectorListener(NULL)
+HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : harl(), ns(), _soListen(-1), connectorListener(NULL), fdTab(), fdTabSize(0)
 {
 
 	int on = 1;
@@ -135,24 +136,21 @@ void HttpConnector::doListen()
 
 void HttpConnector::_listen(int _soListen, netStruct ns)
 {
-	int fdMax;
-	int nbActiveFd;
-
-	int len, rc, on = 1;
+	int rc;
 	int new_sd = -1;
-	int desc_ready, end_server = 0, bReorganizeFdTab = 0;
+	int end_server = 0;
 	int close_conn = 0;
 	//
-	struct sockaddr_in addr;
 	int timeout;
-	struct pollfd **fdTab;
+//	struct pollfd **fdTab;
+//	int fdTabSize = 1;
 	int fdTabMaxSize = config->getParamInt("connector_pollfd_size", 200);
 	struct pollfd *fdTabTemp = new pollfd[fdTabMaxSize]();
 	fdTab = &fdTabTemp;
 
 //	fdTab = new fdTab*[200];
 //	char **envp = new char*[envMap.size()]
-	int fdTabSize = 1, current_size = 0, i, j;
+	int current_size = 0, i;
 
 	harl.info("HttpConnector::_listen : Ecoute sur %s:%i", ns.ipServer.c_str(), ns.portServer);
 
@@ -175,12 +173,14 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 	/*************************************************************/
 	fdTab[0]->fd = _soListen;
 	fdTab[0]->events = POLLIN;
+	fdTabSize = 1;
 	/*************************************************************/
 	/* Initialize the timeout to 3 minutes. If no                */
 	/* activity after 3 minutes this program will end.           */
 	/* timeout value is based on milliseconds.                   */
 	/*************************************************************/
-	timeout = (3 * 60 * 1000);
+//	timeout = (3 * 60 * 1000);
+	timeout = config->getParamInt("poll_timeout_ms", 3 * 60 * 1000);
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
@@ -191,17 +191,22 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 		/***********************************************************/
 		/* Call poll() and wait 3 minutes for it to complete.      */
 		/***********************************************************/
-		harl.debug("HttpConnector::_listen : Waiting on poll()...%i", _allSockets.size());
+		harl.debug("HttpConnector::_listen : Waiting on poll(%i)... fdTabSize=%i", timeout, fdTabSize);
 		rc = poll(*fdTab, fdTabSize, timeout);
 		if (rc < 0)
 		{
 			harl.error("HttpConnector::_listen : poll error : [%s]", strerror(errno));
+			dumpFdTab(fdTab, fdTabSize);
+//			TODO http error?
 			break;
 		}
 		else if (rc == 0)
 		{
+			dumpFdTab(fdTab, fdTabSize);
 			harl.error("HttpConnector::_listen : poll() timed out : [%s]", strerror(errno));
-			break;
+//			break;
+//			TODO http error?
+			continue;
 		}
 
 		/***********************************************************/
@@ -226,6 +231,8 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 			/*********************************************************/
 			if (curentPollFd->revents != POLLIN)
 			{
+//			TODO http error?
+
 				harl.error("HttpConnector::_listen :  %d Error! revents = %d", curentPollFd->fd,
 						curentPollFd->revents);
 				//				end_server = 1;
@@ -260,25 +267,25 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 				/* before we loop back and call poll again.            */
 				/*******************************************************/
 
-				bReorganizeFdTab = _onDataReceiving(curentPollFd, close_conn);
+				_onDataReceiving(curentPollFd, close_conn);
 
 			} /* End of existing connection is readable             */
 		} /* End of loop through pollable descriptors              */
 
-		/***********************************************************/
-		/* If the compress_array flag was turned on, we need       */
-		/* to squeeze together the array and decrement the number  */
-		/* of file descriptors. We do not need to move back the    */
-		/* events and revents fields because the events will always*/
-		/* be POLLIN in this case, and revents is output.          */
-		/***********************************************************/
-		if (bReorganizeFdTab == 1)
-		{
-			bReorganizeFdTab = 0;
-//			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
-			reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
-
-		}
+//		/***********************************************************/
+//		/* If the compress_array flag was turned on, we need       */
+//		/* to squeeze together the array and decrement the number  */
+//		/* of file descriptors. We do not need to move back the    */
+//		/* events and revents fields because the events will always*/
+//		/* be POLLIN in this case, and revents is output.          */
+//		/***********************************************************/
+//		if (bReorganizeFdTab == 1)
+//		{
+//			bReorganizeFdTab = 0;
+////			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
+//			reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
+//
+//		}
 
 	} while (end_server == 0); /* End of serving running.    */
 
@@ -324,10 +331,21 @@ void HttpConnector::reorganiseFdTab(pollfd **fdTab, int *fdTabSize)
 					(*fdTab)[j].fd = (*fdTab)[j + 1].fd;
 			}
 			i--;
-			*fdTabSize--;
+			(*fdTabSize)--;
 		}
 	}
 }
+
+void HttpConnector::dumpFdTab(pollfd **fdTab, int fdTabSize)
+{
+
+	for (int i = 0; i < fdTabSize; i++)
+	{
+		harl.trace("fdTab[%i] = %i", i, (*fdTab)[i]);
+	}
+
+}
+
 void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		struct pollfd fdTab[], int &end_server, int &nfds)
 {
@@ -357,6 +375,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		}
 		if (fcntl(new_sd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
 		{
+//			TODO http error?
 			harl.error("HttpConnector::_acceptIncomingCon : fcntl() failed");
 			close(new_sd);
 			break;
@@ -369,7 +388,6 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		fdTab[nfds].fd = new_sd;
 		fdTab[nfds].events = POLLIN;
 		nfds++;
-		_allSockets.push_back(fdTab[nfds].fd);
 		/*****************************************************/
 		/* Loop back up and accept another incoming          */
 		/* connection                                        */
@@ -383,7 +401,8 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		int &close_conn)
 {
-	char buffer[4500];
+	int rcv_buffer_size_bytes = config->getParamInt("rcv_buffer_size_bytes", 5000);
+	char *buffer = new char[rcv_buffer_size_bytes]();
 	bool compress_array = 0;
 	/*******************************************************/
 	/* Receive all incoming data on this socket            */
@@ -391,17 +410,20 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 	/*******************************************************/
 	do
 	{
+		if (curentPollFd->fd == -1)
+			break;
 		/*****************************************************/
 		/* Receive data on this connection until the         */
 		/* recv fails with EWOULDBLOCK. If any other         */
 		/* failure occurs, we will close the                 */
 		/* connection.                                       */
 		/*****************************************************/
-		int rc = recv(curentPollFd->fd, buffer, sizeof(buffer), 0);
+		int rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
 		if (rc < 0)
 		{
 			if (errno != EWOULDBLOCK)
 			{
+				//			TODO http error?
 				harl.error(" %d HttpConnector::_onDataReceiving : recv() failed [%s]", curentPollFd->fd,
 						strerror(errno));
 				close_conn = 1;
@@ -411,9 +433,10 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		}
 		else if (rc == 0)
 		{
+			//			TODO http error?
 			harl.error(" %d HttpConnector::_onDataReceiving : Connection closed [%s]", curentPollFd->fd,
 					strerror(errno));
-//			close_conn = 1;
+			close_conn = 1;
 			break;
 		}
 		else
@@ -462,6 +485,14 @@ void HttpConnector::closeConnection(int *fd)
 	harl.except("---- %i Fermeture de la connexion \n", *fd);
 	close(*fd);
 	*fd = -1;
-	_allSockets.remove(*fd);
+	/***********************************************************/
+	/* If the compress_array flag was turned on, we need       */
+	/* to squeeze together the array and decrement the number  */
+	/* of file descriptors. We do not need to move back the    */
+	/* events and revents fields because the events will always*/
+	/* be POLLIN in this case, and revents is output.          */
+	/***********************************************************/
+//			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
+	reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
 
 }
