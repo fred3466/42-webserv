@@ -95,18 +95,43 @@ void HttpServer::onIncomming(ConnectorEvent e)
 	(void) e;
 }
 
+bool HttpServer::_checkAccess(Request *request)
+{
+	std::string metReq = request->getHeader()->getMethod();
+	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
+	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
+	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
+	{
+		std::string methConfig = limit_exceptTab[i];
+		if (methConfig == metReq)
+		{
+			return true;
+		}
+	}
+	harl.debug("HttpServer::onDataReceiving: la méthode de la requête [%s] n'est pas autorisée : [%s]", metReq.c_str(), limitConfig.c_str());
+	return false;
+}
+
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getByteBuffer();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-	// seg fault
-	CookieFactory().build(reqHeader);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
+	// seg fault
+	CookieFactory().build(reqHeader);
 	//	req->dump();
 
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
+
+	if (!_checkAccess(request))
+	{
+//		TODO http error @Anastasia
+
+		cleanUp(request, NULL);
+		return;
+	}
 
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -271,9 +296,12 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 void HttpServer::cleanUp(Request *request, Response *resp)
 {
 	delete request;
-	delete resp->getHeader();
-	delete resp->getBodyBin();
-	delete resp;
+	if (resp)
+	{
+		delete resp->getHeader();
+		delete resp->getBodyBin();
+		delete resp;
+	}
 }
 
 void shutFd(int fd)

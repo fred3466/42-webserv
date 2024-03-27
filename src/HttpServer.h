@@ -53,8 +53,8 @@ private:
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
 	void addUltimateHeaders(Response *resp);
-
-public:
+	bool _checkAccess(Request *request);
+	public:
 	HttpServer();
 	~HttpServer();
 

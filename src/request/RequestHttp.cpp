@@ -73,6 +73,17 @@ void RequestHttp::setFdClient(int *fd)
 {
 	fdClient = fd;
 }
+
+void RequestHttp::setBody(RequestBody *body)
+{
+	this->body = body;
+}
+
+RequestBody* RequestHttp::getBody()
+{
+	return body;
+}
+
 bool RequestHttp::isConnectionKeepAlive() throw (char*)
 {
 	bool ret = false;

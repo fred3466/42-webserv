@@ -2,15 +2,18 @@
 
 #include "API/Request.h"
 #include "API/RequestHeader.h"
+#include "API/RequestBody.h"
 #include "../util/StringUtil.h"
 #include <map>
 #include <iterator>
 #include <string>
 
+//TODO En faire une Coplien
 class RequestHttp: public Request
 {
 private:
 	RequestHeader *header;
+	RequestBody *body;
 	int *fdClient;
 
 public:
@@ -33,8 +36,8 @@ public:
 	virtual const std::string& getPath();
 	virtual const std::string getHost();
 
-	void setBody(const std::string &b);
-	const std::string& getBody() const;
+	virtual void setBody(RequestBody *body);
+	virtual RequestBody* getBody();
 
 	virtual bool isConnectionKeepAlive() throw (char*);
 };
