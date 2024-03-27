@@ -4,7 +4,6 @@ ProcessorImplCgiSh::ProcessorImplCgiSh(ProcessorTypeEnum type) : harl(), stringU
 {
 	this->type = type;
 }
-
 ProcessorImplCgiSh::~ProcessorImplCgiSh()
 {
 }
@@ -20,14 +19,14 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	FileUtil *fu = FileUtilFactory().build();
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
+	
+	// It's a CGI request
 	CGIHandler cgiHandler;
 
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
 	int patPathLen = patPath.length();
 	std::string uri = request->getUri();
-//	std::string proto = "http:://";
-//	size_t itePostProtocole = proto.length();
 	size_t ite = uri.find(patPath);
 	if (ite == 0)
 	{
@@ -39,7 +38,7 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	harl.debug(toString() + ":\t" + request->getUri() + " -> " + scriptPath);
 
 	// Execute the CGI script and get output
-	std::string interpreterPath = config->getParamStr("Sh", "");
+	std::string interpreterPath = config->getParamStr("sh", "");
 	std::string
 	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
 	response->setBodyLength(cgiOutput.length());
@@ -51,7 +50,13 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
 	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	response->setCgi(true);
-//		resp->getHeader()->addField("\r\n");
+//	response->setHttpError(HttpErrorFactory.build(200));
+//
+//
+//	Dans filtre:
+//	response->getHttpError()
+
+	//		resp->getHeader()->addField("\r\n");
 
 //	std::string httpResponse = generateHttpResponse(cgiOutput);
 	// Send HTTP response back to the client
@@ -61,52 +66,24 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	return response;
 }
 
-bool ProcessorImplCgiSh::isCGIRequest(const std::string &uri)
+std::string ProcessorImplCgiSh::getBasePath()
 {
-	return uri.find("/cgi-bin/") == 0;
+	return config->getParamStr("base_path", "cgi-bin/toto/");
 }
 
-std::map<std::string, std::string> ProcessorImplCgiSh::prepareCGIEnvironment(Request *request)
+void ProcessorImplCgiSh::setBasePath(std::string basePath)
 {
-	std::map<std::string, std::string> env = std::map<std::string, std::string>(); // @suppress("Invalid template argument")
-
-	env["REQUEST_METHOD"] = request->getMethod();
-	env["QUERY_STRING"] = request->getQueryString();
-	env["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
-	env["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
-	env["HTTP_COOKIE"] = request->getHeader()->getCookieString();
-	env["HTTP_USER_AGENT"] = request->getHeaderFieldValue("User-Agent");
-	env["PATH_INFO"] = request->getUri();
-	env["REMOTE_ADDR"] = "";
-	env["REMOTE_HOST"] = "";
-	env["SCRIPT_FILENAME"] = getScriptPath(request->getFileName());
-	env["SCRIPT_NAME"] = "";
-	env["SERVER_NAME"] = "";
-	env["SERVER_SOFTWARE"] = "Webserv/1.0";
-
-	return env;
+	config->addParam("base_path", basePath);
 }
 
-std::string readRequest(int clientFd)
+void ProcessorImplCgiSh::addProperty(std::string name, std::string value)
 {
-	char buffer[BUF_SIZE];
-	std::string requestText;
-	int nbytes;
+	config->addParam(name, value);
+}
 
-	while ((nbytes = recv(clientFd, buffer, sizeof(buffer), 0)) > 0)
-	{
-		requestText.append(buffer, nbytes);
-	}
-	if (nbytes == 0)
-	{
-		std::cout << "Client disconnected." << std::endl;
-	}
-	else if (nbytes < 0)
-	{
-		std::cerr << "recv() error: " << strerror(errno) << std::endl;
-	}
-
-	return requestText;
+std::string ProcessorImplCgiSh::toString()
+{
+	return "ProcessorImplCgiSh";
 }
 
 ProcessorTypeEnum ProcessorImplCgiSh::getType()
