@@ -17,4 +17,5 @@
 #define REQUEST_HANDLER_IMPL_CLASS_MIMETYPE FiltreResponseMimeType
 #define REQUEST_HEADER_IMPL_INC_COMMON "FiltreResponseCommon.h"
 #define REQUEST_HANDLER_IMPL_CLASS_COMMON FiltreResponseCommon
-
+#define REQUEST_HEADER_IMPL_INC_ERROR "FiltreError.h"
+#define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError

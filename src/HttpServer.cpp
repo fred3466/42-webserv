@@ -111,7 +111,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	Response *resp = ResponseFactory().build(header);
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 
 	if (!resp)
@@ -122,7 +122,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int *fdSocket = e.getFdClient();
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
-//	TODO Fred keepalive
+	//	TODO Fred keepalive
 	if (!request->isConnectionKeepAlive() || resp->isCgi() || (nbSent == resp->getTotalLength()))
 	{
 		connector->closeConnection(fdSocket);
@@ -131,13 +131,13 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(e, request, resp);
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-		Response *resp)
+Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+										Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -152,7 +152,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
-				processor->toString().c_str());
+				   processor->toString().c_str());
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 		if (!contentDone && processor->getType() == CONTENT_MODIFIER)
 		{
@@ -163,7 +163,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	return resp;
 }
 
-char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -179,8 +179,8 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	}
 
 	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields()) +
-			"\r\n";
+								   resp->getHeader()->getFields()) +
+							   "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 	std::string body = "";
 	char *bodyBin = resp->getBodyBin();

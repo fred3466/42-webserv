@@ -1,7 +1,6 @@
 #include "ResponseHttpHeader.h"
 
-ResponseHttpHeader::ResponseHttpHeader() :
-		fields(), su()
+ResponseHttpHeader::ResponseHttpHeader() : fields(), su()
 {
 }
 
@@ -61,4 +60,9 @@ bool ResponseHttpHeader::removeCookie(const std::string &cookieName)
 std::string ResponseHttpHeader::getCookieString()
 {
 	return cookieHelper.getCookieStringResponse(cookies);
+}
+
+void ResponseHttpHeader::setErrorCodeTmp(int errorCode)
+{
+	this->errorCode = errorCode;
 }

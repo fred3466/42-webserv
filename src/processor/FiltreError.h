@@ -7,7 +7,13 @@
 #include "../response/factory/ResponseHeaderFactory.h"
 #include "../util/FileUtilFactory.h"
 
-class FiltreError : Processor
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include "../error/HttpErrorFactory.h"
+#include "../error/HttpReturnCodeHelper.h"
+
+class FiltreError : public Processor
 {
 private:
     ProcessorTypeEnum type;
@@ -24,4 +30,7 @@ public:
     virtual std::string toString();
     virtual void addProperty(std::string name, std::string value);
     virtual ProcessorTypeEnum getType();
+    Response *generateErrorResponse(int errorCode, const std::string &errorMessage);
+    std::string loadErrorPageTemplate();
+    void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);
 };

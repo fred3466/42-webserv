@@ -6,7 +6,7 @@
 #include "../cookie/CookieHelper.h"
 #include "../util/StringUtil.h"
 
-class ResponseHttpHeader: public ResponseHeader
+class ResponseHttpHeader : public ResponseHeader
 {
 private:
 	std::string statusLine;
@@ -14,6 +14,7 @@ private:
 	std::list<Cookie> cookies;
 	CookieHelper cookieHelper;
 	StringUtil su;
+	int errorCode;
 
 public:
 	ResponseHttpHeader();
@@ -27,5 +28,5 @@ public:
 	virtual bool addCookie(const Cookie &cookie);
 	virtual bool removeCookie(const std::string &cookieName);
 	virtual std::string getCookieString();
+	virtual void setErrorCodeTmp(int errorCode);
 };
-

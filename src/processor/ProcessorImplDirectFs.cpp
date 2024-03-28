@@ -74,26 +74,26 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 			std::string fileExt = path.substr(
 				path.rfind(".", std::string::npos));
 
-//			if (stringUtil.strUpperCase(fileExt) == ".GIF")
-//			{
-//				response->getHeader()->addField("Content-Type", "image/gif");
-//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
-//			{
-//				response->getHeader()->addField("Content-Type", "text/html");
-//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
-//			{
-//				response->getHeader()->addField("Content-Type", "text/html");
-//			}
-//			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
-//			//			{
-//			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
-//			//			}
-//			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
-//			{
-//				response->getHeader()->addField("Content-Type", "image/jpeg");
-//			}
+			//			if (stringUtil.strUpperCase(fileExt) == ".GIF")
+			//			{
+			//				response->getHeader()->addField("Content-Type", "image/gif");
+			//			}
+			//			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
+			//			{
+			//				response->getHeader()->addField("Content-Type", "text/html");
+			//			}
+			//			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
+			//			{
+			//				response->getHeader()->addField("Content-Type", "text/html");
+			//			}
+			//			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
+			//			//			{
+			//			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
+			//			//			}
+			//			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
+			//			{
+			//				response->getHeader()->addField("Content-Type", "image/jpeg");
+			//			}
 
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
@@ -120,14 +120,14 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 		{
 			// something else
 		}
-		//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-		response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+		// response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	}
 	else
 	{
 		// error
 		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
-		response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		// response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		response->setErrorCodeTmp(404);
 	}
 	//---------------------testing cooking------------------
 	/*	Cookie cookie;
