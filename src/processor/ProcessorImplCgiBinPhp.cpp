@@ -26,7 +26,7 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	// It's a CGI request
 	CGIHandler cgiHandler;
 
-	Response *responseHttp;
+	// Response *responseHttp;
 	int errorCode = 200;
 	HttpError *error = HttpErrorFactory().build(errorCode);
 

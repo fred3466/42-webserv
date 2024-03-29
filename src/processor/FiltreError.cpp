@@ -1,6 +1,6 @@
 #include "FiltreError.h"
 
-FiltreError::FiltreError(ProcessorTypeEnum type) : type(type), Processor()
+FiltreError::FiltreError(ProcessorTypeEnum type) : Processor(), type(type)
 {
 }
 
@@ -8,14 +8,13 @@ FiltreError::~FiltreError()
 {
 }
 
-Response *FiltreError::process(Request *request, Response *response,
-                               ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response *FiltreError::process(Request * /*request*/, Response *response,
+                               ProcessorAndLocationToProcessor * /*processorAndLocationToProcessor*/)
 {
-    // Assuming errorCode is determined from the request or response analysis
     int errorCode = response->getErrorCodeTmp(); // This needs to be determined based on your application logic
 
     // Generate the error response only if there is an error code set
-    if (errorCode != 200) // Using 200 as an example of a successful operation
+    if (errorCode != 200)
     {
         HttpError *error = HttpErrorFactory::build(errorCode);
         HttReturnCodeHelper returnCodeHelper;
@@ -41,18 +40,16 @@ Response *FiltreError::process(Request *request, Response *response,
             // Set up the body of the response
             char *bodyBinary = new char[errorPageContent.length() + 1];
             std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
-            bodyBinary[errorPageContent.length()] = '\0'; // Null-terminate the string
+            bodyBinary[errorPageContent.length()] = '\0';
 
             httpResp->setBodyBin(bodyBinary);
             httpResp->setBodyLength(errorPageContent.length());
         }
-
-        // Clean up the dynamically allocated error object
         delete error;
     }
     else
     {
-        // Handle the case where there is no error, or implement your logic for successful processing
+        // Handle the case where there is no error
     }
 
     return response;
@@ -80,8 +77,8 @@ ProcessorTypeEnum FiltreError::getType()
 
 Response *FiltreError::generateErrorResponse(int errorCode, const std::string &errorMessage)
 {
-    std::string errorPageContent = loadErrorPageTemplate();         // Load HTML template
-    replacePlaceholders(errorPageContent, errorCode, errorMessage); // Replace placeholders
+    std::string errorPageContent = loadErrorPageTemplate();
+    replacePlaceholders(errorPageContent, errorCode, errorMessage);
 
     // Create a new response header and set the status line appropriately
     ResponseHeader *header = new ResponseHttpHeader();

@@ -11,10 +11,10 @@ class HttpErrorFactory
 {
 private:
     static std::vector<HttpError> errorList;
-    static void loadErrorList(); // New method to load errors from file
+    static void loadErrorList();
 
 public:
-    static void initialize(); // Call this at the start of your program to load errors
+    static void initialize();
     static HttpError *build(int errorCode);
 };
 

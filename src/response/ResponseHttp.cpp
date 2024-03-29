@@ -12,8 +12,7 @@ ResponseHttp::~ResponseHttp()
 
 void ResponseHttp::setStatusLine(std::string sline)
 {
-	// TODO decommenter setStatusLine dans ResponseHeader
-	// header->setStatusLine(sline);
+	header->setStatusLine(sline);
 }
 
 // void ResponseHttp::setBody(std::string sline)
