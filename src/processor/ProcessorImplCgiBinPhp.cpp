@@ -51,9 +51,15 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	std::string
 		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
 	response->setBodyLength(cgiOutput.length());
-	char *bodybin = new char[cgiOutput.length()];
-	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
+
+	char *bodybin = new char[cgiOutput.length() + 1];
+	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
+	bodybin[cgiOutput.length()] = '\0';
+
+	// char *bodybin = new char[cgiOutput.length()];
+	// memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
 	//	bodybin = const_cast<char*>(cgiOutput.data());
+
 	response->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()

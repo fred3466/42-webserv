@@ -11,45 +11,32 @@ FiltreError::~FiltreError()
 Response *FiltreError::process(Request * /*request*/, Response *response,
                                ProcessorAndLocationToProcessor * /*processorAndLocationToProcessor*/)
 {
-    int errorCode = response->getErrorCodeTmp(); // This needs to be determined based on your application logic
+    int errorCode = response->getErrorCodeTmp();
 
-    // Generate the error response only if there is an error code set
     if (errorCode != 200)
     {
         HttpError *error = HttpErrorFactory::build(errorCode);
         HttReturnCodeHelper returnCodeHelper;
 
-        // Generate the status line for the error code
         std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
 
-        // Load and customize the error page content
         std::string errorPageContent = returnCodeHelper.loadErrorPageTemplate();
         replacePlaceholders(errorPageContent, errorCode, error->getDescription());
 
-        // Attempt to cast the response object to ResponseHttp to access specific methods
-        ResponseHttp *httpResp = dynamic_cast<ResponseHttp *>(response);
-        if (httpResp)
-        {
-            // If casting is successful, modify the status line of the response's header
-            ResponseHttpHeader *httpHeader = dynamic_cast<ResponseHttpHeader *>(httpResp->getHeader());
-            if (httpHeader)
-            {
-                httpHeader->setStatusLine(statusLine);
-            }
+        response->setStatusLine(statusLine);
 
-            // Set up the body of the response
-            char *bodyBinary = new char[errorPageContent.length() + 1];
-            std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
-            bodyBinary[errorPageContent.length()] = '\0';
+        char *bodyBinary = new char[errorPageContent.length() + 1];
+        std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
+        bodyBinary[errorPageContent.length()] = '\0';
 
-            httpResp->setBodyBin(bodyBinary);
-            httpResp->setBodyLength(errorPageContent.length());
-        }
+        response->setBodyBin(bodyBinary);
+        response->setBodyLength(errorPageContent.length());
+
         delete error;
     }
     else
     {
-        // Handle the case where there is no error
+        // Case where there is no error
     }
 
     return response;
@@ -124,42 +111,49 @@ void FiltreError::replacePlaceholders(std::string &content, int errorCode, const
     }
 }
 
-/*
-Response *FiltreError::process(Request *request, Response *response,
-                               ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
-{
-    bool errorDetected = false;
+// Response *FiltreError::process(Request * /*request*/, Response *response,
+//                                ProcessorAndLocationToProcessor * /*processorAndLocationToProcessor*/)
+// {
+//     int errorCode = response->getErrorCodeTmp(); // This needs to be determined based on your application logic
 
-    int errorCode = response->getErrorCodeTmp();
-    // HttpError *error = HttpErrorFactory::build(errorCode);
-    // response->setHttpError(error);
+//     // Generate the error response only if there is an error code set
+//     if (errorCode != 200)
+//     {
+//         HttpError *error = HttpErrorFactory::build(errorCode);
+//         HttReturnCodeHelper returnCodeHelper;
 
-    // TODO corriger ststus line
-    // Check for error and set status code accordingly
-    if (errorDetected)
-    {
-        // Error detected, setting the response for a 404 Not Found as an example
-        std::ostringstream statusLine;
-        statusLine << "HTTP/1.1 404 Not Found\r\n";
-        header->setStatusLine(statusLine.str());
-    }
-    else
-    {
-        // No error detected
-        std::ostringstream statusLine;
-        statusLine << "HTTP/1.1 200 OK\r\n";
-        header->setStatusLine(statusLine.str());
-    }
+//         // Generate the status line for the error code
+//         std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
 
-    std::string responseBody = "The content of the response ...";
+//         // Load and customize the error page content
+//         std::string errorPageContent = returnCodeHelper.loadErrorPageTemplate();
+//         replacePlaceholders(errorPageContent, errorCode, error->getDescription());
 
-    char *bodyBinary = new char[responseBody.length() + 1]; // +1 for null terminator
-    std::copy(responseBody.begin(), responseBody.end(), bodyBinary);
-    bodyBinary[responseBody.length()] = '\0';
+//         // Attempt to cast the response object to ResponseHttp to access specific methods
+//         ResponseHttp *httpResp = dynamic_cast<ResponseHttp *>(response);
+//         if (httpResp)
+//         {
+//             // If casting is successful, modify the status line of the response's header
+//             ResponseHttpHeader *httpHeader = dynamic_cast<ResponseHttpHeader *>(httpResp->getHeader());
+//             if (httpHeader)
+//             {
+//                 httpHeader->setStatusLine(statusLine);
+//             }
 
-    response->setBodyBin(bodyBinary);
-    response->setBodyLength(responseBody.length());
+//             // Set up the body of the response
+//             char *bodyBinary = new char[errorPageContent.length() + 1];
+//             std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
+//             bodyBinary[errorPageContent.length()] = '\0';
 
-    return response;
-}
-*/
+//             httpResp->setBodyBin(bodyBinary);
+//             httpResp->setBodyLength(errorPageContent.length());
+//         }
+//         delete error;
+//     }
+//     else
+//     {
+//         // Handle the case where there is no error
+//     }
+
+//     return response;
+// }

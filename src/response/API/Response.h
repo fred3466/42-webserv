@@ -36,4 +36,5 @@ public:
 	virtual void setHttpError(HttpError *error) = 0;
 	virtual void setErrorCodeTmp(int errorCode) = 0;
 	virtual int getErrorCodeTmp() = 0;
+	virtual void setStatusLine(std::string sline) = 0;
 };
