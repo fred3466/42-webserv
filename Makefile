@@ -44,6 +44,7 @@ SRC_FILES	= \
 	processor/FiltreResponseCommon \
 	processor/FiltreRequestPost \
 	processor/CGI/CGIHandler \
+	processor/FiltreError \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \
  	location/ProcessorLocator \
@@ -54,6 +55,8 @@ SRC_FILES	= \
     config/ConfigFactory \
    	config/ConfigReader \
    	config/ConfigValidator \
+	config/ResponseConfig \
+	config/RequestConfig \
 	response/API/Response \
 	response/API/ResponseHeader \
 	response/ResponseHttp \
@@ -68,6 +71,7 @@ SRC_FILES	= \
 	cookie/CookieHelper \
 	cookie/factory/CookieFactory \
 	error/HttpError \
+	error/HttpErrorFactory \
 	error/HttpReturnCodeHelper \
 	Uri/Uri \
 	Uri/UriValidator \

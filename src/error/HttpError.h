@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
-#include "../response/ResponseHttp.h"
-#include "../response/ResponseHttpHeader.h"
+#include <sstream>
+
 class HttpError
 {
 private:
@@ -9,10 +9,13 @@ private:
 	std::string description;
 
 public:
-	HttpError(/* args */);
+	HttpError(int code, const std::string &description);
 	~HttpError();
 
-	ResponseHttp* generateErrorResponse(int errorCode, const std::string &errorMessage);
-	std::string loadErrorPageTemplate();
-	void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);
+	void setCode(int newCode);
+	void setDescription(const std::string &newDescription);
+
+	int getCode() const;
+	std::string getDescription() const;
+	std::string getStatusLine() const;
 };

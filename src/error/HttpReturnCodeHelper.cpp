@@ -13,6 +13,31 @@ std::string HttReturnCodeHelper::getStatusLine(int httpReturnCode)
     return statusLine;
 }
 
+std::string HttReturnCodeHelper::loadErrorPageTemplate()
+{
+    std::ifstream file("htdocs/error_404.html");
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    return content;
+}
+
+// void HttReturnCodeHelper::replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage)
+// {
+//     // Replace [HTTP_ERROR_CODE] and [HTTP_ERROR_DESC] in the content string
+//     std::stringstream codeStream;
+//     codeStream << errorCode;
+//     std::string codeStr = codeStream.str();
+
+//     size_t pos;
+//     while ((pos = content.find("[HTTP_ERROR_CODE]")) != std::string::npos)
+//     {
+//         content.replace(pos, std::string("[HTTP_ERROR_CODE]").length(), codeStr);
+//     }
+//     while ((pos = content.find("[HTTP_ERROR_DESC]")) != std::string::npos)
+//     {
+//         content.replace(pos, std::string("[HTTP_ERROR_DESC]").length(), errorMessage);
+//     }
+// }
+
 /*
 HttReturnCodeHelper helper;
 std::string statusLine;

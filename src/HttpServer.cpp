@@ -76,10 +76,10 @@ void HttpServer::instantiateProcessLocator()
 			}
 		}
 	}
-//	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
-//	Config *configProc = config->clone();
-//	defaultProcessor->setConfig(configProc);
-//	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
+	//	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
+	//	Config *configProc = config->clone();
+	//	defaultProcessor->setConfig(configProc);
+	//	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
 }
 // void addLocationToProcessor(
 // std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
@@ -92,7 +92,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void) e;
+	(void)e;
 }
 
 bool HttpServer::_checkAccess(Request *request)
@@ -100,7 +100,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -129,7 +129,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (!_checkAccess(request))
 	{
-//		TODO http error @Anastasia
+		//		TODO http error @Anastasia
 
 		cleanUp(request, NULL);
 		return;
@@ -139,7 +139,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	Response *resp = ResponseFactory().build(header);
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 
 	if (!resp)
@@ -150,7 +150,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int *fdSocket = e.getFdClient();
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
-//	TODO Fred keepalive
+	//	TODO Fred keepalive
 	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
 		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().c_str());
@@ -160,13 +160,13 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(request, resp);
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-		Response *resp)
+Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+										Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -181,7 +181,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
-				processor->toString().c_str());
+				   processor->toString().c_str());
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 		if (!contentDone && processor->getType() == CONTENT_MODIFIER)
 		{
@@ -192,7 +192,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	return resp;
 }
 
-char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -210,8 +210,8 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	addUltimateHeaders(resp);
 
 	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields()) +
-			"\r\n";
+								   resp->getHeader()->getFields()) +
+							   "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 	std::string body = "";
 	char *bodyBin = resp->getBodyBin();
@@ -275,12 +275,11 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-				contentLengthHeader, contentLengthResponse);
+			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+			contentLengthHeader, contentLengthResponse);
 	}
 	if (transferEncoding == "" && contentLengthHeader == -1)
 		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
-
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)

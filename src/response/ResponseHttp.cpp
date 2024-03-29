@@ -1,8 +1,7 @@
 #include "ResponseHttp.h"
 
-//TODO En faire une Coplien
-ResponseHttp::ResponseHttp(ResponseHeader *head) :
-		bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false) //,  error(NULL)
+// TODO En faire une Coplien
+ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false) //,  error(NULL)
 {
 	header = head;
 }
@@ -16,22 +15,22 @@ void ResponseHttp::setStatusLine(std::string sline)
 	header->setStatusLine(sline);
 }
 
-//void ResponseHttp::setBody(std::string sline)
+// void ResponseHttp::setBody(std::string sline)
 //{
 //	body = sline;
-//}
+// }
 std::string ResponseHttp::getStatusLine()
 {
 	return header->getStatusLine();
 }
-ResponseHeader* ResponseHttp::getHeader()
+ResponseHeader *ResponseHttp::getHeader()
 {
 	return header;
 }
-//std::string ResponseHttp::getBody()
+// std::string ResponseHttp::getBody()
 //{
 //	return body;
-//}
+// }
 int ResponseHttp::getTotalLength()
 {
 	return totalLength;
@@ -53,7 +52,7 @@ void ResponseHttp::setBodyBin(char *bytess)
 	this->bodyBin = bytess;
 }
 
-char* ResponseHttp::getBodyBin()
+char *ResponseHttp::getBodyBin()
 {
 	return bodyBin;
 }
@@ -63,16 +62,16 @@ bool ResponseHttp::isCgi()
 	return flagCgi;
 }
 
-//TODO @Anastasia : virer le bool et tester HttpError.code
+// TODO @Anastasia : virer le bool et tester HttpError.code
 bool ResponseHttp::isError()
 {
 	return flagError;
 }
 
-//HttpError* ResponseHttp::getError()
+// HttpError* ResponseHttp::getError()
 //{
 //	return error;
-//}
+// }
 
 void ResponseHttp::setCgi(bool cgi)
 {
@@ -88,4 +87,25 @@ void ResponseHttp::setCgi(bool cgi)
 void ResponseHttp::setIsError(bool isError)
 {
 	this->flagError = isError;
+}
+
+void ResponseHttp::setHttpError(HttpError *error)
+{
+	this->error = error;
+	this->flagError = true;
+
+	std::ostringstream statusLine;
+	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
+	// TODO remettre setStatusLine
+	// this->header->setStatusLine(statusLine.str());
+}
+
+int ResponseHttp::getErrorCodeTmp()
+{
+	return errorCodeTmp;
+}
+
+void ResponseHttp::setErrorCodeTmp(int errorCode)
+{
+	errorCodeTmp = errorCode;
 }

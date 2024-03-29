@@ -13,8 +13,8 @@ void ProcessorImplCgiSh::setConfig(Config *conf)
 	config = conf;
 }
 
-Response* ProcessorImplCgiSh::process(Request *request, Response *response,
-		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response *ProcessorImplCgiSh::process(Request *request, Response *response,
+									  ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	FileUtil *fu = FileUtilFactory().build();
 
@@ -40,29 +40,29 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	// Execute the CGI script and get output
 	std::string interpreterPath = config->getParamStr("sh", "");
 	std::string
-	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
 	response->setBodyLength(cgiOutput.length());
 	char *bodybin = new char[cgiOutput.length()];
 	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
-//	bodybin = const_cast<char*>(cgiOutput.data());
+	//	bodybin = const_cast<char*>(cgiOutput.data());
 	response->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+	// response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	response->setCgi(true);
-//	response->setHttpError(HttpErrorFactory.build(200));
-//
-//
-//	Dans filtre:
-//	response->getHttpError()
+	//	response->setHttpError(HttpErrorFactory.build(200));
+	//
+	//
+	//	Dans filtre:
+	//	response->getHttpError()
 
 	//		resp->getHeader()->addField("\r\n");
 
-//	std::string httpResponse = generateHttpResponse(cgiOutput);
+	//	std::string httpResponse = generateHttpResponse(cgiOutput);
 	// Send HTTP response back to the client
-//		sendResponse(e.getFdClient(), httpResponse);
-//	}
-//
+	//		sendResponse(e.getFdClient(), httpResponse);
+	//	}
+	//
 	return response;
 }
 
