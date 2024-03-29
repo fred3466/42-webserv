@@ -9,7 +9,7 @@
 #include <sstream>
 #include <cstring>
 
-CGIHandler::CGIHandler() : harl()
+CGIHandler::CGIHandler() : harl(), responseBody(""), responseHeaders()
 {
 }
 
@@ -17,9 +17,9 @@ CGIHandler::~CGIHandler()
 {
 }
 
-void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request,
-		Response *response)
+void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response)
 {
+	(void) response;
 //	Some server supplied environment variables are not defined in the current » CGI/1.1 specification. Only the following variables are defined there: AUTH_TYPE, CONTENT_LENGTH, CONTENT_TYPE, GATEWAY_INTERFACE, PATH_INFO, PATH_TRANSLATED, QUERY_STRING, REMOTE_ADDR, REMOTE_HOST, REMOTE_IDENT, REMOTE_USER, REQUEST_METHOD, SCRIPT_NAME, SERVER_NAME, SERVER_PORT, SERVER_PROTOCOL, and SERVER_SOFTWARE. Everything else should be treated as 'vendor extensions'.
 
 // Environment variables
@@ -159,7 +159,7 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 			int toCharSz = toChar.length();
 			envp[i] = new char[toCharSz + 1]();
 			memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
-			harl.debug("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
+			harl.trace("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
 			i++;
 		}
 //		std::string toChar = "toto=titi";

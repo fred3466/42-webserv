@@ -1,5 +1,6 @@
 #include "ResponseHttp.h"
 
+// TODO En faire une Coplien
 ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false) //,  error(NULL)
 {
 	header = head;

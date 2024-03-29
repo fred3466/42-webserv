@@ -2,6 +2,7 @@
 
 Processor::Processor(ProcessorTypeEnum type)
 {
+	this->type = type;
 }
 Processor::Processor()
 {

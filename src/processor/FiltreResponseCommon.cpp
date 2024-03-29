@@ -1,6 +1,6 @@
 #include "FiltreResponseCommon.h"
 
-FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil()
 {
 	this->type = type;
 }
@@ -26,25 +26,28 @@ std::string FiltreResponseCommon::toString()
 
 Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
+	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
 	path = request->getUri();
 
 //	PHP
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frédéric");
-//	TODO date de la requête, pour un jpg par exemple
-	header->addField("Date", "");
+	header->addField("Server", "webserv/Anastasia Jean-Baptiste Fr%E9d%E9ric");
+	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
+	header->addField("Date", date);
 //	Voir filtre MimeType
 //	header->addField("Content-Type", "");
 //	TODO on s'en fout
-	header->addField("Transfer-Encoding", "");	//chunked
+//	header->addField("Transfer-Encoding", "");	//chunked
 //	le contraire de keep-alive
 	bool isKeepAlive = request->isConnectionKeepAlive();
 	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
 
 //	html jpg
-//	TODO à implémenter ! fred
-	header->addField("Content-Length", "");
+//	TODO à implémenter ! fred => voir HttpServer
+//	int length = response->getBodyLength();
+//	std::string lString = stringUtil.strFromInt(length);
+//	header->addField("Content-Length", lString);
 //	TODO la date du fichier si statique , idem si html statique, absent si dynamique (php)
 	header->addField("Last-Modified", "");
 //	TODO si implémenté, devrait être dans chaque implémentation de Processor (selon que c'est une ressource statique ou pas)

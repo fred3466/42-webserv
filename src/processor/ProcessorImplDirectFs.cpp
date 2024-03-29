@@ -10,7 +10,7 @@
 #include <ostream>
 #include <cstring>
 
-ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
@@ -50,12 +50,14 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 	//	TODO FIN factoriser
 
 	harl.info(request->getUri() + " -> " + path);
-	char *body;
 
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
 	{
 		std::string bodyStr = "";
+		int bodyStrSize = bodyStr.size();
+		char *body = new char[bodyStrSize];
+
 		if (s.st_mode & S_IFDIR)
 		{
 			std::vector<std::string> files = fu->listDir(path);
@@ -65,8 +67,8 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 
 				bodyStr += sending;
 			}
-			response->setBodyLength(bodyStr.size());
-			bodyStr.copy(body, bodyStr.size(), 0);
+			response->setBodyLength(bodyStrSize);
+			bodyStr.copy(body, bodyStrSize, 0);
 			//			body = bodyStr.c_str();
 		}
 		else if (s.st_mode & S_IFREG)
@@ -74,31 +76,16 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 			std::string fileExt = path.substr(
 				path.rfind(".", std::string::npos));
 
-			//			if (stringUtil.strUpperCase(fileExt) == ".GIF")
-			//			{
-			//				response->getHeader()->addField("Content-Type", "image/gif");
-			//			}
-			//			else if (stringUtil.strUpperCase(fileExt) == ".HTML")
-			//			{
-			//				response->getHeader()->addField("Content-Type", "text/html");
-			//			}
-			//			else if (stringUtil.strUpperCase(fileExt) == ".PHP")
-			//			{
-			//				response->getHeader()->addField("Content-Type", "text/html");
-			//			}
-			//			//			else if (stringUtil.strUpper(fileExt) == ".PNG")
-			//			//			{
-			//			//				resp->getHeader()->addField("Content-Type: image/png\r\n");
-			//			//			}
-			//			else if (stringUtil.strUpperCase(fileExt) == ".JPEG" || stringUtil.strUpperCase(fileExt) == ".JPG")
-			//			{
-			//				response->getHeader()->addField("Content-Type", "image/jpeg");
-			//			}
-
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
 			response->setBodyLength(len);
 			response->setBodyBin(bodyBin);
+
+			if (!response->isCgi() && fu->fileExists(path))
+			{
+				std::string dateLastModification = fu->getLastModification(path, RFC_1123_DATE_FORMAT);
+				response->getHeader()->addField("Last-Modified", dateLastModification);
+			}
 
 			// std::ofstream out("out2.gif", std::ios::out | std::ios::binary);
 			// out.write(bodyBin, len);

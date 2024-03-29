@@ -22,18 +22,16 @@ int Config::getParamInt(std::string param, int intDefault)
 {
 	try
 	{
-		std::string res = kv[param];
+		std::string res = kv.at(param);
 		if (!res.empty())
 		{
-			std::stringstream ss(res);
-			int resInt;
-			ss >> resInt;
+			int resInt = StringUtil().intFromStr(res);
 			return resInt;
 		}
 	}
 	catch (const std::out_of_range &oor)
 	{
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+//		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 	return intDefault;
 }
@@ -47,7 +45,7 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 {
 	try
 	{
-		std::string res = kv[param];
+		std::string res = kv.at(param);
 		if (!res.empty())
 		{
 			return res;
@@ -55,7 +53,7 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 	}
 	catch (const std::out_of_range &oor)
 	{
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+//		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 	return stringDefault;
 }

@@ -33,25 +33,28 @@
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
+//#include "response/API/ResponseHeader.h"
+
+//class ResponseHeader;
 class HttpServer: public ConnectorListener
 {
 private:
 	//	std::list<Connector> consListenersList;
 
+	Harl harl;
 	Connector *connector;
 	Config *config;
-	Harl harl;
-	//	ProcessorFactory processorFactory;
 	ProcessorLocator *processorLocator;
-	//	ProcessorLocator processorLocator;
+	StringUtil su;
 	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
 			Response *resp);
 	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
-	void cleanUp(ConnectorEvent e, Request *request, Response *resp);
+	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
-
-public:
+	void addUltimateHeaders(Response *resp);
+	bool _checkAccess(Request *request);
+	public:
 	HttpServer();
 	~HttpServer();
 

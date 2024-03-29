@@ -4,13 +4,13 @@
 #include "../Harl.h"
 #include "../config.h"
 
-#include "../util/FileUtilFactory.h"
+#include "../util/FileUtil.h"
 #include "../util/StringUtil.h"
 #include "../config/Config.h"
-#include "../response/API/Response.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
+#include "../request/factory/RequestBodyFactory.h"
 
-class FiltreResponseCommon: public Processor
+class FiltreRequestPost: public Processor
 {
 private:
 	Harl harl;
@@ -20,8 +20,8 @@ private:
 	ProcessorTypeEnum type;
 
 public:
-	FiltreResponseCommon(ProcessorTypeEnum type);
-	~FiltreResponseCommon();
+	FiltreRequestPost();
+	~FiltreRequestPost();
 	virtual void setConfig(Config *conf);
 	virtual ProcessorTypeEnum getType();
 	virtual std::string toString();

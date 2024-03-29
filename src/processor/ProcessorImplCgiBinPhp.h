@@ -22,10 +22,10 @@ class LocationToProcessor;
 class ProcessorImplCgiBinPhp : public Processor
 {
 private:
-	Config *config;
-	FileUtil fileUtil;
 	Harl harl;
 	StringUtil stringUtil;
+	Config *config;
+	FileUtil fileUtil;
 	ProcessorTypeEnum type;
 	//	std::map<std::string, std::string> env;
 

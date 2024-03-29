@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-HttpServer::HttpServer() : harl(), connector(), config(), processorLocator()
+HttpServer::HttpServer() : harl(), connector(), config(), processorLocator(), su()
 {
 }
 
@@ -76,10 +76,10 @@ void HttpServer::instantiateProcessLocator()
 			}
 		}
 	}
-	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
-	Config *configProc = config->clone();
-	defaultProcessor->setConfig(configProc);
-	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
+	//	Processor *defaultProcessor = processorFactory.build("STATIC_PROCESSOR");
+	//	Config *configProc = config->clone();
+	//	defaultProcessor->setConfig(configProc);
+	//	processorLocator->addLocationToProcessor("/", ".", defaultProcessor, host);
 }
 // void addLocationToProcessor(
 // std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
@@ -92,20 +92,46 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
+	(void)e;
+}
+
+bool HttpServer::_checkAccess(Request *request)
+{
+	std::string metReq = request->getHeader()->getMethod();
+	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
+	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
+	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
+	{
+		std::string methConfig = limit_exceptTab[i];
+		if (methConfig == metReq)
+		{
+			return true;
+		}
+	}
+	harl.debug("HttpServer::onDataReceiving: la méthode de la requête [%s] n'est pas autorisée : [%s]", metReq.c_str(), limitConfig.c_str());
+	return false;
 }
 
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getByteBuffer();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-	// seg fault
-	CookieFactory().build(reqHeader);
 	Request *request = RequestFactory().build(reqHeader);
 	request->setFdClient(e.getFdClient());
+	// seg fault
+	CookieFactory().build(reqHeader);
 	//	req->dump();
 
-	harl.except("HttpServer::onDataReceiving : %s", request->getUri().c_str());
+	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
+
+	if (!_checkAccess(request))
+	{
+		//		TODO http error @Anastasia
+
+		cleanUp(request, NULL);
+		return;
+	}
 
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -123,12 +149,13 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
 	//	TODO Fred keepalive
-	if (!request->isConnectionKeepAlive() || resp->isCgi() || (nbSent == resp->getTotalLength()))
+	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
+		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().c_str());
 		connector->closeConnection(fdSocket);
 	}
 
-	cleanUp(e, request, resp);
+	cleanUp(request, resp);
 }
 
 Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
@@ -177,6 +204,8 @@ char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	{
 		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().c_str());
 	}
+
+	addUltimateHeaders(resp);
 
 	std::string fieldsString = stringUtil.fromListToString(
 								   resp->getHeader()->getFields()) +
@@ -229,6 +258,28 @@ char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	return cstr;
 }
 
+void HttpServer::addUltimateHeaders(Response *resp)
+{
+	ResponseHeader *header = resp->getHeader();
+
+	std::string transferEncoding = header->getFieldAsStr("Transfer-Encoding", "");
+	int contentLengthHeader = header->getFieldAsInt("Content-Length", -1);
+	int contentLengthResponse = resp->getBodyLength();
+
+	if (transferEncoding != "" && contentLengthHeader != -1)
+	{
+		harl.error("HttpServer::addUltimateHeaders: présence des entêtes incompatibles\nTransfer-Encoding = [%s]\nContent-Length=[%i]", transferEncoding, contentLengthHeader);
+	}
+	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
+	{
+		harl.error(
+			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+			contentLengthHeader, contentLengthResponse);
+	}
+	if (transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+}
+
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
 {
 	char *cstr = packageResponseAndGiveMeSomeBytes(request, resp);
@@ -236,17 +287,20 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 
 	if (request && fdSocket && cstr && length)
 		send(*fdSocket, cstr, length, 0);
-	harl.debug("%d sent %d bytes through the wire", fdSocket, length);
+	harl.debug("%d sent %d bytes through the wire", *fdSocket, length);
 	harl.trace("%s", cstr);
 	return length;
 }
 
-void HttpServer::cleanUp(ConnectorEvent e, Request *request, Response *resp)
+void HttpServer::cleanUp(Request *request, Response *resp)
 {
 	delete request;
-	delete resp->getHeader();
-	delete resp->getBodyBin();
-	delete resp;
+	if (resp)
+	{
+		delete resp->getHeader();
+		delete resp->getBodyBin();
+		delete resp;
+	}
 }
 
 void shutFd(int fd)

@@ -14,7 +14,7 @@ public:
 	~StringUtil();
 
 	std::string strUpperCase(std::string s);
-	std::string fromListToString(std::list<std::string> l);
+	std::string fromListToString(std::list<std::string> *l);
 	bool isSpace(char c);
 	bool isalnum(std::string s);
 	std::string normalizeSpaces(std::string s);
@@ -29,5 +29,7 @@ public:
 			std::string defaultValue);
 	std::string dedoublonne(std::string s, std::string cherche);
 	bool isStrictlyEqual(std::string s1, std::string s2);
-
+	std::string strFromInt(int i);
+	int intFromStr(std::string s);
+	std::string formatDate(time_t mtime, std::string strFormat);
 };

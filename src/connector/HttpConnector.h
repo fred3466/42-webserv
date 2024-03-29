@@ -37,10 +37,10 @@ private:
 	Harl harl;
 	netStruct ns;
 	int _soListen;
-	//	std::list<ConnectorListener> connectorListenerList;
 	ConnectorListener *connectorListener;
-	std::list<int> _allSockets;
 	Config *config;
+	struct pollfd **fdTab;
+	int fdTabSize;
 
 	//	HttpConnector(const HttpConnector &o);
 	//	HttpConnector& operator=(const HttpConnector &o);
@@ -51,6 +51,7 @@ private:
 	void _listen(int _soListen, netStruct ns);
 	//	void reorganiseFdTab(struct pollfd *fdTab[], int *fdTabSize);
 	void reorganiseFdTab(pollfd **fdTab, int *fdTabSize);
+	void dumpFdTab(pollfd **fdTab, int fdTabSize);
 
 public:
 	HttpConnector();

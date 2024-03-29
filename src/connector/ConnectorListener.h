@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ConnectorEvent.h"
-#include "../request/API/Request.h"
-#include "../response/API/Response.h"
+//#include "../request/API/Request.h"
+//#include "../response/API/Response.h"
 
 class ConnectorListener
 {

@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "../API/RequestHeader.h"
+#include "../API/RequestBody.h"
 #include <sstream>
 
 class Request
@@ -30,5 +31,7 @@ private:
 	virtual const std::string getHost() =0;
 
 	virtual bool isConnectionKeepAlive() throw (char*)=0;
+	virtual void setBody(RequestBody *body)=0;
+	virtual RequestBody* getBody() =0;
 };
 

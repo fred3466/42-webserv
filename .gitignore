@@ -4,5 +4,7 @@ webserv
 .vscode/
 .vscode/launch.json
 .vscode/targets.log
+out.html
+out2.html
 out2.gif
 webserv.code-workspace

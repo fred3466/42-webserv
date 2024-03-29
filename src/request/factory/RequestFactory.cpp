@@ -1,5 +1,4 @@
 #include "RequestFactory.h"
-#include "../../config.h"
 
 RequestFactory::RequestFactory()
 {

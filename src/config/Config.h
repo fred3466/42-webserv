@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdexcept>
 #include "../Harl.h"
+#include "../util/StringUtil.h"
 
 class Config
 {

@@ -4,7 +4,7 @@ INCLUDE		=
 SRC_DIR		= src/
 OBJ_DIR		= obj/
 CC			= g++
-CFLAGS		= -g -std=c++98 -pedantic-errors #-Wall -Wextra -Werror
+CFLAGS		= -g -std=c++98 -pedantic-errors -Wall -Wextra -Werror
 LFLAGS		= #-lreadline 
 RM			= rm -f
 AR			= ar rcs
@@ -29,7 +29,9 @@ SRC_FILES	= \
 	connector/TcpConnector \
 	request/API/Request \
 	request/API/RequestHeader \
+	request/API/RequestBody \
 	request/RequestHttpHeader \
+	request/RequestHttpBody \
 	request/RequestHttp \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
