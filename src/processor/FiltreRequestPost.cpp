@@ -1,7 +1,8 @@
 #include "FiltreRequestPost.h"
 
-FiltreRequestPost::FiltreRequestPost()
+FiltreRequestPost::FiltreRequestPost(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil()
 {
+	this->type = type;
 }
 
 FiltreRequestPost::~FiltreRequestPost()
@@ -20,15 +21,34 @@ ProcessorTypeEnum FiltreRequestPost::getType()
 
 std::string FiltreRequestPost::toString()
 {
-	return "FiltreRequestPost";
+	return "FiltreRequestPost " + type;
 }
+//TODO http error
+/*
+ If CONTENT_TYPE is blank, the script can reject the request
+ with a 415 'Unsupported Media Type' error, where supported by the
+ protocol.
 
+ When parsing PATH_INFO, PATH_TRANSLATED or SCRIPT_NAME the script
+ should be careful of void path segments ("//") and special path
+ segments ("." and "..").  They should either be removed from the path
+ before use in OS system calls, or the request should be rejected with
+ 404 'Not Found'.
+ */
 Response* FiltreRequestPost::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	std::string rawBody = "";
+	(void) processorAndLocationToProcessor;
+	RequestBody *body = request->getBody();
+	(void) body;
+//	response->set
+	std::string CONTENT_TYPE = request->getHeaderFieldValue("Content-Type");
+	if (CONTENT_TYPE == "application/x-www-form-urlencoded"
+			|| CONTENT_TYPE == "multipart/form-data")
+	{
+//		POST POST POST POST POST POST POST POST POST POST POST
 
-	RequestBody *body = RequestBodyFactory().build(rawBody);
-	request->setBody(body);
+		std::string CONTENT_LENGTH = request->getHeaderFieldValue("Content-Length");
+	}
 
 	return response;
 }

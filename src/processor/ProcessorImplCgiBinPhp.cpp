@@ -88,7 +88,7 @@ void ProcessorImplCgiBinPhp::addProperty(std::string name, std::string value)
 
 std::string ProcessorImplCgiBinPhp::toString()
 {
-	return "ProcessorImplCgiBinPhp";
+	return "ProcessorImplCgiBinPhp " + type;
 }
 
 ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()

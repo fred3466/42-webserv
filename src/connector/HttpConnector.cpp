@@ -482,7 +482,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 
 void HttpConnector::closeConnection(int *fd)
 {
-	harl.except("---- %i Fermeture de la connexion \n", *fd);
+	harl.debug("---- %i Fermeture de la connexion \n", *fd);
 	close(*fd);
 	*fd = -1;
 	/***********************************************************/

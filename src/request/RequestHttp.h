@@ -19,7 +19,7 @@ private:
 public:
 	RequestHttp();
 	~RequestHttp();
-	RequestHttp(RequestHeader *header);
+	RequestHttp(RequestHeader *header, RequestBody *body);
 
 	virtual const std::list<std::string>& getFields() const;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const;

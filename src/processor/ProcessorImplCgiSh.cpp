@@ -19,7 +19,7 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	FileUtil *fu = FileUtilFactory().build();
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	
+
 	// It's a CGI request
 	CGIHandler cgiHandler;
 
@@ -83,7 +83,7 @@ void ProcessorImplCgiSh::addProperty(std::string name, std::string value)
 
 std::string ProcessorImplCgiSh::toString()
 {
-	return "ProcessorImplCgiSh";
+	return "ProcessorImplCgiSh " + type;
 }
 
 ProcessorTypeEnum ProcessorImplCgiSh::getType()

@@ -20,7 +20,7 @@ private:
 	ProcessorTypeEnum type;
 
 public:
-	FiltreRequestPost();
+	FiltreRequestPost(ProcessorTypeEnum type);
 	~FiltreRequestPost();
 	virtual void setConfig(Config *conf);
 	virtual ProcessorTypeEnum getType();

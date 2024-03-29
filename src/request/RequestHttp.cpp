@@ -4,9 +4,10 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *head) : fdClient(NULL)
+RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL)
 {
 	header = head;
+	this->body = body;
 }
 
 RequestHeader* RequestHttp::getHeader() const

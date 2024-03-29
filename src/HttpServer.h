@@ -27,6 +27,7 @@
 #include "processor/ProcessorFactory.h"
 #include "request/API/Request.h"
 #include "request/factory/RequestFactory.h"
+#include "request/factory/RequestBodyFactory.h"
 #include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"

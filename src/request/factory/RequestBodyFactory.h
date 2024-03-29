@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../config.h"
+#include "../../request/API/RequestHeader.h"
 #include REQUEST_BODY_IMPL_INC
 
 class RequestBodyFactory
@@ -8,6 +9,6 @@ class RequestBodyFactory
 public:
 	RequestBodyFactory();
 	~RequestBodyFactory();
-	RequestBodyFactory* build(std::string *rawRequest);
+	RequestBody* build(std::string *rawRequest, RequestHeader *reqHeader);
 };
 

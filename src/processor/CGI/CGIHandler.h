@@ -2,10 +2,14 @@
 
 #include <string>
 #include <map>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
 
 #include "../../request/API/Request.h"
 #include "../../response/API/Response.h"
 #include "../../Harl.h"
+#include "../../util/StringUtil.h"
 
 class CGIHandler
 {

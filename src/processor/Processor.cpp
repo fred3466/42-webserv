@@ -2,7 +2,7 @@
 
 Processor::Processor(ProcessorTypeEnum type)
 {
-	this->type = type;
+	(void) type;
 }
 Processor::Processor()
 {

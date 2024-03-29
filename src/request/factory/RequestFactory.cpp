@@ -8,8 +8,8 @@ RequestFactory::~RequestFactory()
 {
 }
 
-Request* RequestFactory::build(RequestHeader *header)
+Request* RequestFactory::build(RequestHeader *header, RequestBody *body)
 {
-	Request *req = new REQUEST_IMPL_CLASS(header);
+	Request *req = new REQUEST_IMPL_CLASS(header, body);
 	return req;
 }

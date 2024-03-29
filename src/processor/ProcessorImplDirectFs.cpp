@@ -160,7 +160,7 @@ void ProcessorImplDirectFs::addProperty(std::string name, std::string value)
 
 std::string ProcessorImplDirectFs::toString()
 {
-	return "ProcessorImplDirectFs";
+	return "ProcessorImplDirectFs " + type;
 }
 
 ProcessorTypeEnum ProcessorImplDirectFs::getType()

@@ -59,7 +59,9 @@ void FiltreResponseMimeType::setConfig(Config *conf)
 std::string FiltreResponseMimeType::toString()
 {
 	std::ostringstream oss;
-	oss << "FiltreResponseMimeType Processor with ";
+	oss << "FiltreResponseMimeType ";
+	oss << +type;
+	oss << " Processor with ";
 	oss << mimeTypeHelper->numberOfMappings();
 	oss << " MIME type mappings.";
 	return oss.str(); // Convert the ostringstream to string and return it

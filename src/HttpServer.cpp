@@ -108,7 +108,7 @@ bool HttpServer::_checkAccess(Request *request)
 			return true;
 		}
 	}
-	harl.debug("HttpServer::onDataReceiving: la méthode de la requête [%s] n'est pas autorisée : [%s]", metReq.c_str(), limitConfig.c_str());
+	harl.debug("HttpServer::_checkAccess: la méthode de la requête [%s] n'est pas autorisée : [%s]", metReq.c_str(), limitConfig.c_str());
 	return false;
 }
 
@@ -116,14 +116,16 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getByteBuffer();
 	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
-	Request *request = RequestFactory().build(reqHeader);
+	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
+	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e.getFdClient());
 	// seg fault
 	CookieFactory().build(reqHeader);
 	//	req->dump();
 
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().c_str());
-	harl.debug("HttpServer::onDataReceiving : %s", request->getHeader()->toString().c_str());
+	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
+	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
 	if (!_checkAccess(request))
 	{

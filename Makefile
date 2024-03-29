@@ -35,12 +35,14 @@ SRC_FILES	= \
 	request/RequestHttp \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
+	request/factory/RequestBodyFactory\
  	processor/Processor \
 	processor/ProcessorFactory \
 	processor/ProcessorImplDirectFs \
 	processor/ProcessorImplCgiBinPhp \
 	processor/FiltreResponseMimeType \
 	processor/FiltreResponseCommon \
+	processor/FiltreRequestPost \
 	processor/CGI/CGIHandler \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \

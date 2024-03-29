@@ -10,6 +10,7 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 	lines.str(rawRequest->c_str());
 	char key[2048], val[2048], line[2048];
 	bool firstLine = true;
+	bool bBodyMode = false;
 
 	while (lines)
 	{
@@ -20,7 +21,8 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 
 		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
-			std::string method = lineStr.substr(0, 3);
+			StringUtil su = StringUtil();
+			std::string method = su.getNthTokenIfExists(su.tokenize(lineStr, ' '), 0, "METHOD???");
 			this->setMethod(method);
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
@@ -29,7 +31,15 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 		} else
 		{
 			lineSs.getline(val, 2048, '\n');
-			this->addField(std::string(val));
+			std::string valStr = std::string(val);
+			if (bBodyMode || valStr == "\r" || valStr == "")
+			{
+				bBodyMode = true;
+				return;
+			} else
+			{
+				this->addField(valStr);
+			}
 		}
 	}
 	//cookie set plusieurs fois ?

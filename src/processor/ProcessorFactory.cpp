@@ -42,6 +42,8 @@ Processor* ProcessorFactory::build(std::string procName)
 		return new REQUEST_HANDLER_IMPL_CLASS_MIMETYPE(typeHeaderModifier);
 	else if (procName == "COMMON_FILTER")
 		return new REQUEST_HANDLER_IMPL_CLASS_COMMON(typeHeaderModifier);
+	else if (procName == "POST_FILTER")
+		return new REQUEST_HANDLER_IMPL_CLASS_POST(typeHeaderModifier);
 //	TODO doit être configurable
 	return new ProcessorImplDirectFs(typeContentModifier);
 }

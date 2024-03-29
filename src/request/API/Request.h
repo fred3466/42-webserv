@@ -12,7 +12,7 @@ class Request
 private:
 	public:
 	Request();
-	Request(RequestHeader *header);
+	Request(RequestHeader *header, RequestBody *body);
 	virtual ~Request();
 
 	virtual const std::list<std::string>& getFields() const =0;
