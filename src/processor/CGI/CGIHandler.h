@@ -2,22 +2,25 @@
 
 #include <string>
 #include <map>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
 
 #include "../../request/API/Request.h"
 #include "../../response/API/Response.h"
 #include "../../Harl.h"
+#include "../../util/StringUtil.h"
 
 class CGIHandler
 {
 private:
 	Harl harl;
-	// Parses the CGI script output
-	void parseOutput(const std::string &output);
-
 	std::string responseBody;
 	std::map<std::string, std::string> responseHeaders;
-	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request,
-			Response *response);
+
+	// Parses the CGI script output
+	void parseOutput(const std::string &output);
+	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response);
 
 	std::string captureScriptOutput(int fileDescriptor);
 

@@ -28,9 +28,10 @@ std::string FiltreResponseMimeType::getResponseMimeType(const std::string &fileP
 Response* FiltreResponseMimeType::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
+	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
-	path = request->getUri();
+	path = request->getUri().getUri();
 
 	// Extracting MIME type using the file path
 	std::string mimeType = getResponseMimeType(path);
@@ -58,7 +59,9 @@ void FiltreResponseMimeType::setConfig(Config *conf)
 std::string FiltreResponseMimeType::toString()
 {
 	std::ostringstream oss;
-	oss << "FiltreResponseMimeType Processor with ";
+	oss << "FiltreResponseMimeType ";
+	oss << +type;
+	oss << " Processor with ";
 	oss << mimeTypeHelper->numberOfMappings();
 	oss << " MIME type mappings.";
 	return oss.str(); // Convert the ostringstream to string and return it

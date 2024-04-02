@@ -14,10 +14,10 @@
 class ProcessorImplDirectFs: public Processor
 {
 private:
-	Config *config;
-	FileUtil fileUtil;
 	Harl harl;
 	StringUtil stringUtil;
+	Config *config;
+	FileUtil fileUtil;
 	ProcessorTypeEnum type;
 
 public:

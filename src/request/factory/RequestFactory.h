@@ -13,6 +13,6 @@ private:
 public:
 	RequestFactory();
 	~RequestFactory();
-	Request* build(RequestHeader *header);
+	Request* build(RequestHeader *header, RequestBody *body);
 };
 

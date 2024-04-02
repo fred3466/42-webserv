@@ -1,7 +1,6 @@
 #include "ResponseHttpHeader.h"
 
-ResponseHttpHeader::ResponseHttpHeader() :
-		fields(), su()
+ResponseHttpHeader::ResponseHttpHeader() : fields(), su()
 {
 }
 
@@ -12,7 +11,7 @@ int ResponseHttpHeader::getFieldAsInt(std::string param, int intDefault)
 {
 	try
 	{
-		std::string res = fields[param];
+		std::string res = fields.at(param);
 		if (!res.empty())
 		{
 			int resInt = su.intFromStr(res);
@@ -21,7 +20,7 @@ int ResponseHttpHeader::getFieldAsInt(std::string param, int intDefault)
 	}
 	catch (const std::out_of_range &oor)
 	{
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+//		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 	return intDefault;
 }
@@ -30,7 +29,7 @@ std::string ResponseHttpHeader::getFieldAsStr(std::string param, std::string str
 {
 	try
 	{
-		std::string res = fields[param];
+		std::string res = fields.at(param);
 		if (!res.empty())
 		{
 			return res;
@@ -38,7 +37,7 @@ std::string ResponseHttpHeader::getFieldAsStr(std::string param, std::string str
 	}
 	catch (const std::out_of_range &oor)
 	{
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+//		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 	return stringDefault;
 }
@@ -85,7 +84,7 @@ bool ResponseHttpHeader::addCookie(const Cookie &cookie)
 	bool ret = false;
 	int i = cookies.size();
 	cookies = cookieHelper.addCookie(cookies, cookie);
-	if (cookies.size() > i)
+	if ((int) cookies.size() > i)
 		ret = true;
 	return ret;
 }
@@ -95,7 +94,7 @@ bool ResponseHttpHeader::removeCookie(const std::string &cookieName)
 	bool ret = false;
 	int i = cookies.size();
 	cookies = cookieHelper.removeCookie(cookies, cookieName);
-	if (cookies.size() < i)
+	if ((int) cookies.size() < i)
 		ret = true;
 	return ret;
 }
@@ -103,4 +102,9 @@ bool ResponseHttpHeader::removeCookie(const std::string &cookieName)
 std::string ResponseHttpHeader::getCookieString()
 {
 	return cookieHelper.getCookieStringResponse(cookies);
+}
+
+void ResponseHttpHeader::setErrorCodeTmp(int errorCode)
+{
+	this->errorCode = errorCode;
 }

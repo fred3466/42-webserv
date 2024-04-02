@@ -27,6 +27,7 @@
 #include "processor/ProcessorFactory.h"
 #include "request/API/Request.h"
 #include "request/factory/RequestFactory.h"
+#include "request/factory/RequestBodyFactory.h"
 #include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"
@@ -41,20 +42,20 @@ class HttpServer: public ConnectorListener
 private:
 	//	std::list<Connector> consListenersList;
 
+	Harl harl;
 	Connector *connector;
 	Config *config;
-	Harl harl;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
 	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
 			Response *resp);
 	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
-	void cleanUp(ConnectorEvent e, Request *request, Response *resp);
+	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
 	void addUltimateHeaders(Response *resp);
-
-public:
+	bool _checkAccess(Request *request);
+	public:
 	HttpServer();
 	~HttpServer();
 

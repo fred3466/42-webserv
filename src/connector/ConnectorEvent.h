@@ -11,8 +11,8 @@ class ConnectorEvent
 private:
 	Request *req;
 	Response *resp;
-	std::string byteBuffer;
 	int *fdClient;
+	std::string byteBuffer;
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);

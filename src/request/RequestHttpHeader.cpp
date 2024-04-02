@@ -10,6 +10,7 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 	lines.str(rawRequest->c_str());
 	char key[2048], val[2048], line[2048];
 	bool firstLine = true;
+	bool bBodyMode = false;
 
 	while (lines)
 	{
@@ -20,7 +21,8 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 
 		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
-			std::string method = lineStr.substr(0, 3);
+			StringUtil su = StringUtil();
+			std::string method = su.getNthTokenIfExists(su.tokenize(lineStr, ' '), 0, "METHOD???");
 			this->setMethod(method);
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
@@ -29,7 +31,15 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 		} else
 		{
 			lineSs.getline(val, 2048, '\n');
-			this->addField(std::string(val));
+			std::string valStr = std::string(val);
+			if (bBodyMode || valStr == "\r" || valStr == "")
+			{
+				bBodyMode = true;
+				return;
+			} else
+			{
+				this->addField(valStr);
+			}
 		}
 	}
 	//cookie set plusieurs fois ?
@@ -61,7 +71,7 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 std::string RequestHttpHeader::toString()
 {
 	std::string ret = "";
-	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri() + "]\t[" + getVersion() + "]\n";
+	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri().getUri() + "]\t[" + getVersion() + "]\n";
 
 	StringUtil su = StringUtil();
 	ret += su.dedoublonne(su.fromListToString(&fields), "\n");
@@ -108,7 +118,7 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 	bool ret = false;
 	int i = cookies.size();
 	cookies = cookieHelper.addCookie(cookies, cookie);
-	if (cookies.size() > i)
+	if ((int) cookies.size() > i)
 		ret = true;
 	return ret;
 }
@@ -116,9 +126,9 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 {
 	bool ret = false;
-	int i = cookies.size();
+	int i = (int) cookies.size();
 	cookies = cookieHelper.removeCookie(cookies, cookieName);
-	if (cookies.size() < i)
+	if ((int) cookies.size() < i)
 		ret = true;
 	return ret;
 }
@@ -128,14 +138,15 @@ std::string RequestHttpHeader::getCookieString()
 	return cookieHelper.getCookieString(cookies);
 }
 
-const std::string& RequestHttpHeader::getUri() const
+const Uri& RequestHttpHeader::getUri() const
 {
-	return uri.getUri();
+	return uri;
 }
 
-void RequestHttpHeader::setUri(const std::string &u)
+void RequestHttpHeader::setUri(const Uri &u)
 {
-	uri = Uri(u);
+//	uri = Uri(u);
+	uri = u;
 }
 
 const std::string& RequestHttpHeader::getQueryString() const

@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include "../API/RequestHeader.h"
+#include "../API/RequestBody.h"
+#include "../../Uri/Uri.h"
 #include <sstream>
 
 class Request
@@ -11,11 +13,11 @@ class Request
 private:
 	public:
 	Request();
-	Request(RequestHeader *header);
+	Request(RequestHeader *header, RequestBody *body);
 	virtual ~Request();
 
 	virtual const std::list<std::string>& getFields() const =0;
-	virtual const std::string& getUri() const =0;
+	virtual const Uri& getUri() const =0;
 	virtual const std::string& getMethod() const =0;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const =0;
 	virtual void setFdClient(int *fd)=0;
@@ -30,5 +32,7 @@ private:
 	virtual const std::string getHost() =0;
 
 	virtual bool isConnectionKeepAlive() throw (char*)=0;
+	virtual void setBody(RequestBody *body)=0;
+	virtual RequestBody* getBody() =0;
 };
 

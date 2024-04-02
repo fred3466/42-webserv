@@ -4,9 +4,10 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *head) : fdClient(NULL)
+RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL)
 {
 	header = head;
+	this->body = body;
 }
 
 RequestHeader* RequestHttp::getHeader() const
@@ -55,7 +56,7 @@ const std::list<std::string>& RequestHttp::getFields() const
 	return header->getFields();
 }
 
-const std::string& RequestHttp::getUri() const
+const Uri& RequestHttp::getUri() const
 {
 	return header->getUri();
 }
@@ -73,6 +74,17 @@ void RequestHttp::setFdClient(int *fd)
 {
 	fdClient = fd;
 }
+
+void RequestHttp::setBody(RequestBody *body)
+{
+	this->body = body;
+}
+
+RequestBody* RequestHttp::getBody()
+{
+	return body;
+}
+
 bool RequestHttp::isConnectionKeepAlive() throw (char*)
 {
 	bool ret = false;

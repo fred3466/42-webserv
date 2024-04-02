@@ -10,7 +10,7 @@
 #include <ostream>
 #include <cstring>
 
-ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config()
+ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
@@ -34,28 +34,30 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	//	std::string path = root + request->getUri();
 
 	//	TODO factoriser
-	std::string uri = request->getUri();
+	Uri uri = request->getUri();
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
+	std::string uriLessRoutePattern = uri.getPath();
 	int patPathLen = patPath.length();
-	size_t ite = uri.find(patPath);
+	size_t ite = uriLessRoutePattern.find(patPath);
 	if (ite == 0)
 	{
-		uri.erase(0, patPathLen);
+		uriLessRoutePattern.erase(0, patPathLen);
 	}
+	std::string fileName = uri.getFileName() + uri.getFileExtension();
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	std::string path = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
-	harl.debug(toString() + ":\t" + request->getUri() + " -> " + path);
+	std::string path = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uriLessRoutePattern + fileName;
+	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + path);
 	//	TODO FIN factoriser
 
-	harl.info(request->getUri() + " -> " + path);
-	char *body;
+	harl.info("ProcessorImplDirectFs::process: " + request->getUri().getUri() + " -> " + path);
 
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
 	{
 		std::string bodyStr = "";
+
 		if (s.st_mode & S_IFDIR)
 		{
 			std::vector<std::string> files = fu->listDir(path);
@@ -65,8 +67,10 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 
 				bodyStr += sending;
 			}
-			response->setBodyLength(bodyStr.size());
-			bodyStr.copy(body, bodyStr.size(), 0);
+			int bodyStrSize = bodyStr.size();
+			char *body = new char[bodyStrSize];
+			response->setBodyLength(bodyStrSize);
+			bodyStr.copy(body, bodyStrSize, 0);
 			//			body = bodyStr.c_str();
 		}
 		else if (s.st_mode & S_IFREG)
@@ -89,7 +93,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 			// out.write(bodyBin, len);
 			// out.close();
 
-			body = bodyBin;
+//			body = bodyBin;
 			//			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
 			//			os.write(body, len);
 			//			os.close();
@@ -105,14 +109,14 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 		{
 			// something else
 		}
-		//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-		response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+		// response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
 	}
 	else
 	{
 		// error
 		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
-		response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		// response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		response->setErrorCodeTmp(404);
 	}
 	//---------------------testing cooking------------------
 	/*	Cookie cookie;

@@ -1,7 +1,7 @@
 #include "ResponseHttp.h"
 
-ResponseHttp::ResponseHttp(ResponseHeader *head) :
-		bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false) //,  error(NULL)
+// TODO En faire une Coplien
+ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false), error(), errorCodeTmp(200)
 {
 	header = head;
 }
@@ -15,10 +15,10 @@ void ResponseHttp::setStatusLine(std::string sline)
 	header->setStatusLine(sline);
 }
 
-//void ResponseHttp::setBody(std::string sline)
+// void ResponseHttp::setBody(std::string sline)
 //{
 //	body = sline;
-//}
+// }
 std::string ResponseHttp::getStatusLine()
 {
 	return header->getStatusLine();
@@ -27,10 +27,10 @@ ResponseHeader* ResponseHttp::getHeader()
 {
 	return header;
 }
-//std::string ResponseHttp::getBody()
+// std::string ResponseHttp::getBody()
 //{
 //	return body;
-//}
+// }
 int ResponseHttp::getTotalLength()
 {
 	return totalLength;
@@ -62,16 +62,16 @@ bool ResponseHttp::isCgi()
 	return flagCgi;
 }
 
-//TODO @Anastasia : virer le bool et tester HttpError.code
+// TODO @Anastasia : virer le bool et tester HttpError.code
 bool ResponseHttp::isError()
 {
 	return flagError;
 }
 
-//HttpError* ResponseHttp::getError()
+// HttpError* ResponseHttp::getError()
 //{
 //	return error;
-//}
+// }
 
 void ResponseHttp::setCgi(bool cgi)
 {
@@ -87,4 +87,30 @@ void ResponseHttp::setCgi(bool cgi)
 void ResponseHttp::setIsError(bool isError)
 {
 	this->flagError = isError;
+}
+
+void ResponseHttp::setHttpError(HttpError *error)
+{
+	this->error = error;
+	this->flagError = error->getCode() != 200;
+
+//	std::ostringstream statusLine;
+//	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
+	// TODO remettre setStatusLine
+	// this->header->setStatusLine(statusLine.str());
+}
+
+HttpError* ResponseHttp::getHttpError()
+{
+	return error;
+}
+
+int ResponseHttp::getErrorCodeTmp()
+{
+	return errorCodeTmp;
+}
+
+void ResponseHttp::setErrorCodeTmp(int errorCode)
+{
+	errorCodeTmp = errorCode;
 }

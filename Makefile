@@ -29,17 +29,22 @@ SRC_FILES	= \
 	connector/TcpConnector \
 	request/API/Request \
 	request/API/RequestHeader \
+	request/API/RequestBody \
 	request/RequestHttpHeader \
+	request/RequestHttpBody \
 	request/RequestHttp \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
+	request/factory/RequestBodyFactory\
  	processor/Processor \
 	processor/ProcessorFactory \
 	processor/ProcessorImplDirectFs \
 	processor/ProcessorImplCgiBinPhp \
 	processor/FiltreResponseMimeType \
 	processor/FiltreResponseCommon \
+	processor/FiltreRequestPost \
 	processor/CGI/CGIHandler \
+	processor/FiltreError \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \
  	location/ProcessorLocator \
@@ -50,6 +55,8 @@ SRC_FILES	= \
     config/ConfigFactory \
    	config/ConfigReader \
    	config/ConfigValidator \
+	config/ResponseConfig \
+	config/RequestConfig \
 	response/API/Response \
 	response/API/ResponseHeader \
 	response/ResponseHttp \
@@ -64,6 +71,7 @@ SRC_FILES	= \
 	cookie/CookieHelper \
 	cookie/factory/CookieFactory \
 	error/HttpError \
+	error/HttpErrorFactory \
 	error/HttpReturnCodeHelper \
 	Uri/Uri \
 	Uri/UriValidator \

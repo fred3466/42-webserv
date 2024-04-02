@@ -9,7 +9,7 @@
 #include <sstream>
 #include <cstring>
 
-CGIHandler::CGIHandler() : harl()
+CGIHandler::CGIHandler() : harl(), responseBody(""), responseHeaders()
 {
 }
 
@@ -17,14 +17,15 @@ CGIHandler::~CGIHandler()
 {
 }
 
-void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request,
-		Response *response)
+void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response)
 {
+	(void) response;
 //	Some server supplied environment variables are not defined in the current » CGI/1.1 specification. Only the following variables are defined there: AUTH_TYPE, CONTENT_LENGTH, CONTENT_TYPE, GATEWAY_INTERFACE, PATH_INFO, PATH_TRANSLATED, QUERY_STRING, REMOTE_ADDR, REMOTE_HOST, REMOTE_IDENT, REMOTE_USER, REQUEST_METHOD, SCRIPT_NAME, SERVER_NAME, SERVER_PORT, SERVER_PROTOCOL, and SERVER_SOFTWARE. Everything else should be treated as 'vendor extensions'.
 
 // Environment variables
 //	Which request method was used to access the page; e.g. 'GET', 'HEAD', 'POST', 'PUT'.
-	(*envMap)["REQUEST_METHOD"] = request->getMethod();
+	std::string reqMethod = request->getMethod();
+	(*envMap)["REQUEST_METHOD"] = reqMethod;
 //	The query string, if any, via which the page was accessed.
 	(*envMap)["QUERY_STRING"] = request->getQueryString();
 //	(*envMap)["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
@@ -52,10 +53,10 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["REDIRECT_STATUS"] = "200";
 
 //	The URI which was given in order to access this page; for instance, '/index.html'.
-	(*envMap)["REQUEST_URI"] = request->getUri();
-	(*envMap)["DOCUMENT_URI"] = request->getUri(); //TODO a voir
+	(*envMap)["REQUEST_URI"] = request->getUri().getUri();
+	(*envMap)["DOCUMENT_URI"] = request->getUri().getUri(); //TODO a voir
 //	The document root directory under which the current script is executing, as defined in the server's configuration file.
-	(*envMap)["DOCUMENT_ROOT"] = request->getUri(); //TODO a voir
+	(*envMap)["DOCUMENT_ROOT"] = request->getUri().getUri(); //TODO a voir
 //	Name and revision of the information protocol via which the page was requested; e.g. 'HTTP/1.0';
 	(*envMap)["REQUEST_SCHEME"] = "http"; //TODO a voir
 //	Set to a non-empty value if the script was queried through the HTTPS protocol.
@@ -77,6 +78,35 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 //	The name of the server host under which the current script is executing. If the script is running on a virtual host, this will be the value defined for that virtual host.
 	(*envMap)["SERVER_NAME"] = "mon serveur web"; //TODO a voir
 	(*envMap)["SERVER_PORT"] = ""; //TODO a voir
+
+	if (reqMethod == "POST")
+	{
+//		(*envMap)["HTTP_RAW_POST_DATA"] = request->getBody()->getContent()->c_str();
+	}
+
+	StringUtil su = StringUtil();
+	std::list<std::string> request_headers = request->getHeader()->getFields();
+	for (std::list<std::string>::iterator it = request_headers.begin();
+			it != request_headers.end(); ++it)
+	{
+		std::string rawField = *it;
+		int nbSeparatorsToProcess = 1;
+		std::vector<std::string> toks = su.tokenize(rawField, ':', nbSeparatorsToProcess);
+		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		name = su.strUpperCase(std::string("HTTP_") + su.trim(name));
+//		TODO	chercher/remplacer "-" et "."(?) dans le nom par "_"
+		std::string val = su.getNthTokenIfExists(toks, 1, "");
+		val = su.trim(val);
+
+		(*envMap)[name] = val;
+
+//		std::string name = it->first;
+//		std::transform(name.begin(), name.end(), name.begin(), ::toupper);
+//		std::string key = "HTTP_" + name;
+//		_env[key] = it->second;
+	}
+
+//	(*envMap)["argv"] = "nom=rrter&age=;";
 
 //	'REQUEST_TIME'
 //	    The timestamp of the start of the request.
@@ -124,12 +154,16 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 
 }
 
-std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request,
+std::string
+CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request,
 		Response *response)
 {
 // Setup environment variables
 	std::map<std::string, std::string> envMap = std::map<std::string, std::string>();
 	setupEnvironmentVariables(&envMap, request, response);
+
+	std::string cmdLine = "-f " + scriptPath;
+	harl.debug("CGIHandler::executeCGIScript [%s %s] ???", interpreterPath.c_str(), cmdLine.c_str());
 
 	int pipefd[2];
 	pipe(pipefd); // Create a pipe
@@ -138,7 +172,6 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 	if (pid == 0)
 	{
 		// Child process
-		std::string cmdLine = "-f " + scriptPath;
 //		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
 //		(envMap)["SCRIPT_FILENAME_XXXXXXXXXXXXXX"] = request->getFileName();
 //		The absolute pathname of the currently executing script.
@@ -159,7 +192,7 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 			int toCharSz = toChar.length();
 			envp[i] = new char[toCharSz + 1]();
 			memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
-			harl.debug("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
+			harl.trace("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
 			i++;
 		}
 //		std::string toChar = "toto=titi";
@@ -169,12 +202,11 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 //		i++;
 		envp[i] = NULL;
 
-		harl.debug("CGIHandler::executeCGIScript [%s %s]", interpreterPath.c_str(), cmdLine.c_str());
-		close(pipefd[0]);               // Close unused read end
+//		close(pipefd[0]); // Close unused read end
 		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
 //	execl(interpreterPath.c_str(), cmdLine.c_str(), (char*) NULL);
 
-		const char *argv[3];
+		const char *argv[4];
 		i = 0;
 		argv[i++] = interpreterPath.c_str();
 		argv[i++] = "-f";
@@ -192,13 +224,31 @@ std::string CGIHandler::executeCGIScript(std::string interpreterPath, std::strin
 	else
 	{
 		// Parent process
-		close(pipefd[1]); // Close unused write end
+//		close(pipefd[1]); // Close unused write end
 
-		char buffer[1024] =
-				{ };
+		RequestBody *reqBody = request->getBody();
+		std::string *reqBodyContentPtr = reqBody->getContent();
+		std::string reqBodyContent = *reqBodyContentPtr;
+
+		if (reqBodyContent != "")
+		{
+//			char *cstr = (char*) (reqBodyContent.c_str());
+//			int length = (int) reqBodyContent.length();
+
+//		//	send(pipefd[1], cstr, length, 0);
+
+//			int written =
+//			write(pipefd[1], cstr, length);
+//			harl.debug("%d sent %d bytes through the wire", pipefd[1], written);
+
+		}
+		close(pipefd[1]); // Close  write end
+
+		int bufferReadSize = 1024;
+		char *buffer = new char[bufferReadSize]();
 		std::string output;
 		ssize_t count;
-		while ((count = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
+		while ((count = read(pipefd[0], buffer, bufferReadSize)) > 0)
 		{
 			buffer[count] = '\0';
 			output += buffer;

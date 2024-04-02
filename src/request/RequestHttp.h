@@ -2,26 +2,29 @@
 
 #include "API/Request.h"
 #include "API/RequestHeader.h"
+#include "API/RequestBody.h"
 #include "../util/StringUtil.h"
 #include <map>
 #include <iterator>
 #include <string>
 
+//TODO En faire une Coplien
 class RequestHttp: public Request
 {
 private:
 	RequestHeader *header;
+	RequestBody *body;
 	int *fdClient;
 
 public:
 	RequestHttp();
 	~RequestHttp();
-	RequestHttp(RequestHeader *header);
+	RequestHttp(RequestHeader *header, RequestBody *body);
 
 	virtual const std::list<std::string>& getFields() const;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const;
 	virtual void addField(std::string rawField) const;
-	virtual const std::string& getUri() const;
+	virtual const Uri& getUri() const;
 	virtual const std::string& getMethod() const;
 	//	virtual void dump() const;
 	virtual void setFdClient(int *fd);
@@ -33,8 +36,8 @@ public:
 	virtual const std::string& getPath();
 	virtual const std::string getHost();
 
-	void setBody(const std::string &b);
-	const std::string& getBody() const;
+	virtual void setBody(RequestBody *body);
+	virtual RequestBody* getBody();
 
 	virtual bool isConnectionKeepAlive() throw (char*);
 };

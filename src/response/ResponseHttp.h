@@ -1,9 +1,9 @@
 #pragma once
 #include "API/ResponseHeader.h"
 #include "API/Response.h"
-//#include "../error/HttpError.h"
+#include "../error/HttpError.h"
 
-//class HttpError;
+class HttpError;
 class ResponseHttp: public Response
 {
 private:
@@ -14,18 +14,19 @@ private:
 	int totalLength;
 	bool flagCgi;
 	bool flagError;
-	//	HttpError *error;
+	HttpError *error;
+	int errorCodeTmp;
 
 public:
 	ResponseHttp(ResponseHeader *header);
 	~ResponseHttp();
 	//	ResponseHttp(const ResponseHttp &other);
-//	ResponseHttp& operator=(const ResponseHttp &other);
+	//	ResponseHttp& operator=(const ResponseHttp &other);
 
 	void setStatusLine(std::string sline);
 	void setHeader(std::string sline);
 	//	std::string getBody();
-//	void setBody(std::string sline);
+	//	void setBody(std::string sline);
 	void setBodyBin(char *bytess);
 	std::string getStatusLine();
 	char* getBodyBin();
@@ -42,6 +43,8 @@ public:
 	//	virtual void setError(HttpError *error);
 	//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
 	virtual void setIsError(bool isError);
-
+	virtual void setHttpError(HttpError *error);
+	virtual int getErrorCodeTmp();
+	virtual void setErrorCodeTmp(int errorCode);
+	virtual HttpError* getHttpError();
 };
-
