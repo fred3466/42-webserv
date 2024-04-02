@@ -44,7 +44,7 @@ Response *ProcessorImplCgiSh::process(Request *request, Response *response,
 	response->setBodyLength(cgiOutput.length());
 	char *bodybin = new char[cgiOutput.length()];
 	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
-	//	bodybin = const_cast<char*>(cgiOutput.data());
+//	bodybin = const_cast<char*>(cgiOutput.data());
 	response->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
@@ -60,9 +60,9 @@ Response *ProcessorImplCgiSh::process(Request *request, Response *response,
 
 	//	std::string httpResponse = generateHttpResponse(cgiOutput);
 	// Send HTTP response back to the client
-	//		sendResponse(e.getFdClient(), httpResponse);
-	//	}
-	//
+//		sendResponse(e.getFdClient(), httpResponse);
+//	}
+//
 	return response;
 }
 
