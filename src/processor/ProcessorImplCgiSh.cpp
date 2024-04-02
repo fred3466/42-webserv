@@ -19,7 +19,7 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	FileUtil *fu = FileUtilFactory().build();
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	
+
 	// It's a CGI request
 	CGIHandler cgiHandler;
 
@@ -44,7 +44,6 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	response->setBodyLength(cgiOutput.length());
 	char *bodybin = new char[cgiOutput.length()];
 	memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
-//	bodybin = const_cast<char*>(cgiOutput.data());
 	response->setBodyBin(bodybin);
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
@@ -62,7 +61,6 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	// Send HTTP response back to the client
 //		sendResponse(e.getFdClient(), httpResponse);
 //	}
-//
 	return response;
 }
 
