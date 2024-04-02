@@ -42,11 +42,9 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 		uri.erase(0, patPathLen);
 	}
 
-	// Determine script path from the URI
 	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
 	harl.debug(toString() + ":\t" + request->getUri() + " -> " + scriptPath);
 
-	// Execute the CGI script and get output
 	std::string interpreterPath = config->getParamStr("php_exe", "");
 	std::string
 		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);

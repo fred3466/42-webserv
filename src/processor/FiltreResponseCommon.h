@@ -9,8 +9,9 @@
 #include "../config/Config.h"
 #include "../response/API/Response.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
+#include "../error/HttpErrorFactory.h"
 
-class FiltreResponseCommon: public Processor
+class FiltreResponseCommon : public Processor
 {
 private:
 	Harl harl;
@@ -25,7 +26,6 @@ public:
 	virtual void setConfig(Config *conf);
 	virtual ProcessorTypeEnum getType();
 	virtual std::string toString();
-	virtual Response* process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
+	virtual Response *process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	virtual void addProperty(std::string name, std::string value);
 };
-
