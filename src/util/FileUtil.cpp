@@ -18,9 +18,9 @@ std::string FileUtil::getLastModification(std::string fpath, std::string strForm
 	{
 		return "ERROR stat";
 
-//		har("stat");
-//		TODO exit interdit
-//		exit(-1);
+		//		har("stat");
+		//		TODO exit interdit
+		//		exit(-1);
 	}
 	char buf[1000];
 	time_t mtime = sb.st_mtime;
@@ -109,4 +109,12 @@ bool FileUtil::writeFile(std::string path, char *data, size_t dataSize)
 	fileStream.write(data, dataSize);
 	fileStream.close();
 	return true;
+}
+
+bool FileUtil::isDirectory(std::string path)
+{
+	struct stat statbuf;
+	if (stat(path.c_str(), &statbuf) != 0)
+		return false;
+	return S_ISDIR(statbuf.st_mode);
 }
