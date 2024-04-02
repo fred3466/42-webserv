@@ -1,7 +1,7 @@
 #include "ResponseHttp.h"
 
 // TODO En faire une Coplien
-ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false) //,  error(NULL)
+ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false), error(), errorCodeTmp(200)
 {
 	header = head;
 }
@@ -23,7 +23,7 @@ std::string ResponseHttp::getStatusLine()
 {
 	return header->getStatusLine();
 }
-ResponseHeader *ResponseHttp::getHeader()
+ResponseHeader* ResponseHttp::getHeader()
 {
 	return header;
 }
@@ -52,7 +52,7 @@ void ResponseHttp::setBodyBin(char *bytess)
 	this->bodyBin = bytess;
 }
 
-char *ResponseHttp::getBodyBin()
+char* ResponseHttp::getBodyBin()
 {
 	return bodyBin;
 }
@@ -92,12 +92,17 @@ void ResponseHttp::setIsError(bool isError)
 void ResponseHttp::setHttpError(HttpError *error)
 {
 	this->error = error;
-	this->flagError = true;
+	this->flagError = error->getCode() != 200;
 
-	std::ostringstream statusLine;
-	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
+//	std::ostringstream statusLine;
+//	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
 	// TODO remettre setStatusLine
 	// this->header->setStatusLine(statusLine.str());
+}
+
+HttpError* ResponseHttp::getHttpError()
+{
+	return error;
 }
 
 int ResponseHttp::getErrorCodeTmp()

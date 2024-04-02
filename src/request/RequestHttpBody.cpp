@@ -20,9 +20,9 @@ RequestHttpBody::RequestHttpBody(std::string *rawRequest)
 		std::stringstream lineSs;
 		lineSs.str(line);
 		std::string lineStr = lineSs.str();
-		if (bBodyMode)
+		if (bBodyMode /* && lineStr != ""*/)
 		{
-			lineStr += "\n";
+//			lineStr += "\n";
 			tempContent += lineStr;
 		}
 		if (lineStr == "\r" || lineStr == "")

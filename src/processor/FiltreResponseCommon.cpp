@@ -37,9 +37,11 @@ Response *FiltreResponseCommon::process(Request *request, Response *response, Pr
 	header->addField("Date", date);
 	//	Voir filtre MimeType
 	//	header->addField("Content-Type", "");
-	//	TODO on s'en fout
-	//	header->addField("Transfer-Encoding", "");	//chunked
+	//	TODO fred post à vérifier 29/03
+	//	TODO on s'en fout ???
+	header->addField("Transfer-Encoding", "chunked"); // chunked
 	//	le contraire de keep-alive
+	//	TODO fred à vérifier 29/03
 	bool isKeepAlive = request->isConnectionKeepAlive();
 	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
 

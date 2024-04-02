@@ -4,43 +4,43 @@ std::vector<HttpError> HttpErrorFactory::errorList;
 
 void HttpErrorFactory::initialize()
 {
-    loadErrorList();
+	loadErrorList();
 }
 
 void HttpErrorFactory::loadErrorList()
 {
-    errorList.clear();
+	errorList.clear();
 
-    std::ifstream file("errors.txt");
-    std::string line;
+	std::ifstream file("conf/errors.txt");
+	std::string line;
 
-    if (file.is_open())
-    {
-        while (std::getline(file, line))
-        {
-            std::istringstream iss(line);
-            int code;
-            std::string message;
-            if (iss >> code && std::getline(iss >> std::ws, message))
-            {
-                HttpError error(code, message);
-                errorList.push_back(error);
-            }
-        }
-        file.close();
-    }
+	if (file.is_open())
+	{
+		while (std::getline(file, line))
+		{
+			std::istringstream iss(line);
+			int code;
+			std::string message;
+			if (iss >> code && std::getline(iss >> std::ws, message))
+			{
+				HttpError error(code, message);
+				errorList.push_back(error);
+			}
+		}
+		file.close();
+	}
 }
 
-HttpError *HttpErrorFactory::build(int errorCode)
+HttpError* HttpErrorFactory::build(int errorCode)
 {
-    for (std::vector<HttpError>::const_iterator it = errorList.begin(); it != errorList.end(); ++it)
-    {
-        if (it->getCode() == errorCode)
-        {
-            return new HttpError(it->getCode(), it->getDescription());
-        }
-    }
-    return new HttpError(errorCode, "Unknown Error");
+	for (std::vector<HttpError>::const_iterator it = errorList.begin(); it != errorList.end(); ++it)
+	{
+		if (it->getCode() == errorCode)
+		{
+			return new HttpError(it->getCode(), it->getDescription());
+		}
+	}
+	return new HttpError(errorCode, "Unknown Error");
 }
 
 // Response *HttpErrorFactory::generateErrorResponse(int errorCode, const std::string &errorMessage)

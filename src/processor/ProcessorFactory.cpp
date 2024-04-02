@@ -1,11 +1,11 @@
 #include "ProcessorFactory.h"
 
-std::vector<ProcessorAndLocationToProcessor *> *ProcessorFactory::build(Request *request)
+std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
 {
 	//	std::string ext = request->getFileExtension();
 	//	std::string uri = request->getUri();
 
-	std::vector<ProcessorAndLocationToProcessor *> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
+	std::vector<ProcessorAndLocationToProcessor*> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
 	//	procs->insert(procs->begin(), new ProcessorImplDirectFs());
 
 	//	StringUtil stringUtil;
@@ -26,7 +26,7 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 	processorLocator = pl;
 }
 
-Processor *ProcessorFactory::build(std::string procName)
+Processor* ProcessorFactory::build(std::string procName)
 {
 	//	TODO new
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;

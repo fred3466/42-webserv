@@ -23,8 +23,8 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 	config = conf;
 }
 
-Response *ProcessorImplDirectFs::process(Request *request, Response *response,
-										 ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* ProcessorImplDirectFs::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	FileUtil *fu = FileUtilFactory().build();
 
@@ -74,7 +74,7 @@ Response *ProcessorImplDirectFs::process(Request *request, Response *response,
 		else if (s.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
-				path.rfind(".", std::string::npos));
+					path.rfind(".", std::string::npos));
 
 			char *bodyBin;
 			int len = fu->readFile(path, &bodyBin);
@@ -160,7 +160,7 @@ void ProcessorImplDirectFs::addProperty(std::string name, std::string value)
 
 std::string ProcessorImplDirectFs::toString()
 {
-	return "ProcessorImplDirectFs " + type;
+	return "ProcessorImplDirectFs";
 }
 
 ProcessorTypeEnum ProcessorImplDirectFs::getType()

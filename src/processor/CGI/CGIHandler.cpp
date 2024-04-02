@@ -162,6 +162,9 @@ CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPat
 	std::map<std::string, std::string> envMap = std::map<std::string, std::string>();
 	setupEnvironmentVariables(&envMap, request, response);
 
+	std::string cmdLine = "-f " + scriptPath;
+	harl.debug("CGIHandler::executeCGIScript [%s %s] ???", interpreterPath.c_str(), cmdLine.c_str());
+
 	int pipefd[2];
 	pipe(pipefd); // Create a pipe
 
@@ -169,7 +172,6 @@ CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPat
 	if (pid == 0)
 	{
 		// Child process
-		std::string cmdLine = "-f " + scriptPath;
 //		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
 //		(envMap)["SCRIPT_FILENAME_XXXXXXXXXXXXXX"] = request->getFileName();
 //		The absolute pathname of the currently executing script.
@@ -200,8 +202,7 @@ CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPat
 //		i++;
 		envp[i] = NULL;
 
-		harl.debug("CGIHandler::executeCGIScript [%s %s]", interpreterPath.c_str(), cmdLine.c_str());
-		close(pipefd[0]); // Close unused read end
+//		close(pipefd[0]); // Close unused read end
 		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
 //	execl(interpreterPath.c_str(), cmdLine.c_str(), (char*) NULL);
 
@@ -231,12 +232,14 @@ CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPat
 
 		if (reqBodyContent != "")
 		{
-			char *cstr = (char*) (reqBodyContent.c_str());
-			int length = (int) reqBodyContent.length();
+//			char *cstr = (char*) (reqBodyContent.c_str());
+//			int length = (int) reqBodyContent.length();
 
-//			send(pipefd[1], cstr, length, 0);
-			int written = write(pipefd[1], cstr, length);
-			harl.debug("%d sent %d bytes through the wire", pipefd[1], written);
+//		//	send(pipefd[1], cstr, length, 0);
+
+//			int written =
+//			write(pipefd[1], cstr, length);
+//			harl.debug("%d sent %d bytes through the wire", pipefd[1], written);
 
 		}
 		close(pipefd[1]); // Close  write end
@@ -245,7 +248,7 @@ CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPat
 		char *buffer = new char[bufferReadSize]();
 		std::string output;
 		ssize_t count;
-		while ((count = read(pipefd[0], buffer, bufferReadSize - 1)) > 0)
+		while ((count = read(pipefd[0], buffer, bufferReadSize)) > 0)
 		{
 			buffer[count] = '\0';
 			output += buffer;

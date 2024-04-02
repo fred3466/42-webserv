@@ -13,10 +13,11 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 	config = conf;
 }
 
-Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
-										  ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	//	resp->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
+//	TODO fred post
+	response->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
 	//	char *body;
@@ -27,8 +28,6 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	CGIHandler cgiHandler;
 
 	// Response *responseHttp;
-	int errorCode = 200;
-	HttpError *error = HttpErrorFactory().build(errorCode);
 
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
@@ -47,10 +46,10 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 
 	std::string interpreterPath = config->getParamStr("php_exe", "");
 	std::string
-		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
-	response->setBodyLength(cgiOutput.length());
+	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
 
-	char *bodybin = new char[cgiOutput.length() + 1];
+	response->setBodyLength(cgiOutput.length());
+	char *bodybin = new char[cgiOutput.length()];
 	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
 	bodybin[cgiOutput.length()] = '\0';
 
@@ -62,8 +61,6 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	// Generate HTTP response from CGI output
 	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
 	//	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-
-	response->setHttpError(error);
 
 	response->setCgi(true);
 	//	response->setHttpError(HttpErrorFactory.build(200));
@@ -99,7 +96,7 @@ void ProcessorImplCgiBinPhp::addProperty(std::string name, std::string value)
 
 std::string ProcessorImplCgiBinPhp::toString()
 {
-	return "ProcessorImplCgiBinPhp " + type;
+	return "ProcessorImplCgiBinPhp";
 }
 
 ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()
