@@ -40,6 +40,7 @@ SRC_FILES	= \
 	processor/ProcessorFactory \
 	processor/ProcessorImplDirectFs \
 	processor/ProcessorImplCgiBinPhp \
+	processor/ProcessorImplCgiSh \
 	processor/FiltreResponseMimeType \
 	processor/FiltreResponseCommon \
 	processor/FiltreRequestPost \
