@@ -1,0 +1,1 @@
+echo $REQUEST_URI
