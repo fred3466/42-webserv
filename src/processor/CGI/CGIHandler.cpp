@@ -53,10 +53,10 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["REDIRECT_STATUS"] = "200";
 
 //	The URI which was given in order to access this page; for instance, '/index.html'.
-	(*envMap)["REQUEST_URI"] = request->getUri();
-	(*envMap)["DOCUMENT_URI"] = request->getUri(); //TODO a voir
+	(*envMap)["REQUEST_URI"] = request->getUri().getUri();
+	(*envMap)["DOCUMENT_URI"] = request->getUri().getUri(); //TODO a voir
 //	The document root directory under which the current script is executing, as defined in the server's configuration file.
-	(*envMap)["DOCUMENT_ROOT"] = request->getUri(); //TODO a voir
+	(*envMap)["DOCUMENT_ROOT"] = request->getUri().getUri(); //TODO a voir
 //	Name and revision of the information protocol via which the page was requested; e.g. 'HTTP/1.0';
 	(*envMap)["REQUEST_SCHEME"] = "http"; //TODO a voir
 //	Set to a non-empty value if the script was queried through the HTTPS protocol.

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../API/RequestHeader.h"
 #include "../API/RequestBody.h"
+#include "../../Uri/Uri.h"
 #include <sstream>
 
 class Request
@@ -16,7 +17,7 @@ private:
 	virtual ~Request();
 
 	virtual const std::list<std::string>& getFields() const =0;
-	virtual const std::string& getUri() const =0;
+	virtual const Uri& getUri() const =0;
 	virtual const std::string& getMethod() const =0;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const =0;
 	virtual void setFdClient(int *fd)=0;

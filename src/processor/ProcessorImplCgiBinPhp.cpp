@@ -32,7 +32,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
 	int patPathLen = patPath.length();
-	std::string uri = request->getUri();
+	std::string uri = request->getUri().getUri();
 	//	std::string proto = "http:://";
 	//	size_t itePostProtocole = proto.length();
 	size_t ite = uri.find(patPath);
@@ -42,7 +42,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	}
 
 	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
-	harl.debug(toString() + ":\t" + request->getUri() + " -> " + scriptPath);
+	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + scriptPath);
 
 	std::string interpreterPath = config->getParamStr("php_exe", "");
 	std::string

@@ -34,29 +34,29 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	//	std::string path = root + request->getUri();
 
 	//	TODO factoriser
-	std::string uri = request->getUri();
+	Uri uri = request->getUri();
 	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
 	std::string patPath = locationToProcessor->getUrlPath();
+	std::string uriLessRoutePattern = uri.getPath();
 	int patPathLen = patPath.length();
-	size_t ite = uri.find(patPath);
+	size_t ite = uriLessRoutePattern.find(patPath);
 	if (ite == 0)
 	{
-		uri.erase(0, patPathLen);
+		uriLessRoutePattern.erase(0, patPathLen);
 	}
+	std::string fileName = uri.getFileName() + uri.getFileExtension();
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	std::string path = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
-	harl.debug(toString() + ":\t" + request->getUri() + " -> " + path);
+	std::string path = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uriLessRoutePattern + fileName;
+	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + path);
 	//	TODO FIN factoriser
 
-	harl.info(request->getUri() + " -> " + path);
+	harl.info("ProcessorImplDirectFs::process: " + request->getUri().getUri() + " -> " + path);
 
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
 	{
 		std::string bodyStr = "";
-		int bodyStrSize = bodyStr.size();
-		char *body = new char[bodyStrSize];
 
 		if (s.st_mode & S_IFDIR)
 		{
@@ -67,6 +67,8 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 
 				bodyStr += sending;
 			}
+			int bodyStrSize = bodyStr.size();
+			char *body = new char[bodyStrSize];
 			response->setBodyLength(bodyStrSize);
 			bodyStr.copy(body, bodyStrSize, 0);
 			//			body = bodyStr.c_str();
@@ -91,7 +93,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 			// out.write(bodyBin, len);
 			// out.close();
 
-			body = bodyBin;
+//			body = bodyBin;
 			//			std::ofstream os("out2.gif", std::ios::binary | std::ios::out);
 			//			os.write(body, len);
 			//			os.close();

@@ -134,7 +134,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	CookieFactory().build(reqHeader);
 	//	req->dump();
 
-	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().c_str());
+	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
@@ -160,7 +160,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (!resp)
 	{
-		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().c_str());
+		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
 	}
 
 	HttpError *he = resp->getHttpError();
@@ -172,7 +172,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	//	TODO Fred keepalive
 	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
-		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().c_str());
+		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().getUri().c_str());
 		connector->closeConnection(fdSocket);
 	}
 
@@ -199,7 +199,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
 		//		processor->setConfig(config);
 
-		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().c_str(),
+		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().getUri().c_str(),
 				processor->toString().c_str());
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
@@ -225,14 +225,12 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 
 	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
 	{
-		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().c_str());
+		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
 	}
 
 	addUltimateHeaders(resp);
 
-	std::string fieldsString = stringUtil.fromListToString(
-			resp->getHeader()->getFields()) +
-			"\r\n";
+	std::string fieldsString = stringUtil.fromListToString(resp->getHeader()->getFields()) + "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 	std::string body = "";
 	char *bodyBin = resp->getBodyBin();

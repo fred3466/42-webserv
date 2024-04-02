@@ -56,7 +56,7 @@ const std::list<std::string>& RequestHttp::getFields() const
 	return header->getFields();
 }
 
-const std::string& RequestHttp::getUri() const
+const Uri& RequestHttp::getUri() const
 {
 	return header->getUri();
 }

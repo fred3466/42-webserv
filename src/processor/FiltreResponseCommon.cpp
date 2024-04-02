@@ -24,22 +24,22 @@ std::string FiltreResponseCommon::toString()
 	return "FiltreResponseCommon " + type;
 }
 
-Response *FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	(void)processorAndLocationToProcessor;
+	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
-	path = request->getUri();
+	path = request->getUri().getUri();
 
 	//	PHP
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Fr%E9d%E9ric");
+	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
 	header->addField("Date", date);
 	//	Voir filtre MimeType
 	//	header->addField("Content-Type", "");
 	//	TODO fred post à vérifier 29/03
-	//	TODO on s'en fout ???
-	header->addField("Transfer-Encoding", "chunked"); // chunked
+	//	TODO on s'en fout ??? => 02/04 fred: on dirait que non !
+//	header->addField("Transfer-Encoding", "chunked"); // chunked
 	//	le contraire de keep-alive
 	//	TODO fred à vérifier 29/03
 	bool isKeepAlive = request->isConnectionKeepAlive();
