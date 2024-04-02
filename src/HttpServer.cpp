@@ -298,8 +298,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 				contentLengthHeader, contentLengthResponse);
 	}
 //	TODO fred post 29/03
-//	if (transferEncoding == "" && contentLengthHeader == -1)
-//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+	if (transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
