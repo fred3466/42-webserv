@@ -4,7 +4,7 @@
 #include "../error/HttpError.h"
 
 class HttpError;
-class ResponseHttp : public Response
+class ResponseHttp: public Response
 {
 private:
 	ResponseHeader *header;
@@ -29,10 +29,10 @@ public:
 	//	void setBody(std::string sline);
 	void setBodyBin(char *bytess);
 	std::string getStatusLine();
-	char *getBodyBin();
+	char* getBodyBin();
 	int getBodyLength();
 	void setBodyLength(int len);
-	ResponseHeader *getHeader();
+	ResponseHeader* getHeader();
 	virtual int getTotalLength();
 	virtual void setTotalLength(int len);
 	virtual bool isCgi();
@@ -46,4 +46,5 @@ public:
 	virtual void setHttpError(HttpError *error);
 	virtual int getErrorCodeTmp();
 	virtual void setErrorCodeTmp(int errorCode);
+	virtual HttpError* getHttpError();
 };

@@ -37,9 +37,11 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	header->addField("Date", date);
 //	Voir filtre MimeType
 //	header->addField("Content-Type", "");
-//	TODO on s'en fout
-//	header->addField("Transfer-Encoding", "");	//chunked
+	//	TODO fred post à vérifier 29/03
+	//	TODO on s'en fout ???
+	header->addField("Transfer-Encoding", "chunked");	//chunked
 //	le contraire de keep-alive
+//	TODO fred à vérifier 29/03
 	bool isKeepAlive = request->isConnectionKeepAlive();
 	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
 
@@ -49,11 +51,14 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 //	std::string lString = stringUtil.strFromInt(length);
 //	header->addField("Content-Length", lString);
 //	TODO la date du fichier si statique , idem si html statique, absent si dynamique (php)
-	header->addField("Last-Modified", "");
+	//	TODO fred à vérifier 29/03
+//header->addField("Last-Modified", "");
 //	TODO si implémenté, devrait être dans chaque implémentation de Processor (selon que c'est une ressource statique ou pas)
-	header->addField("ETag", "");	//65f5bc3b-17e9
+	//	TODO fred à vérifier 29/03
+//	header->addField("ETag", "");	//65f5bc3b-17e9
 //	TODO présent partout !
-	header->addField("Accept-Ranges", "bytes");
+//	TODO vraiment à confronter avec nginx
+//	header->addField("Accept-Ranges", "bytes");
 //	header->addField("", "");
 //	header->addField("", "");
 //	header->addField("", "");

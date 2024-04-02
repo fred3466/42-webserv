@@ -16,9 +16,9 @@ public:
 	//	Response(const Response &o);
 	//	Response& operator=(const Response &o);
 
-	virtual ResponseHeader *getHeader() = 0;
+	virtual ResponseHeader* getHeader() = 0;
 	//	virtual std::string getBody()=0;
-	virtual char *getBodyBin() = 0;
+	virtual char* getBodyBin() = 0;
 	virtual void setBodyBin(char *bytess) = 0;
 	virtual int getBodyLength() = 0;
 	virtual void setBodyLength(int len) = 0;
@@ -34,6 +34,7 @@ public:
 	virtual void setIsError(bool isError) = 0;
 	// virtual void setHttpError(const HttpError *error) = 0;
 	virtual void setHttpError(HttpError *error) = 0;
+	virtual HttpError* getHttpError() = 0;
 	virtual void setErrorCodeTmp(int errorCode) = 0;
 	virtual int getErrorCodeTmp() = 0;
 	virtual void setStatusLine(std::string sline) = 0;

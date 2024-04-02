@@ -44,10 +44,10 @@ void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string e
 {
 //	TODO new ici
 	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor, host);
-	harl.debug("ROUTE : %s", lp->toString().c_str());
+
 	locationToProcessorVector.push_back(lp);
 
-//	std::sort(locationToProcessorVector.begin(), locationToProcessorVector.end(), &locationToProcessorComparator);
+	std::sort(locationToProcessorVector.begin(), locationToProcessorVector.end(), &locationToProcessorComparator);
 }
 
 std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProcessorForUrlAndExt(Request *request)
