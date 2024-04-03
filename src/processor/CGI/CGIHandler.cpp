@@ -44,7 +44,32 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	//   Applications SHOULD use this field to indicate the transfer-length of
 	//   the message-body, unless this is prohibited by the rules in section
 	//   4.4.
-	//	(*envMap)["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
+
+	//	4.4 Message Length
+	//
+	//	   The transfer-length of a message is the length of the message-body as
+	//	   it appears in the message; that is, after any transfer-codings have
+	//	   been applied. When a message-body is included with a message, the
+	//	   transfer-length of that body is determined by one of the following
+	//	   (in order of precedence):
+	//
+	//	   1.Any response message which "MUST NOT" include a message-body (such
+	//	     as the 1xx, 204, and 304 responses and any response to a HEAD
+	//	     request) is always terminated by the first empty line after the
+	//	     header fields, regardless of the entity-header fields present in
+	//	     the message.
+	//
+	//	   2.If a Transfer-Encoding header field (section 14.41) is present and
+	//	     has any value other than "identity", then the transfer-length is
+	//	     defined by use of the "chunked" transfer-coding (section 3.6),
+	//	     unless the message is terminated by closing the connection.
+	//
+	//	   3.If a Content-Length header field (section 14.13) is present, its
+	//	     decimal value in OCTETs represents both the entity-length and the
+	//	     transfer-length. The Content-Length header field MUST NOT be sent
+	//	     if these two lengths are different (i.e., if a Transfer-Encoding
+
+	(*envMap)["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
 	//	What revision of the CGI specification the server is using; e.g. 'CGI/1.1'
 	(*envMap)["GATEWAY_INTERFACE"] = "CGI/1.1";
 	(*envMap)["SERVER_PROTOCOL"] = "HTTP/1.1";
@@ -53,10 +78,10 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["REDIRECT_STATUS"] = "200";
 
 	//	The URI which was given in order to access this page; for instance, '/index.html'.
-	(*envMap)["REQUEST_URI"] = request->getUri();
-	(*envMap)["c"] = request->getUri(); // TODO a voir
+	(*envMap)["REQUEST_URI"] = request->getUri().getUri();
+	(*envMap)["DOCUMENT_URI"] = request->getUri().getUri(); // TODO a voir
 	//	The document root directory under which the current script is executing, as defined in the server's configuration file.
-	(*envMap)["DOCUMENT_ROOT"] = request->getUri(); // TODO a voir
+	(*envMap)["DOCUMENT_ROOT"] = request->getUri().getUri(); // TODO a voir
 	//	Name and revision of the information protocol via which the page was requested; e.g. 'HTTP/1.0';
 	(*envMap)["REQUEST_SCHEME"] = "http"; // TODO a voir
 	//	Set to a non-empty value if the script was queried through the HTTPS protocol.

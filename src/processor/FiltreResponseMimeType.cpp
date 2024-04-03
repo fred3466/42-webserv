@@ -31,7 +31,7 @@ Response* FiltreResponseMimeType::process(Request *request, Response *response,
 	(void) processorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
-	path = request->getUri();
+	path = request->getUri().getUri();
 
 	// Extracting MIME type using the file path
 	std::string mimeType = getResponseMimeType(path);

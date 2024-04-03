@@ -16,14 +16,18 @@ Uri::Uri(const std::string &uri)
 	std::string path;
 	std::string query = "";
 	size_t pos = 0;
-	if (uri.find("?", pos) != std::string::npos)
+	size_t posQM = uri.find("?");
+	size_t lastSlashBeforeQM = uri.rfind("/", posQM);
+
+	if (posQM != std::string::npos)
 	{
-		path = uri.substr(pos, uri.find("?", pos) - pos);
-		pos = uri.find("?", pos) + 1;
-		query = uri.substr(pos);
+//		path = uri.substr(pos, uri.find("?", pos) - pos);
+		path = uri.substr(lastSlashBeforeQM);
+		query = uri.substr(posQM);
 	} else
 	{
-		path = uri.substr(pos);
+//		path = uri.substr(pos);
+		path = uri.substr(pos, lastSlashBeforeQM);
 	}
 	path = UriValidator().formatPath(path);
 	setPath(path);
@@ -47,7 +51,7 @@ const std::string& Uri::getQuery() const
 
 const std::string Uri::getFileExtension() const
 {
-	std::string path = getPath();
+	std::string path = _uri;
 	size_t pos = path.rfind(".");
 	if (pos != std::string::npos)
 	{
@@ -58,11 +62,10 @@ const std::string Uri::getFileExtension() const
 
 const std::string Uri::getFileName() const
 {
-	std::string path = getPath();
-	size_t pos = path.rfind("/");
+	size_t pos = _uri.rfind("/");
 	if (pos != std::string::npos)
 	{
-		return path.substr(pos + 1, path.rfind(".") - pos - 1);
+		return _uri.substr(pos + 1, _uri.rfind(".") - pos - 1);
 	}
 	return "";
 }

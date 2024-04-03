@@ -12,6 +12,18 @@ Harl::~Harl()
 {
 }
 
+void Harl::trace2(std::string msg, ...)
+{
+	char formatedChars[2000];
+	va_list args;
+	if (HARL_LEVEL >= 5)
+	{
+		va_start(args, msg);
+		vsnprintf(formatedChars, 2000, msg.c_str(), args);
+		va_end(args);
+		Harl::_write("TRACE2", formatedChars);
+	}
+}
 void Harl::trace(std::string msg, ...)
 {
 	char formatedChars[2000];

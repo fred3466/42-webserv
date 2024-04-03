@@ -24,7 +24,7 @@ public:
 	virtual const std::list<std::string>& getFields() const;
 	virtual std::string getHeaderFieldValue(std::string fieldName) const;
 	virtual void addField(std::string rawField) const;
-	virtual const std::string& getUri() const;
+	virtual const Uri& getUri() const;
 	virtual const std::string& getMethod() const;
 	//	virtual void dump() const;
 	virtual void setFdClient(int *fd);

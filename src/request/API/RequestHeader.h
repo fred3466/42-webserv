@@ -17,8 +17,8 @@ public:
 	virtual std::string getFieldValue(std::string fieldName) const =0;
 	virtual const std::string& getMethod() const =0;
 	virtual void setMethod(const std::string &method)=0;
-	virtual const std::string& getUri() const =0;
-	virtual void setUri(const std::string &uri)=0;
+	virtual const Uri& getUri() const =0;
+	virtual void setUri(const Uri &uri)=0;
 	virtual const std::string& getVersion() const =0;
 	virtual void setVersion(const std::string &version)=0;
 	virtual std::string toString()=0;
@@ -29,5 +29,5 @@ public:
 	virtual const std::string& getQueryString() const =0;
 	virtual const std::string getFileExtension() const =0;
 	virtual const std::string getFileName() const =0;
-	virtual const std::string& getPath() const=0;
+	virtual const std::string& getPath() const =0;
 };

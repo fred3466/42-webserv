@@ -71,7 +71,7 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 std::string RequestHttpHeader::toString()
 {
 	std::string ret = "";
-	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri() + "]\t[" + getVersion() + "]\n";
+	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri().getUri() + "]\t[" + getVersion() + "]\n";
 
 	StringUtil su = StringUtil();
 	ret += su.dedoublonne(su.fromListToString(&fields), "\n");
@@ -138,14 +138,15 @@ std::string RequestHttpHeader::getCookieString()
 	return cookieHelper.getCookieString(cookies);
 }
 
-const std::string& RequestHttpHeader::getUri() const
+const Uri& RequestHttpHeader::getUri() const
 {
-	return uri.getUri();
+	return uri;
 }
 
-void RequestHttpHeader::setUri(const std::string &u)
+void RequestHttpHeader::setUri(const Uri &u)
 {
-	uri = Uri(u);
+//	uri = Uri(u);
+	uri = u;
 }
 
 const std::string& RequestHttpHeader::getQueryString() const

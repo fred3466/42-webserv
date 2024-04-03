@@ -29,8 +29,8 @@ public:
 	virtual std::string getFieldValue(std::string fieldName) const;
 	virtual const std::string& getMethod() const;
 	virtual void setMethod(const std::string &method);
-	virtual const std::string& getUri() const;
-	virtual void setUri(const std::string &uri);
+	virtual const Uri& getUri() const;
+	virtual void setUri(const Uri &uri);
 	virtual const std::string& getVersion() const;
 	virtual void setVersion(const std::string &version);
 	virtual std::string toString();

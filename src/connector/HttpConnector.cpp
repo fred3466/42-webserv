@@ -67,17 +67,18 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : harl(), n
 	//	connectorListener = NULL;
 
 	// protocol ip==0 (/etc/protocols)
+	harl.trace2("---HttpConnector::HttpConnector: socket");
 	if ((_soListen = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
-		harl.error("Creating socket, bye !");
+		harl.error("HttpConnector::HttpConnector: Creating socket, bye !");
 		// TODO exit n'est pas dans la liste des fonctions autorisées !
 		exit(-1);
 	}
 	/*************************************************************/
 	/* Allow socket descriptor to be reuseable                   */
 	/*************************************************************/
-	int rc = setsockopt(_soListen, SOL_SOCKET, SO_REUSEADDR, (char*) &on,
-			sizeof(on));
+	harl.trace2("---HttpConnector::HttpConnector: setsockopt");
+	int rc = setsockopt(_soListen, SOL_SOCKET, SO_REUSEADDR, (char*) &on, sizeof(on));
 	if (rc < 0)
 	{
 		harl.error("HttpConnector::HttpConnector : setsockopt() failed");
@@ -90,6 +91,7 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : harl(), n
 	/* the incoming connections will also be nonblocking since   */
 	/* they will inherit that state from the listening socket.   */
 	/*************************************************************/
+	harl.trace2("---HttpConnector::HttpConnector: ioctl");
 	rc = ioctl(_soListen, FIONBIO, (char*) &on);
 	if (rc < 0)
 	{
@@ -100,11 +102,13 @@ HttpConnector::HttpConnector(std::string ipStr, int port, Config *c) : harl(), n
 	}
 
 	int option_value = 1;
+	harl.trace2("---HttpConnector::HttpConnector: setsockopt");
 	setsockopt(_soListen, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
 	sockaddrStruct.sin_family = AF_INET;
 	//	memset(&sockaddrStruct, 0, sizeof(SOCKADDR_IN));
 	sockaddrStruct.sin_addr.s_addr = inet_addr(ipStr.c_str());
 	sockaddrStruct.sin_port = htons(port);
+	harl.trace2("---HttpConnector::HttpConnector: bind");
 	if (bind(_soListen, (struct sockaddr*) &sockaddrStruct,
 			sizeof(sockaddrStruct)) == -1)
 	{
@@ -154,6 +158,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 
 	harl.info("HttpConnector::_listen : Ecoute sur %s:%i", ns.ipServer.c_str(), ns.portServer);
 
+	harl.trace2("---HttpConnector::_listen: listen");
 	rc = listen(_soListen, 5);
 	if (rc < 0)
 	{
@@ -339,6 +344,7 @@ void HttpConnector::reorganiseFdTab(pollfd **fdTab, int *fdTabSize)
 void HttpConnector::dumpFdTab(pollfd **fdTab, int fdTabSize)
 {
 
+	harl.trace("HttpConnector::dumpFdTab: fdTabSize=%i", fdTabSize);
 	for (int i = 0; i < fdTabSize; i++)
 	{
 		harl.trace("fdTab[%i] = %i", i, (*fdTab)[i]);
@@ -363,6 +369,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* failure on accept will cause us to end the        */
 		/* server.                                           */
 		/*****************************************************/
+		harl.trace2("---HttpConnector::_acceptIncomingCon: accept");
 		new_sd = accept(_soListen, NULL, NULL);
 		if (new_sd < 0)
 		{
@@ -373,6 +380,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 			}
 			break;
 		}
+		harl.trace2("---HttpConnector::_acceptIncomingCon: fcntl");
 		if (fcntl(new_sd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
 		{
 //			TODO http error?
@@ -418,7 +426,9 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		/* failure occurs, we will close the                 */
 		/* connection.                                       */
 		/*****************************************************/
+		harl.trace2("---HttpConnector::_onDataReceiving: recv");
 		int rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
+		harl.trace2("---HttpConnector::_onDataReceiving: retour recv rc=%i", rc);
 		if (rc < 0)
 		{
 			if (errno != EWOULDBLOCK)
@@ -428,13 +438,13 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 						strerror(errno));
 				close_conn = 1;
 			}
-//			close_conn = 1;
+			close_conn = 1;
 			break;
 		}
 		else if (rc == 0)
 		{
 			//			TODO http error?
-			harl.error(" %d HttpConnector::_onDataReceiving : Connection closed [%s]", curentPollFd->fd,
+			harl.error("rc == 0 %d HttpConnector::_onDataReceiving : //Connection closed [%s]", curentPollFd->fd,
 					strerror(errno));
 			close_conn = 1;
 			break;
@@ -474,6 +484,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 	/*******************************************************/
 	if (close_conn)
 	{
+		harl.trace2("---HttpConnector::_onDataReceiving: closeConnection");
 		closeConnection(&curentPollFd->fd);
 		compress_array = 1;
 	}

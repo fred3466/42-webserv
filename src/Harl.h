@@ -12,6 +12,7 @@ private:
 	public:
 	Harl();
 	~Harl();
+	void trace2(std::string msg, ...);
 	void trace(std::string msg, ...);
 	void debug(std::string msg, ...);
 	void info(std::string msg, ...);
