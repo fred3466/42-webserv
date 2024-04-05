@@ -48,7 +48,16 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	std::string
 		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
 
-	response->setBodyLength(cgiOutput.length());
+	int bodyLen = cgiOutput.length();
+	std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
+//	bodyLenHexaStr = stringUtil.toHexa(bodyLen + bodyLenHexaStr.length() + 2 + 7);
+
+	cgiOutput = bodyLenHexaStr + "\r\n" + cgiOutput + "\r\n0\r\n\r\n";
+	bodyLen = cgiOutput.length();
+
+//	bodyLen += bodyLenHexaStr.length();
+	response->setBodyLength(bodyLen);
+
 	char *bodybin = new char[cgiOutput.length()];
 	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
 	bodybin[cgiOutput.length()] = '\0';

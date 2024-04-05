@@ -15,6 +15,8 @@ private:
 	RequestHeader *header;
 	RequestBody *body;
 	int *fdClient;
+	std::string host;
+	int port;
 
 public:
 	RequestHttp();
@@ -35,6 +37,7 @@ public:
 	virtual const std::string getFileName() const;
 	virtual const std::string &getPath();
 	virtual const std::string getHost();
+	virtual int getPort();
 
 	virtual void setBody(RequestBody *body);
 	virtual RequestBody *getBody();

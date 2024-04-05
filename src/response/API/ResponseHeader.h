@@ -6,12 +6,13 @@
 class ResponseHeader
 {
 private:
-public:
+	public:
 	ResponseHeader();
 	virtual ~ResponseHeader();
 
 	virtual void addField(std::string headerName, std::string headerValue) = 0;
-	virtual std::list<std::string> *getFields() = 0;
+	virtual void addNoReplaceField(std::string headerName, std::string headerValue) = 0;
+	virtual std::list<std::string>* getFields() = 0;
 	virtual std::string getStatusLine() = 0;
 	virtual void setStatusLine(std::string statusLine) = 0;
 	virtual Cookie getCookie(const std::string &cookieName) = 0;

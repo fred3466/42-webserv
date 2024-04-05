@@ -32,9 +32,8 @@ void HttpServer::init(Config *c)
 void HttpServer::instantiateProcessLocator()
 {
 	StringUtil su = StringUtil();
-	std::string port = config->getParamStr("port", "");
-	if (port != "" && port != "80")
-		port = ":" + port;
+	std::string port = config->getParamStr("port", "80");
+	port = ":" + port;
 	std::string host = config->getParamStr("server_name", "") + port;
 
 	//	TODO new
@@ -330,8 +329,11 @@ void HttpServer::addUltimateHeaders(Response *resp)
 			contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
-	if (transferEncoding == "" && contentLengthHeader == -1)
-		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+	if (resp->isCgi())
+		header->addField("Transfer-Encoding", "chunked");
+	else // TODO fred : vraiment ?
+		if (transferEncoding == "" && contentLengthHeader == -1)
+			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)

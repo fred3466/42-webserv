@@ -6,11 +6,19 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 #include "../../request/API/Request.h"
 #include "../../response/API/Response.h"
 #include "../../Harl.h"
 #include "../../util/StringUtil.h"
+
+// Structure avec des tubes full-duplex
+typedef struct fdpipe
+{
+	int fd[2];
+	int fds[2];
+} fdpipe;
 
 class CGIHandler
 {
@@ -19,21 +27,15 @@ private:
 	std::string responseBody;
 	std::map<std::string, std::string> responseHeaders;
 
-	// Parses the CGI script output
-	void parseOutput(const std::string &output);
 	void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response);
 
-	std::string captureScriptOutput(int fileDescriptor);
+	void feedEnv(char **envp, std::map<std::string, std::string> envMap);
+	void _parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid);
+	void _childProcess(fdpipe *pipes, std::map<std::string, std::string> envMap, std::string interpreterPath, std::string &scriptPath, Request *request);
 
 public:
 	CGIHandler();
 	virtual ~CGIHandler();
-
-	// Executes the CGI script and returns the result
-	std::string executeCGI(const std::string &scriptPath, const std::map<std::string, std::string> &envVariables);
-	void logError(const std::string &message);
-	void logSuccess(const std::string &message);
-	//    std::string executeCGIScript(const std::string &scriptPath);
 	std::string executeCGIScript(std::string interpreterPath, std::string &scriptPath,
 								 Request *request, Response *response);
 };

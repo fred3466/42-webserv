@@ -39,8 +39,8 @@ Response* FiltreResponseMimeType::process(Request *request, Response *response,
 	// Add MIME type to the response header
 	if (header)
 	{
-		header->addField("Content-Type", mimeType + ";");
-		header->addField("X-FiltreResponseMimeType-Content-Type", mimeType + ";");
+		header->addNoReplaceField("Content-Type", mimeType + ";");
+//		header->addField("X-FiltreResponseMimeType-Content-Type", mimeType + ";");
 	}
 
 	return response;

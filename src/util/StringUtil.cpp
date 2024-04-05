@@ -237,3 +237,13 @@ std::string StringUtil::formatDate(time_t mtime, std::string strFormat)
 	std::string ret = std::string(buf);
 	return ret;
 }
+
+std::string StringUtil::toHexa(int i)
+{
+	std::string ret = "";
+	std::stringstream stream;
+	stream << std::hex << i;
+	stream >> ret;
+
+	return ret;
+}
