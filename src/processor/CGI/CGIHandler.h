@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include <map>
 #include <stdlib.h>
@@ -34,7 +35,7 @@ public:
 	void logSuccess(const std::string &message);
 	//    std::string executeCGIScript(const std::string &scriptPath);
 	std::string executeCGIScript(std::string interpreterPath, std::string &scriptPath,
-			Request *request, Response *response);
+								 Request *request, Response *response);
 };
 
 // export REQUEST_METHOD=GET

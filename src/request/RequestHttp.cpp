@@ -10,7 +10,7 @@ RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL
 	this->body = body;
 }
 
-RequestHeader* RequestHttp::getHeader() const
+RequestHeader *RequestHttp::getHeader() const
 {
 	return header;
 }
@@ -30,12 +30,12 @@ const std::string RequestHttp::getHost()
 	return getHeaderFieldValue("Host");
 }
 
-const std::string& RequestHttp::getPath()
+const std::string &RequestHttp::getPath()
 {
 	return header->getPath();
 }
 
-const std::string& RequestHttp::getQueryString() const
+const std::string &RequestHttp::getQueryString() const
 {
 	return header->getQueryString();
 }
@@ -51,22 +51,22 @@ void RequestHttp::addField(std::string rawField) const
 	getHeader()->addField(rawField);
 }
 
-const std::list<std::string>& RequestHttp::getFields() const
+const std::list<std::string> &RequestHttp::getFields() const
 {
 	return header->getFields();
 }
 
-const Uri& RequestHttp::getUri() const
+const Uri &RequestHttp::getUri() const
 {
 	return header->getUri();
 }
 
-const std::string& RequestHttp::getMethod() const
+const std::string &RequestHttp::getMethod() const
 {
 	return header->getMethod();
 }
 
-int* RequestHttp::getFdClient() const
+int *RequestHttp::getFdClient() const
 {
 	return fdClient;
 }
@@ -80,12 +80,12 @@ void RequestHttp::setBody(RequestBody *body)
 	this->body = body;
 }
 
-RequestBody* RequestHttp::getBody()
+RequestBody *RequestHttp::getBody()
 {
 	return body;
 }
 
-bool RequestHttp::isConnectionKeepAlive() throw (char*)
+bool RequestHttp::isConnectionKeepAlive() throw(char *)
 {
 	bool ret = false;
 	StringUtil su = StringUtil();
@@ -93,7 +93,8 @@ bool RequestHttp::isConnectionKeepAlive() throw (char*)
 	if (header->getFields().empty())
 	{
 		throw "IllegalStateException : Request::getHeader().getFields() est vide !";
-	} else
+	}
+	else
 	{
 		std::string connectionVal = header->getFieldValue("Connection");
 		ret = su.isStrictlyEqual(connectionVal, "keep-alive");

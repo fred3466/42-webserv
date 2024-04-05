@@ -34,10 +34,11 @@
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
-//#include "response/API/ResponseHeader.h"
+#include "error/HttpErrorFactory.h"
+// #include "response/API/ResponseHeader.h"
 
-//class ResponseHeader;
-class HttpServer: public ConnectorListener
+// class ResponseHeader;
+class HttpServer : public ConnectorListener
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -47,21 +48,24 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
-	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-			Response *resp);
-	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+								Response *resp);
+	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
 	void addUltimateHeaders(Response *resp);
 	bool _checkAccess(Request *request);
-	public:
+
+public:
 	HttpServer();
 	~HttpServer();
 
 	virtual void init(Config *conf);
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
+
+	bool checkRequestBodySize(Request *request, Response *&response);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
@@ -75,3 +79,7 @@ private:
 	//	std::string generateHttpResponse(const std::string &cgiOutput);
 	//	int getClientFd(int clientId);
 };
+
+// yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s1.org:8081/cgi-bin_fred/anastasia.php
+
+// curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit" http://s1.org:8081/cgi-bin_fred/anastasia.php

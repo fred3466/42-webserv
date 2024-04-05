@@ -9,18 +9,18 @@ FiltreError::~FiltreError()
 {
 }
 
-Response* FiltreError::process(Request *request, Response *response,
-		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response *FiltreError::process(Request *request, Response *response,
+							   ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	(void) request;
-	(void) processorAndLocationToProcessor;
+	(void)request;
+	(void)processorAndLocationToProcessor;
 
 	int errorCode = response->getErrorCodeTmp();
 
 	if (errorCode != 200)
 	{
 		HttpError *error = response->getHttpError();
-		HttReturnCodeHelper returnCodeHelper;
+		HttpReturnCodeHelper returnCodeHelper;
 
 		std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
 
@@ -66,7 +66,7 @@ ProcessorTypeEnum FiltreError::getType()
 	return type;
 }
 
-Response* FiltreError::generateErrorResponse(int errorCode, const std::string &errorMessage)
+Response *FiltreError::generateErrorResponse(int errorCode, const std::string &errorMessage)
 {
 	std::string errorPageContent = loadErrorPageTemplate();
 	replacePlaceholders(errorPageContent, errorCode, errorMessage);

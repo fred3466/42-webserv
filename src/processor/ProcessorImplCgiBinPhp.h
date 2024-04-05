@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <sstream>
 #include "../Harl.h"
 #include "../response/API/ResponseHeader.h"
 #include "../response/factory/ResponseHeaderFactory.h"
@@ -14,7 +15,7 @@
 #include "../location/ProcessorAndLocationToProcessor.h"
 #include "../error/HttpErrorFactory.h"
 // #include "../error/HttpError.h"
-// #include "../error/HttpReturnCodeHelper.h"
+#include "../error/HttpReturnCodeHelper.h"
 
 // class ProcessorAndLocationToProcessor;
 class LocationToProcessor;

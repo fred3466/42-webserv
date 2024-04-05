@@ -91,16 +91,33 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 																		   //	The IP address from which the user is viewing the current page.
 	(*envMap)["REMOTE_ADDR"] = "";										   // TODO Fred
 	//	The port being used on the user's machine to communicate with the web server.
-	(*envMap)["REMOTE_PORT"] = ""; // TODO a voir get port in request, use method tokenize
+	(*envMap)["REMOTE_PORT"] = ""; // TODO Fred
 	//	The authenticated user.
-	(*envMap)["REMOTE_USER"] = ""; // TODO a voir
+	(*envMap)["REMOTE_USER"] = ""; // TODO Fred
+
 	//	The IP address of the server under which the current script is executing.
 	(*envMap)["SERVER_ADDR"] = ""; // TODO a voir
+
 	//	The port on the server machine being used by the web server for communication. For default setups, this will be '80'; using SSL, for instance, will change this to whatever your defined secure HTTP port is.
-	(*envMap)["PATH_INFO"] = ""; // TODO a voir
+	// (*envMap)["PATH_INFO"] = ""; // TODO a voir
+
+	std::string scriptName = "/cgi-bin/anastasia.php";
+	std::string pathInfo = "";
+	std::string fullUri = request->getUri().getUri();
+
+	size_t scriptNamePos = fullUri.find(scriptName);
+	if (scriptNamePos != std::string::npos)
+	{
+		pathInfo = fullUri.substr(scriptNamePos + scriptName.length());
+		if (!pathInfo.empty() && pathInfo[0] != '/')
+		{
+			pathInfo = "/" + pathInfo;
+		}
+	}
+	(*envMap)["SCRIPT_NAME"] = scriptName;
+	(*envMap)["PATH_INFO"] = pathInfo;
 
 	(*envMap)["SERVER_NAME"] = request->getHost();
-
 	std::string serverPort = "8081";
 	(*envMap)["SERVER_PORT"] = serverPort;
 
