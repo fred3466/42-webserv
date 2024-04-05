@@ -30,6 +30,7 @@ private:
 	virtual const std::string getFileName() const =0;
 	virtual const std::string& getPath() =0;
 	virtual const std::string getHost() =0;
+	virtual int getPort()=0;
 
 	virtual bool isConnectionKeepAlive() throw (char*)=0;
 	virtual void setBody(RequestBody *body)=0;

@@ -11,6 +11,7 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 	char key[2048], val[2048], line[2048];
 	bool firstLine = true;
 	bool bBodyMode = false;
+	StringUtil su = StringUtil();
 
 	while (lines)
 	{
@@ -21,7 +22,6 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 
 		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
-			StringUtil su = StringUtil();
 			std::string method = su.getNthTokenIfExists(su.tokenize(lineStr, ' '), 0, "METHOD???");
 			this->setMethod(method);
 			lineSs.getline(key, 2048, ' ');
@@ -38,6 +38,7 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 				return;
 			} else
 			{
+				valStr = su.trim(valStr);
 				this->addField(valStr);
 			}
 		}

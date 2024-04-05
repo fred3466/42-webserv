@@ -179,114 +179,143 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 
 }
 
+void CGIHandler::feedEnv(char **envp, std::map<std::string, std::string> envMap)
+{
+	int i = 0;
+	for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
+	{
+		std::string key = ite->first;
+		std::string val = ite->second;
+		std::string toChar = key + "=" + val;
+//			TODO leak
+//			TODO BUG!!!!
+		int toCharSz = toChar.length();
+		envp[i] = new char[toCharSz + 1]();
+		memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
+		harl.trace("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
+		i++;
+	}
+	envp[i] = NULL;
+
+}
+
+void CGIHandler::_childProcess(fdpipe *pipes, std::map<std::string, std::string> envMap, std::string interpreterPath, std::string &scriptPath, Request *request)
+{
+	dup2(pipes->fd[1], STDOUT_FILENO); // !!!!
+	close(pipes->fd[0]); // !!!!
+
+	dup2(pipes->fds[0], STDIN_FILENO);
+	close(pipes->fds[1]); // !!!!
+
+//		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
+	(envMap)["SCRIPT_FILENAME"] = request->getFileName();
+
+//		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
+	(envMap)["SCRIPT_NAME"] = scriptPath;
+
+	char **envp = new char*[envMap.size()]; //need to be delete() after it is used, or else it will cause memory leak
+	feedEnv(envp, envMap);
+
+	const char *argv[4];
+	int i = 0;
+	argv[i++] = interpreterPath.c_str();
+	argv[i++] = "-f";
+	std::string stp = scriptPath;
+//		std::string stp = "\"" + scriptPath + "\"";
+	argv[i++] = stp.c_str();
+	argv[i++] = NULL;
+
+//	dup2(pipes->fils[1], 1);
+//	close(pipes->fils[1]);
+
+	const char *execPath = interpreterPath.c_str();
+	execve(execPath, const_cast<char* const*>(argv), const_cast<char* const*>(envp));
+	exit(EXIT_FAILURE); // execl only returns on error
+}
+
 std::string
 CGIHandler::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request,
 		Response *response)
 {
 // Setup environment variables
+	std::string output;
 	std::map<std::string, std::string> envMap = std::map<std::string, std::string>();
 	setupEnvironmentVariables(&envMap, request, response);
 
 	std::string cmdLine = "-f " + scriptPath;
 	harl.debug("CGIHandler::executeCGIScript [%s %s] ???", interpreterPath.c_str(), cmdLine.c_str());
 
-	int pipefd[2];
-	pipe(pipefd); // Create a pipe
+	fdpipe pipes;
+	pipe(pipes.fd);
+	pipe(pipes.fds);
 
 	pid_t pid = fork();
+
 	if (pid == 0)
 	{
 		// Child process
-//		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
-//		(envMap)["SCRIPT_FILENAME_XXXXXXXXXXXXXX"] = request->getFileName();
-//		The absolute pathname of the currently executing script.
-		(envMap)["SCRIPT_FILENAME"] = request->getFileName();
+//		close(pipes.fils[0]);
 
-//		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
-		(envMap)["SCRIPT_NAME"] = scriptPath;
-
-		char **envp = new char*[envMap.size()]; //need to be delete() after it is used, or else it will cause memory leak
-		int i = 0;
-		for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
-		{
-			std::string key = ite->first;
-			std::string val = ite->second;
-			std::string toChar = key + "=" + val;
-//			TODO leak
-//			TODO BUG!!!!
-			int toCharSz = toChar.length();
-			envp[i] = new char[toCharSz + 1]();
-			memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
-			harl.trace("CGIHandler::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
-			i++;
-		}
-//		std::string toChar = "toto=titi";
-//		//			TODO leak
-//		envp[i] = new char[toChar.length()];
-//		memcpy((char*) envp[i], toChar.c_str(), toChar.length());
-//		i++;
-		envp[i] = NULL;
-
-//		close(pipefd[0]); // Close unused read end
-		dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to pipe
-//	execl(interpreterPath.c_str(), cmdLine.c_str(), (char*) NULL);
-
-		const char *argv[4];
-		i = 0;
-		argv[i++] = interpreterPath.c_str();
-		argv[i++] = "-f";
-		std::string stp = scriptPath;
-//		std::string stp = "\"" + scriptPath + "\"";
-		argv[i++] = stp.c_str();
-		argv[i++] = NULL;
-
-		const char *execPath = interpreterPath.c_str();
-
-		execve(execPath, const_cast<char* const*>(argv), const_cast<char* const*>(envp));
-//		execv(execPath, const_cast<char* const*>(argv));
-		exit(EXIT_FAILURE); // execl only returns on error
+		_childProcess(&pipes, envMap, interpreterPath, scriptPath, request);
 	}
 	else
 	{
 		// Parent process
-//		close(pipefd[1]); // Close unused write end
+		_parentProcess(&output, &pipes, request, pid);
 
-		RequestBody *reqBody = request->getBody();
-		std::string *reqBodyContentPtr = reqBody->getContent();
-		std::string reqBodyContent = *reqBodyContentPtr;
-
-		if (reqBodyContent != "")
-		{
-//			char *cstr = (char*) (reqBodyContent.c_str());
-//			int length = (int) reqBodyContent.length();
-
-//		//	send(pipefd[1], cstr, length, 0);
-
-//			int written =
-//			write(pipefd[1], cstr, length);
-//			harl.debug("%d sent %d bytes through the wire", pipefd[1], written);
-
-		}
-		close(pipefd[1]); // Close  write end
-
-		int bufferReadSize = 1024;
-		char *buffer = new char[bufferReadSize]();
-		std::string output;
-		ssize_t count;
-		while ((count = read(pipefd[0], buffer, bufferReadSize)) > 0)
-		{
-			buffer[count] = '\0';
-			output += buffer;
-		}
-		close(pipefd[0]); // Close read end
-
-		// Wait for child process to terminate
-		int status;
-		waitpid(pid, &status, 0);
-
-		// Reset environment variables if needed here
-		harl.debug("CGIHandler::executeCGIScript: output :\n%s", output.c_str());
+//		harl.debug("CGIHandler::executeCGIScript: output :\n%s", output.c_str());
 		return output;
 	}
+//	int status;
+//	waitpid(pid, &status, 0);
+
+//	int status;
+//	wait(&status);
+
+	return output;
+}
+
+void CGIHandler::_parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid)
+{
+//	dup2(1, pipes->fd[1]);
+//	dup2(0, pipes->fds[0]);
+
+	close(pipes->fd[1]); // !!!!
+	close(pipes->fds[0]);
+
+	RequestBody *reqBody = request->getBody();
+	std::string *reqBodyContentPtr = reqBody->getContent();
+	std::string reqBodyContent = *reqBodyContentPtr;
+
+	if (reqBodyContent != "")
+	{
+		char *cstr = (char*) (reqBodyContent.c_str());
+		int length = (int) reqBodyContent.length();
+
+//		send(pipefd[1], cstr, length, 0);
+
+		int written = write(pipes->fds[1], cstr, length);
+		(void) written;
+//		close(pipefd_pere_fils[1]);
+//			harl.debug("CGIHandler::executeCGIScript: %d sent %d bytes through the wire", pipefd_pere_fils[1], written);
+//		sleep(1);
+	}
+	close(pipes->fds[1]);
+
+//	sleep(10);
+	int bufferReadSize = 1024;
+	char *buffer = new char[bufferReadSize]();
+
+	ssize_t count;
+	while ((count = read(pipes->fd[0], buffer, bufferReadSize)) > 0)
+	{
+		buffer[count] = '\0';
+		*output += buffer;
+	}
+	close(pipes->fd[0]); // !!!!
+	int status; // !!!!
+	waitpid(pid, &status, 0); // !!!!
+
+//	sleep(1);
 }
 

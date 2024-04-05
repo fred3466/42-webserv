@@ -55,8 +55,10 @@ std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProc
 	StringUtil su = StringUtil();
 	std::string pathReq = request->getPath();
 	std::string extReq = su.strUpperCase(request->getFileExtension());
-//	std::string hostReq = request->getHost();
-	std::string hostReq = request->getHeaderFieldValue("Host");
+	std::string hostReq = request->getHost();
+	int portReq = request->getPort();
+	hostReq = hostReq + ":" + su.strFromInt(portReq);
+//	std::string hostReq = request->getHeaderFieldValue("Host");
 //TODO fuite mémoire : new
 	std::vector<ProcessorAndLocationToProcessor*>
 	*ret = new std::vector<ProcessorAndLocationToProcessor*>();

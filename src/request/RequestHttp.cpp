@@ -6,8 +6,15 @@ RequestHttp::~RequestHttp()
 
 RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL)
 {
+	StringUtil su = StringUtil();
 	header = head;
 	this->body = body;
+
+	std::string hostPort = getHeaderFieldValue("Host");
+	std::vector<std::string> list = su.tokenize(hostPort, ':');
+	host = su.getNthTokenIfExists(list, 0, "");
+	port = su.intFromStr(su.getNthTokenIfExists(list, 1, "80"));
+
 }
 
 RequestHeader* RequestHttp::getHeader() const
@@ -27,7 +34,8 @@ const std::string RequestHttp::getFileName() const
 
 const std::string RequestHttp::getHost()
 {
-	return getHeaderFieldValue("Host");
+//	return getHeaderFieldValue("Host");
+	return host;
 }
 
 const std::string& RequestHttp::getPath()
@@ -99,4 +107,10 @@ bool RequestHttp::isConnectionKeepAlive() throw (char*)
 		ret = su.isStrictlyEqual(connectionVal, "keep-alive");
 	}
 	return ret;
+}
+
+int RequestHttp::getPort()
+{
+	return port;
+
 }
