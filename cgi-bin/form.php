@@ -5,6 +5,11 @@
 <title>Insert title here</title>
 </head>
 <body>
+<?php 
+$input_data = file_get_contents("php://stdin");
+echo("input_data=<hr>$input_data<hr>");
+
+?>
 HTTP_RAW_POST_DATA : <?php var_dump($HTTP_RAW_POST_DATA); ?>
 <br>
 Bonjour, <?php echo htmlspecialchars($_POST['nom']); ?>.

@@ -1,8 +1,8 @@
 #include "HttpReturnCodeHelper.h"
 
-HttReturnCodeHelper::HttReturnCodeHelper() {}
+HttpReturnCodeHelper::HttpReturnCodeHelper() {}
 
-std::string HttReturnCodeHelper::getStatusLine(int httpReturnCode)
+std::string HttpReturnCodeHelper::getStatusLine(int httpReturnCode)
 {
     ResponseTools responseTools;
     std::string reasonPhrase = responseTools.buildStatusLineForCode(httpReturnCode);
@@ -13,7 +13,7 @@ std::string HttReturnCodeHelper::getStatusLine(int httpReturnCode)
     return statusLine;
 }
 
-std::string HttReturnCodeHelper::loadErrorPageTemplate()
+std::string HttpReturnCodeHelper::loadErrorPageTemplate()
 {
     std::ifstream file("htdocs/error_404.html");
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());

@@ -32,7 +32,9 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	path = request->getUri().getUri();
 
 	//	PHP
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
+//	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
+//	header->addField("Access-Control-Allow-Origin", "*");
+	header->addField("Server", "nginx/1.22.1");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
 	header->addField("Date", date);
 	//	Voir filtre MimeType
@@ -68,15 +70,16 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 
 	//	html jpg
 	//	TODO à implémenter ! fred => voir HttpServer
-	int length = response->getBodyLength();
-	std::string lString = stringUtil.strFromInt(length);
-	header->addField("Content-Length", lString);
+//	int length = response->getBodyLength();
+//	std::string lString = stringUtil.strFromInt(length);
+//	header->addField("Content-Length", lString);
+
 	//	TODO la date du fichier si statique , idem si html statique, absent si dynamique (php)
 	header->addField("Last-Modified", "");
 	//	TODO si implémenté, devrait être dans chaque implémentation de Processor (selon que c'est une ressource statique ou pas)
 	header->addField("ETag", ""); // 65f5bc3b-17e9
 	//	TODO présent partout !
-	header->addField("Accept-Ranges", "bytes");
+//	header->addField("Accept-Ranges", "bytes");
 	//	header->addField("", "");
 	//	header->addField("", "");
 	//	header->addField("", "");

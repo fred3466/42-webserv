@@ -32,4 +32,5 @@ public:
 	std::string strFromInt(int i);
 	int intFromStr(std::string s);
 	std::string formatDate(time_t mtime, std::string strFormat);
+	std::string toHexa(int i);
 };

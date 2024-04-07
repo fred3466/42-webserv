@@ -49,6 +49,20 @@ void ResponseHttpHeader::addField(std::string headerName, std::string headerValu
 	fields[headerName] = headerValue;
 }
 
+void ResponseHttpHeader::addNoReplaceField(std::string headerName, std::string headerValue)
+{
+	if (headerValue == "" || headerName == "")
+		return;
+
+	try
+	{
+		fields.at(headerName);
+	} catch (const std::out_of_range &oor)
+	{
+		fields[headerName] = headerValue;
+	}
+}
+
 std::list<std::string>* ResponseHttpHeader::getFields()
 {
 //	TODO new par ici

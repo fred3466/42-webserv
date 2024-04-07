@@ -2,12 +2,13 @@
 #include <string>
 #include <list>
 #include <map>
+#include <stdexcept>
 #include "API/ResponseHeader.h"
 #include "../cookie/Cookie.h"
 #include "../cookie/CookieHelper.h"
 #include "../util/StringUtil.h"
 
-class ResponseHttpHeader : public ResponseHeader
+class ResponseHttpHeader: public ResponseHeader
 {
 private:
 	std::string statusLine;
@@ -22,7 +23,7 @@ public:
 	virtual ~ResponseHttpHeader();
 
 	virtual void addField(std::string headerName, std::string headerValue);
-	virtual std::list<std::string> *getFields();
+	virtual std::list<std::string>* getFields();
 	virtual std::string getStatusLine();
 	virtual void setStatusLine(std::string statusLine);
 	virtual Cookie getCookie(const std::string &cookieName);
@@ -32,4 +33,5 @@ public:
 	int getFieldAsInt(std::string param, int intDefault);
 	std::string getFieldAsStr(std::string param, std::string stringDefault);
 	virtual void setErrorCodeTmp(int errorCode);
+	virtual void addNoReplaceField(std::string headerName, std::string headerValue);
 };
