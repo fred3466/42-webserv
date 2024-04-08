@@ -17,31 +17,34 @@ Response *FiltreError::process(Request *request, Response *response,
 
 	int errorCode = response->getErrorCodeTmp();
 
-	if (errorCode != 200)
-	{
-		HttpError *error = response->getHttpError();
-		HttpReturnCodeHelper returnCodeHelper;
+	HttpError *error = HttpErrorFactory().build(errorCode);
+	response->setHttpError(error);
 
-		std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
+	// if (errorCode != 200)
+	// {
+	// 	HttpError *error = response->getHttpError();
+	// 	HttpReturnCodeHelper returnCodeHelper;
 
-		std::string errorPageContent = returnCodeHelper.loadErrorPageTemplate();
-		replacePlaceholders(errorPageContent, errorCode, error->getDescription());
+	// 	std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
 
-		response->setStatusLine(statusLine);
+	// 	std::string errorPageContent = returnCodeHelper.loadErrorPageTemplate();
+	// 	replacePlaceholders(errorPageContent, errorCode, error->getDescription());
 
-		char *bodyBinary = new char[errorPageContent.length() + 1];
-		std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
-		bodyBinary[errorPageContent.length()] = '\0';
+	// 	response->setStatusLine(statusLine);
 
-		response->setBodyBin(bodyBinary);
-		response->setBodyLength(errorPageContent.length());
+	// 	char *bodyBinary = new char[errorPageContent.length() + 1];
+	// 	std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
+	// 	bodyBinary[errorPageContent.length()] = '\0';
 
-		delete error;
-	}
-	else
-	{
-		// Case where there is no error
-	}
+	// 	response->setBodyBin(bodyBinary);
+	// 	response->setBodyLength(errorPageContent.length());
+
+	// 	delete error;
+	// }
+	// else
+	// {
+	// 	// Case where there is no error
+	// }
 
 	return response;
 }
