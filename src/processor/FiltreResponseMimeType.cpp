@@ -114,6 +114,16 @@ ProcessorTypeEnum FiltreResponseMimeType::getType()
 {
 	return type;
 }
+
+bool FiltreResponseMimeType::isExclusif()
+{
+	return false;
+}
+
+bool FiltreResponseMimeType::isBypassingExclusif()
+{
+	return false;
+}
 // Response *FiltreResponseMimeType::process(Request *request, Response *response,
 //                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 // {

@@ -39,6 +39,8 @@ protected:
 	virtual void setConfig(Config *conf);
 	virtual std::string toString();
 	virtual ProcessorTypeEnum getType();
+	virtual bool isExclusif();
+	virtual bool isBypassingExclusif();
 	void addProperty(std::string name, std::string value);
 
 	std::string readRequest(int clientFd);

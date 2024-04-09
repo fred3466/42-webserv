@@ -95,3 +95,13 @@ void FiltreResponseCommon::addProperty(std::string name, std::string value)
 {
 	config->addParam(name, value);
 }
+
+bool FiltreResponseCommon::isExclusif()
+{
+	return false;
+}
+
+bool FiltreResponseCommon::isBypassingExclusif()
+{
+	return false;
+}

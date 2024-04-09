@@ -170,3 +170,13 @@ ProcessorTypeEnum ProcessorImplDirectFs::getType()
 {
 	return type;
 }
+
+bool ProcessorImplDirectFs::isExclusif()
+{
+	return false;
+}
+
+bool ProcessorImplDirectFs::isBypassingExclusif()
+{
+	return false;
+}

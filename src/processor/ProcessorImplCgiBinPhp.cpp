@@ -112,3 +112,13 @@ ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()
 {
 	return type;
 }
+
+bool ProcessorImplCgiBinPhp::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinPhp::isBypassingExclusif()
+{
+	return false;
+}

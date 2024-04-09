@@ -120,3 +120,14 @@ ProcessorTypeEnum ProcessorImplCgiBinPerl::getType()
 {
 	return type;
 }
+
+bool ProcessorImplCgiBinPerl::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinPerl::isBypassingExclusif()
+{
+	return false;
+}
+

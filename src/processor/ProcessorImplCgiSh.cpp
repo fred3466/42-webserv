@@ -103,3 +103,8 @@ ProcessorTypeEnum ProcessorImplCgiSh::getType()
 {
 	return type;
 }
+
+bool ProcessorImplCgiSh::isBypassingExclusif()
+{
+	return false;
+}

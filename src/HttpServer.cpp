@@ -219,6 +219,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		Response *resp)
 {
 	bool contentDone = false;
+	bool oneIsExclusif = false;
 	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
 			ite != processorList->end();
 			ite++)
@@ -226,19 +227,32 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
-		if (contentDone && processor->getType() == CONTENT_MODIFIER)
+		bool bBypassingExclusif = processor->isBypassingExclusif();
+
+		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
-			harl.debug("HttpServer::runProcessorChain : contentDone==true, skipping [%s]", processor->toString().c_str());
+			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d skipping [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
+					processor->toString().c_str());
 			continue;
 		}
 
 		//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
 		//		processor->setConfig(config);
 
-		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().getUri().c_str(),
-				processor->toString().c_str());
+		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
+				request->getUri().getUri().c_str(),
+				processor->toString().c_str(),
+				contentDone,
+				oneIsExclusif,
+				bBypassingExclusif
+				);
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
+		if (processor->isExclusif())
+		{
+			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF", processor->toString().c_str());
+			oneIsExclusif = true;
+		}
 
 		if (!contentDone && processor->getType() == CONTENT_MODIFIER)
 		{

@@ -112,3 +112,13 @@ ProcessorTypeEnum ProcessorImplCgiBinSh::getType()
 {
 	return type;
 }
+
+bool ProcessorImplCgiBinSh::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinSh::isBypassingExclusif()
+{
+	return false;
+}
