@@ -165,6 +165,7 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	}
 	if (!isSpace(cstrWithNoTab[s.length() - 1]))
 		ret += cstrWithNoTab[s.length() - 1];
+	delete[] cstrWithNoTab;
 	return ret;
 }
 

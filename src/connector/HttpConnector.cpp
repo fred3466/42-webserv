@@ -415,10 +415,13 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		int &close_conn)
 {
 	bool compress_array = 0;
+	int rcv_buffer_size_bytes = config->getParamInt("rcv_buffer_size_bytes", 5000000);
+	rcv_buffer_size_bytes *= sizeof(char);
 	/*******************************************************/
 	/* Receive all incoming data on this socket            */
 	/* before we loop back and call poll again.            */
 	/*******************************************************/
+	char *buffer = new char[rcv_buffer_size_bytes + 1];
 	do
 	{
 		if (curentPollFd->fd == -1)
@@ -430,11 +433,12 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		/* connection.                                       */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_onDataReceiving: recv");
-		int rcv_buffer_size_bytes = config->getParamInt("rcv_buffer_size_bytes", 5000);
-
-		char **buffer = new char*[rcv_buffer_size_bytes]();
-//		std::memset(*buffer, 0, rcv_buffer_size_bytes);
-		int rc = recv(curentPollFd->fd, *buffer, rcv_buffer_size_bytes, 0);
+//		char **bufferPtr = &buffer;
+		for (int i = 0; i < rcv_buffer_size_bytes; i++)
+			buffer[i] = 0;
+//		std::memset(buffer, 0, rcv_buffer_size_bytes);
+		ssize_t rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
+		buffer[rcv_buffer_size_bytes] = 0;
 
 		harl.trace2("---HttpConnector::_onDataReceiving: retour recv rc=%i", rc);
 		if (rc < 0)
@@ -474,8 +478,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			//				close_conn = 1;
 			//				break;
 			//			}
-			std::string cont = std::string(*buffer);
-			delete buffer[rcv_buffer_size_bytes];
+			std::string cont = std::string(buffer);
 			harl.trace(cont);
 			ConnectorEvent e(cont);
 			e.setFdClient(&curentPollFd->fd);
@@ -483,7 +486,9 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			//			close_conn = 1;
 			//			break;
 		}
+//		delete[] buffer;
 	} while (1);
+	delete[] buffer;
 
 	/*******************************************************/
 	/* If the close_conn flag was turned on, we need       */

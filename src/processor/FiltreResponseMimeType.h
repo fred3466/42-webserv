@@ -17,6 +17,7 @@ private:
 
 public:
 	FiltreResponseMimeType(ProcessorTypeEnum type);
+	virtual ~FiltreResponseMimeType();
 	//	FiltreResponseMimeType(MimeTypeHelper &mimeTypeHelper);
 	std::string getResponseMimeType(const std::string &filePath) const;
 

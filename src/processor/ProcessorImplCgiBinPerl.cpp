@@ -6,6 +6,8 @@ ProcessorImplCgiBinPerl::ProcessorImplCgiBinPerl(ProcessorTypeEnum type) : harl(
 }
 ProcessorImplCgiBinPerl::~ProcessorImplCgiBinPerl()
 {
+	harl.debug("ProcessorImplCgiBinPerl::~ProcessorImplCgiBinPerl: destruction de config");
+	delete config;
 }
 
 void ProcessorImplCgiBinPerl::setConfig(Config *conf)
@@ -48,6 +50,7 @@ Response* ProcessorImplCgiBinPerl::process(Request *request, Response *response,
 	std::string
 	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 	int bodyLen = cgiOutput.length();
+	delete cgiHandler;
 
 	bool bTransferEncoding = true; //"" != response->getHeader()->getFieldAsStr("Transfer-Encoding", "");
 	if (bTransferEncoding)
@@ -63,7 +66,7 @@ Response* ProcessorImplCgiBinPerl::process(Request *request, Response *response,
 //	bodyLen += bodyLenHexaStr.length();
 	response->setBodyLength(bodyLen);
 
-	char *bodybin = new char[cgiOutput.length()];
+	char *bodybin = new char[cgiOutput.length() + 1];
 	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
 	bodybin[cgiOutput.length()] = '\0';
 

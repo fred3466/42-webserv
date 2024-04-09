@@ -6,6 +6,11 @@ FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : type(ty
 	mimeTypeHelper = new MimeTypeHelper();
 }
 
+FiltreResponseMimeType::~FiltreResponseMimeType()
+{
+	delete mimeTypeHelper;
+}
+
 std::string FiltreResponseMimeType::getResponseMimeType(const std::string &filePath) const
 {
 	// Extract the file extension from the filePath

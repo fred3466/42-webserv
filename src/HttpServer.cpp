@@ -27,6 +27,8 @@ void HttpServer::init(Config *c)
 	connector->registerIt(this);
 
 	connector->doListen();
+
+	delete config;
 }
 
 void HttpServer::instantiateProcessLocator()
@@ -76,7 +78,8 @@ void HttpServer::instantiateProcessLocator()
 				processor->addProperty(nameProperty, valProperty);
 			}
 		}
-	}
+	} //for
+	delete locations;
 
 	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
 	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
@@ -188,6 +191,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 
 	resp = runProcessorChain(processorList, request, resp);
+	delete processorList;
 
 	if (!resp)
 	{
@@ -208,7 +212,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		connector->closeConnection(fdSocket);
 	}
 
-//	cleanUp(request, resp);
+	cleanUp(request, resp);
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
@@ -240,7 +244,6 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		{
 			contentDone = true;
 		}
-		//		delete processor;
 	}
 	return resp;
 }
@@ -279,9 +282,12 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 	int length = resp->getTotalLength();
 
 	if (request && fdSocket && cstr && length)
+	{
 		send(*fdSocket, cstr, length, 0);
+	}
 	harl.debug("%d sent %d bytes through the wire", *fdSocket, length);
 	harl.trace("%s", cstr);
+	delete[] cstr;
 	return length;
 }
 
@@ -301,8 +307,10 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	}
 
 	addUltimateHeaders(resp);
+	std::list<std::string> *fields = resp->getHeader()->getFields();
+	std::string fieldsString = stringUtil.fromListToString(fields) + "\r\n";
+	delete fields;
 
-	std::string fieldsString = stringUtil.fromListToString(resp->getHeader()->getFields()) + "\r\n";
 	std::string statusLine = resp->getHeader()->getStatusLine();
 	std::string body = "";
 	char *bodyBin = resp->getBodyBin();
@@ -354,11 +362,14 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 
 void HttpServer::cleanUp(Request *request, Response *resp)
 {
+	delete request->getBody();
+	delete request->getHeader();
 	delete request;
 	if (resp)
 	{
+		delete resp->getHttpError();
 		delete resp->getHeader();
-		delete resp->getBodyBin();
+		delete[] resp->getBodyBin();
 		delete resp;
 	}
 }

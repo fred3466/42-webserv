@@ -150,6 +150,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 					std::string real_base_path(path);
 					c->addParam("base_path", base_path);
 					c->addParam("real_base_path", real_base_path);
+					free(path);
 				}
 			}
 			//			server_name

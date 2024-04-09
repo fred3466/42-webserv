@@ -208,6 +208,7 @@ void CGIHandlerPerl::feedEnv(char **envp, std::map<std::string, std::string> env
 		int toCharSz = toChar.length();
 		envp[i] = new char[toCharSz + 1]();
 		memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
+		envp[i][toCharSz] = 0;
 		harl.trace("CGIHandlerPerl::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
 		i++;
 	}
@@ -293,7 +294,7 @@ CGIHandlerPerl::executeCGIScript(std::string interpreterPath, std::string &scrip
 
 	if (pid == 0)
 	{
-		char **envp = new char*[envMap.size()]; //need to be delete() after it is used, or else it will cause memory leak
+		char **envp = new char*[envMap.size() + 1]; //need to be delete() after it is used, or else it will cause memory leak
 		_childProcess(&pipes, envMap, interpreterPath, scriptPath, request, envp);
 //TODO truc à faire ici ?
 //		delete envp[envMap.size()];

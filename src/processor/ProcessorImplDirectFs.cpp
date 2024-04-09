@@ -26,6 +26,7 @@ void ProcessorImplDirectFs::setConfig(Config *conf)
 Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
+//	TODO a virer et faire un appel au constructeur par défaut
 	FileUtil *fu = FileUtilFactory().build();
 
 	//	std::string path = "C:\\Users\\Sauleyayan\\Desktop\\New folder";
