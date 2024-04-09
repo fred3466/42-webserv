@@ -1,19 +1,19 @@
-#include "ProcessorImplCgiBinPhp.h"
+#include "ProcessorImplCgiBinSh.h"
 
-ProcessorImplCgiBinPhp::ProcessorImplCgiBinPhp(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
+ProcessorImplCgiBinSh::ProcessorImplCgiBinSh(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
-ProcessorImplCgiBinPhp::~ProcessorImplCgiBinPhp()
+ProcessorImplCgiBinSh::~ProcessorImplCgiBinSh()
 {
 }
 
-void ProcessorImplCgiBinPhp::setConfig(Config *conf)
+void ProcessorImplCgiBinSh::setConfig(Config *conf)
 {
 	config = conf;
 }
 
-Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
+Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	//	TODO fred post
@@ -25,7 +25,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	//	if (isCGIRequest(request->getUri()))
 	//	{
 	// It's a CGI request
-	CGIHandler *cgiHandler = CGIHandlerFactory().build("PHP_CGI", config);
+	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
 
 	// Response *responseHttp;
 
@@ -44,7 +44,7 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
 	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + scriptPath);
 
-	std::string interpreterPath = config->getParamStr("php_exe", "");
+	std::string interpreterPath = config->getParamStr("sh_exe", "");
 	std::string
 	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 
@@ -88,27 +88,27 @@ Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	return response;
 }
 
-std::string ProcessorImplCgiBinPhp::getBasePath()
+std::string ProcessorImplCgiBinSh::getBasePath()
 {
 	return config->getParamStr("base_path", "cgi-bin/toto/");
 }
 
-void ProcessorImplCgiBinPhp::setBasePath(std::string basePath)
+void ProcessorImplCgiBinSh::setBasePath(std::string basePath)
 {
 	config->addParam("base_path", basePath);
 }
 
-void ProcessorImplCgiBinPhp::addProperty(std::string name, std::string value)
+void ProcessorImplCgiBinSh::addProperty(std::string name, std::string value)
 {
 	config->addParam(name, value);
 }
 
-std::string ProcessorImplCgiBinPhp::toString()
+std::string ProcessorImplCgiBinSh::toString()
 {
-	return "ProcessorImplCgiBinPhp";
+	return "ProcessorImplCgiBinSh";
 }
 
-ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()
+ProcessorTypeEnum ProcessorImplCgiBinSh::getType()
 {
 	return type;
 }

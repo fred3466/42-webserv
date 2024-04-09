@@ -139,7 +139,18 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 //			base_path
 			if (key == "base_path")
 			{
-				c->addParam("base_path", su.getNthTokenIfExists(toksVal, 0, ""));
+				std::string base_path = su.getNthTokenIfExists(toksVal, 0, "");
+				char *path = realpath(base_path.c_str(), NULL);
+				if (path == NULL)
+				{
+//					TODO traiter l'erreur de configuration et abandonner le chargement (erreur fatale)!
+				}
+				else
+				{
+					std::string real_base_path(path);
+					c->addParam("base_path", base_path);
+					c->addParam("real_base_path", real_base_path);
+				}
 			}
 			//			server_name
 			else if (key == "server_name")
@@ -153,7 +164,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			{
 				std::string ip = su.getNthTokenIfExists(toksVal, 0, "127.0.0.1");
 				c->addParam("listen", ip);
-				std::string port = su.getNthTokenIfExists(toksVal, 1, "8080");
+				std::string port = su.getNthTokenIfExists(toksVal, 1, "80");
 				c->addParam("port", port);
 			}
 

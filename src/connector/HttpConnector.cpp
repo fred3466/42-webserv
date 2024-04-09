@@ -370,7 +370,12 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* server.                                           */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_acceptIncomingCon: accept");
-		new_sd = accept(_soListen, NULL, NULL);
+//		sockaddr_in client_addr;
+//		socklen_t client_addr_len = sizeof(client_addr);
+//		new_sd = accept(_soListen, (struct sockaddr*) &client_addr, &client_addr_len);
+		new_sd = accept(_soListen, 0, 0);
+//		char str[INET_ADDRSTRLEN];
+//		inet_ntop( AF_INET, &ipAddr, str, INET_ADDRSTRLEN);
 		if (new_sd < 0)
 		{
 			if (errno != EWOULDBLOCK)
@@ -409,8 +414,6 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		int &close_conn)
 {
-	int rcv_buffer_size_bytes = config->getParamInt("rcv_buffer_size_bytes", 5000);
-	char *buffer = new char[rcv_buffer_size_bytes]();
 	bool compress_array = 0;
 	/*******************************************************/
 	/* Receive all incoming data on this socket            */
@@ -427,7 +430,12 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		/* connection.                                       */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_onDataReceiving: recv");
-		int rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
+		int rcv_buffer_size_bytes = config->getParamInt("rcv_buffer_size_bytes", 5000);
+
+		char **buffer = new char*[rcv_buffer_size_bytes]();
+//		std::memset(*buffer, 0, rcv_buffer_size_bytes);
+		int rc = recv(curentPollFd->fd, *buffer, rcv_buffer_size_bytes, 0);
+
 		harl.trace2("---HttpConnector::_onDataReceiving: retour recv rc=%i", rc);
 		if (rc < 0)
 		{
@@ -466,7 +474,8 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			//				close_conn = 1;
 			//				break;
 			//			}
-			std::string cont = std::string(buffer);
+			std::string cont = std::string(*buffer);
+			delete buffer[rcv_buffer_size_bytes];
 			harl.trace(cont);
 			ConnectorEvent e(cont);
 			e.setFdClient(&curentPollFd->fd);

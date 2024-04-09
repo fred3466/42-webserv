@@ -1,0 +1,86 @@
+[07-Apr-2024 17:09:28 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:09:28 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:09:28 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:09:28 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:13:35 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:13:35 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:13:35 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:13:35 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:13:46 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:13:46 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:13:46 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:13:46 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:29:19 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:29:19 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:29:19 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:29:19 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:41:32 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:41:32 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:41:32 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:41:32 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:48:40 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:48:40 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:48:40 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:48:40 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:51:40 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:51:40 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:51:40 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:51:40 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:51:54 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:51:54 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:51:54 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:51:54 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:52:08 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:52:08 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:52:08 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:52:08 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:52:16 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:52:16 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:52:16 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:52:16 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 17:55:10 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 17:55:10 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 17:55:10 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 17:55:10 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 18:23:38 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 18:23:38 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 18:23:38 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 18:23:38 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 18:34:03 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 18:34:03 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 18:34:03 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 18:34:03 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 18:34:07 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 18:34:07 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 18:34:07 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 18:34:07 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[07-Apr-2024 20:42:29 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[07-Apr-2024 20:42:29 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[07-Apr-2024 20:42:29 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[07-Apr-2024 20:42:29 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[08-Apr-2024 14:59:07 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[08-Apr-2024 15:02:21 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[08-Apr-2024 15:51:33 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[08-Apr-2024 15:51:33 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[08-Apr-2024 15:51:33 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[08-Apr-2024 15:51:33 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[08-Apr-2024 15:51:37 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[08-Apr-2024 15:51:37 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[08-Apr-2024 15:51:37 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[08-Apr-2024 15:51:37 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[08-Apr-2024 22:14:31 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[08-Apr-2024 22:14:40 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[08-Apr-2024 22:14:44 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[09-Apr-2024 10:22:13 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[09-Apr-2024 10:22:13 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[09-Apr-2024 10:22:13 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[09-Apr-2024 10:22:13 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[09-Apr-2024 10:23:09 UTC] PHP Warning:  Undefined array key "Path" in /home/fbourgue/0-wsp/webserv/cgi-bin/infos.php on line 21
+[09-Apr-2024 10:23:14 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[09-Apr-2024 10:23:14 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[09-Apr-2024 10:23:14 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[09-Apr-2024 10:23:14 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20
+[09-Apr-2024 10:23:19 UTC] PHP Warning:  Undefined variable $HTTP_RAW_POST_DATA in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 15
+[09-Apr-2024 10:23:19 UTC] PHP Warning:  Undefined array key "nom" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 17
+[09-Apr-2024 10:23:19 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 18
+[09-Apr-2024 10:23:19 UTC] PHP Warning:  Undefined array key "age" in /home/fbourgue/0-wsp/webserv/cgi-bin/form.php on line 20

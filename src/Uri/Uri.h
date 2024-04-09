@@ -11,12 +11,13 @@ private:
 	std::string _uri;
 	std::string _path;
 	std::string _query;
-public:
+	public:
 	Uri();
 	Uri(const std::string &uri);
 	~Uri();
 	const std::string& getUri() const;
 	const std::string& getPath() const;
+	const std::string getPathInfo() const;
 	const std::string& getQuery() const;
 	const std::string getFileExtension() const;
 	const std::string getFileName() const;

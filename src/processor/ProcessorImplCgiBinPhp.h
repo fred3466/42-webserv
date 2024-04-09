@@ -11,6 +11,7 @@
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 #include "CGI/CGIHandler.h"
+#include "CGI/CGIHandlerFactory.h"
 // #include "../location/LocationToProcessor.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
 #include "../error/HttpErrorFactory.h"
@@ -20,7 +21,7 @@
 // class ProcessorAndLocationToProcessor;
 class LocationToProcessor;
 
-class ProcessorImplCgiBinPhp : public Processor
+class ProcessorImplCgiBinPhp: public Processor
 {
 private:
 	Harl harl;
@@ -31,11 +32,11 @@ private:
 	//	std::map<std::string, std::string> env;
 
 protected:
-public:
+	public:
 	ProcessorImplCgiBinPhp(ProcessorTypeEnum type);
 	~ProcessorImplCgiBinPhp();
-	virtual Response *process(Request *request, Response *response,
-							  ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
+	virtual Response* process(Request *request, Response *response,
+			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	virtual void setConfig(Config *conf);
 	virtual std::string toString();
 	virtual ProcessorTypeEnum getType();

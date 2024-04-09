@@ -10,6 +10,7 @@
 #include <cstring>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 
 class FileUtil
 {
@@ -23,4 +24,5 @@ public:
 	bool writeFile(std::string path, char *data, size_t dataSize);
 	std::string getLastModification(std::string fpath, std::string strFormat);
 	bool isDirectory(std::string path);
+	std::string realPathFile(std::string path);
 };

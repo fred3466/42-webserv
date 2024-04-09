@@ -28,6 +28,24 @@ std::string StringUtil::fromListToString(std::list<std::string> *l)
 	}
 	return ret;
 }
+std::string StringUtil::fromCArrayToString(const char *a[])
+{
+	std::string ret;
+	bool bIsFirst = true;
+	while (*a)
+	{
+		if (!bIsFirst)
+		{
+			ret += " ";
+		} else
+		{
+			bIsFirst = false;
+		}
+		ret += *a;
+		a++;
+	}
+	return ret;
+}
 
 //supprime les espaces en fin de chaine
 std::string StringUtil::rtrim(std::string &s)

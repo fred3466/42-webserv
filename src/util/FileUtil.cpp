@@ -118,3 +118,12 @@ bool FileUtil::isDirectory(std::string path)
 		return false;
 	return S_ISDIR(statbuf.st_mode);
 }
+
+std::string FileUtil::realPathFile(std::string relativePath)
+{
+	char *path = realpath(relativePath.c_str(), NULL);
+	if (path != NULL)
+		return std::string(path);
+	else
+		return "";
+}

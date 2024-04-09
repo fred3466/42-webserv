@@ -70,9 +70,9 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 
 	//	html jpg
 	//	TODO à implémenter ! fred => voir HttpServer
-//	int length = response->getBodyLength();
-//	std::string lString = stringUtil.strFromInt(length);
-//	header->addField("Content-Length", lString);
+	int length = response->getBodyLength();
+	std::string lString = stringUtil.strFromInt(length);
+	header->addField("Content-Length", lString);
 
 	//	TODO la date du fichier si statique , idem si html statique, absent si dynamique (php)
 	header->addField("Last-Modified", "");

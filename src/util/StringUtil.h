@@ -15,6 +15,7 @@ public:
 
 	std::string strUpperCase(std::string s);
 	std::string fromListToString(std::list<std::string> *l);
+	std::string fromCArrayToString(const char *a[]);
 	bool isSpace(char c);
 	bool isalnum(std::string s);
 	std::string normalizeSpaces(std::string s);
