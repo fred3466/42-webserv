@@ -26,11 +26,12 @@ public:
 	std::vector<std::string> tokenize(std::string s, char sep);
 	std::vector<std::string> tokenize(std::string s, char sep, int nbSeparatorsToProcessParam);
 	std::string getNthTokenIfExists(std::vector<std::string> v, int index,
-			std::string defaultValue);
+									std::string defaultValue);
 	std::string dedoublonne(std::string s, std::string cherche);
 	bool isStrictlyEqual(std::string s1, std::string s2);
 	std::string strFromInt(int i);
 	int intFromStr(std::string s);
 	std::string formatDate(time_t mtime, std::string strFormat);
 	std::string toHexa(int i);
+	std::string getAliasFromVal(const std::string &val);
 };
