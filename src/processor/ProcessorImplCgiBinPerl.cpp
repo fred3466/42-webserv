@@ -1,22 +1,24 @@
-#include "ProcessorImplCgiSh.h"
+#include "ProcessorImplCgiBinPerl.h"
 
-ProcessorImplCgiSh::ProcessorImplCgiSh(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
+ProcessorImplCgiBinPerl::ProcessorImplCgiBinPerl(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
-ProcessorImplCgiSh::~ProcessorImplCgiSh()
+ProcessorImplCgiBinPerl::~ProcessorImplCgiBinPerl()
 {
+	harl.debug("ProcessorImplCgiBinPerl::~ProcessorImplCgiBinPerl: destruction de config");
+	delete config;
 }
 
-void ProcessorImplCgiSh::setConfig(Config *conf)
+void ProcessorImplCgiBinPerl::setConfig(Config *conf)
 {
 	config = conf;
 }
 
-Response* ProcessorImplCgiSh::process(Request *request, Response *response,
+Response* ProcessorImplCgiBinPerl::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-//	TODO fred post
+	//	TODO fred post
 	response->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
@@ -25,7 +27,7 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	//	if (isCGIRequest(request->getUri()))
 	//	{
 	// It's a CGI request
-	CGIHandler cgiHandler;
+	CGIHandler *cgiHandler = CGIHandlerFactory().build("PERL_CGI", config);
 
 	// Response *responseHttp;
 
@@ -44,12 +46,27 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
 	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + scriptPath);
 
-	std::string interpreterPath = config->getParamStr("sh", "");
+	std::string interpreterPath = config->getParamStr("perl_exe", "");
 	std::string
-	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
+	int bodyLen = cgiOutput.length();
+	delete cgiHandler;
 
-	response->setBodyLength(cgiOutput.length());
-	char *bodybin = new char[cgiOutput.length()];
+	bool bTransferEncoding = true; //"" != response->getHeader()->getFieldAsStr("Transfer-Encoding", "");
+	if (bTransferEncoding)
+	{
+		std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
+		cgiOutput = bodyLenHexaStr + "\r\n" + cgiOutput + "\r\n0\r\n\r\n";
+	} else
+	{
+		cgiOutput = "\r\n" + cgiOutput + "\r\n\r\n";
+	}
+	bodyLen = cgiOutput.length();
+
+//	bodyLen += bodyLenHexaStr.length();
+	response->setBodyLength(bodyLen);
+
+	char *bodybin = new char[cgiOutput.length() + 1];
 	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
 	bodybin[cgiOutput.length()] = '\0';
 
@@ -79,32 +96,38 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	return response;
 }
 
-std::string ProcessorImplCgiSh::getBasePath()
+std::string ProcessorImplCgiBinPerl::getBasePath()
 {
-	return config->getParamStr("base_path", "cgi-bin/sh/");
+	return config->getParamStr("base_path", "cgi-bin/toto/");
 }
 
-void ProcessorImplCgiSh::setBasePath(std::string basePath)
+void ProcessorImplCgiBinPerl::setBasePath(std::string basePath)
 {
 	config->addParam("base_path", basePath);
 }
 
-void ProcessorImplCgiSh::addProperty(std::string name, std::string value)
+void ProcessorImplCgiBinPerl::addProperty(std::string name, std::string value)
 {
 	config->addParam(name, value);
 }
 
-std::string ProcessorImplCgiSh::toString()
+std::string ProcessorImplCgiBinPerl::toString()
 {
-	return "ProcessorImplCgiSh";
+	return "ProcessorImplCgiBinPerl";
 }
 
-ProcessorTypeEnum ProcessorImplCgiSh::getType()
+ProcessorTypeEnum ProcessorImplCgiBinPerl::getType()
 {
 	return type;
 }
 
-bool ProcessorImplCgiSh::isBypassingExclusif()
+bool ProcessorImplCgiBinPerl::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinPerl::isBypassingExclusif()
 {
 	return false;
 }
+

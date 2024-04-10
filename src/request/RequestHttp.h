@@ -18,6 +18,7 @@ private:
 	std::string host;
 	int port;
 	std::string remoteIpPort;
+	bool bConnectionKeepAlive;
 
 public:
 	RequestHttp();

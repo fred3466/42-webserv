@@ -21,7 +21,7 @@
 // class ProcessorAndLocationToProcessor;
 class LocationToProcessor;
 
-class ProcessorImplCgiBinPhp: public Processor
+class ProcessorImplCgiBinPerl: public Processor
 {
 private:
 	Harl harl;
@@ -33,8 +33,8 @@ private:
 
 protected:
 	public:
-	ProcessorImplCgiBinPhp(ProcessorTypeEnum type);
-	~ProcessorImplCgiBinPhp();
+	ProcessorImplCgiBinPerl(ProcessorTypeEnum type);
+	~ProcessorImplCgiBinPerl();
 	virtual Response* process(Request *request, Response *response,
 			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
 	virtual void setConfig(Config *conf);

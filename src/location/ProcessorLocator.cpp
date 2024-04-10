@@ -6,6 +6,18 @@ ProcessorLocator::ProcessorLocator() : harl(), locationToProcessorVector()
 
 ProcessorLocator::~ProcessorLocator()
 {
+	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
+			ite != locationToProcessorVector.end(); ite++)
+	{
+		LocationToProcessor *lp = *ite;
+		Processor *p = lp->getProcessor();
+		if (p)
+		{
+			delete p;
+			p = NULL;
+			delete lp;
+		}
+	}
 }
 
 std::vector<LocationToProcessor*> ProcessorLocator::getLocationToProcessorVector()
@@ -40,6 +52,7 @@ bool locationToProcessorComparator(LocationToProcessor *me, LocationToProcessor 
 	bool ret = scoreMe < scoreOther;
 	return ret;
 }
+
 void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor, std::string host)
 {
 //	TODO new ici
@@ -60,8 +73,7 @@ std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProc
 	hostReq = hostReq + ":" + su.strFromInt(portReq);
 //	std::string hostReq = request->getHeaderFieldValue("Host");
 //TODO fuite mémoire : new
-	std::vector<ProcessorAndLocationToProcessor*>
-	*ret = new std::vector<ProcessorAndLocationToProcessor*>();
+	std::vector<ProcessorAndLocationToProcessor*> *ret = new std::vector<ProcessorAndLocationToProcessor*>();
 	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
 			ite != locationToProcessorVector.end(); ite++)
 	{
@@ -96,8 +108,7 @@ std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProc
 					std::string msg = "ProcessorLocator::listOrderedProcessorForUrlAndExt MATCH : path [%s] ext [%s] -> ["
 							+ p->toString()
 							+ "]";
-					ProcessorAndLocationToProcessor *processorAndLocationToProcessor = new ProcessorAndLocationToProcessor(
-							p, lp);
+					ProcessorAndLocationToProcessor *processorAndLocationToProcessor = new ProcessorAndLocationToProcessor(p, lp);
 					harl.debug(msg, urlPathIteChar, extensionChar);
 					ret->push_back(processorAndLocationToProcessor);
 				}

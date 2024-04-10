@@ -17,6 +17,7 @@ private:
 
 public:
 	FiltreResponseMimeType(ProcessorTypeEnum type);
+	virtual ~FiltreResponseMimeType();
 	//	FiltreResponseMimeType(MimeTypeHelper &mimeTypeHelper);
 	std::string getResponseMimeType(const std::string &filePath) const;
 
@@ -26,6 +27,8 @@ public:
 	virtual std::string toString();
 	virtual void addProperty(std::string name, std::string value);
 	virtual ProcessorTypeEnum getType();
+	virtual bool isExclusif();
+	virtual bool isBypassingExclusif();
 
 	std::string getProperty(const std::string &name) const;
 	void reloadConfigurations();

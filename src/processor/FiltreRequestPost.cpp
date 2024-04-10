@@ -35,11 +35,11 @@ std::string FiltreRequestPost::toString()
  before use in OS system calls, or the request should be rejected with
  404 'Not Found'.
  */
-Response *FiltreRequestPost::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* FiltreRequestPost::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	(void)processorAndLocationToProcessor;
+	(void) processorAndLocationToProcessor;
 	RequestBody *body = request->getBody();
-	(void)body;
+	(void) body;
 	//	response->set
 	std::string CONTENT_TYPE = request->getHeaderFieldValue("Content-Type");
 	if (CONTENT_TYPE == "application/x-www-form-urlencoded" || CONTENT_TYPE == "multipart/form-data")
@@ -55,4 +55,14 @@ Response *FiltreRequestPost::process(Request *request, Response *response, Proce
 void FiltreRequestPost::addProperty(std::string name, std::string value)
 {
 	config->addParam(name, value);
+}
+
+bool FiltreRequestPost::isExclusif()
+{
+	return false;
+}
+
+bool FiltreRequestPost::isBypassingExclusif()
+{
+	return false;
 }

@@ -25,7 +25,7 @@ Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 	//	if (isCGIRequest(request->getUri()))
 	//	{
 	// It's a CGI request
-	CGIHandler cgiHandler;
+	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
 
 	// Response *responseHttp;
 
@@ -46,7 +46,7 @@ Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 
 	std::string interpreterPath = config->getParamStr("sh_exe", "");
 	std::string
-	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 
 	int bodyLen = cgiOutput.length();
 	std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
@@ -111,4 +111,14 @@ std::string ProcessorImplCgiBinSh::toString()
 ProcessorTypeEnum ProcessorImplCgiBinSh::getType()
 {
 	return type;
+}
+
+bool ProcessorImplCgiBinSh::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinSh::isBypassingExclusif()
+{
+	return false;
 }

@@ -4,7 +4,7 @@ RequestHttp::~RequestHttp()
 {
 }
 
-RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL)
+RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL), bConnectionKeepAlive(false)
 {
 	StringUtil su = StringUtil();
 	header = head;
@@ -14,6 +14,16 @@ RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL
 	std::vector<std::string> list = su.tokenize(hostPort, ':');
 	host = su.getNthTokenIfExists(list, 0, "");
 	port = su.intFromStr(su.getNthTokenIfExists(list, 1, "80"));
+
+	if (head->getFields().empty())
+	{
+		throw "IllegalStateException : Request::getHeader().getFields() est vide !";
+	}
+	else
+	{
+		std::string connectionVal = header->getFieldValue("Connection");
+		bConnectionKeepAlive = StringUtil().isStrictlyEqual(connectionVal, "keep-alive");
+	}
 
 }
 
@@ -95,19 +105,7 @@ RequestBody* RequestHttp::getBody()
 
 bool RequestHttp::isConnectionKeepAlive() throw (char*)
 {
-	bool ret = false;
-	StringUtil su = StringUtil();
-	RequestHeader *header = getHeader();
-	if (header->getFields().empty())
-	{
-		throw "IllegalStateException : Request::getHeader().getFields() est vide !";
-	}
-	else
-	{
-		std::string connectionVal = header->getFieldValue("Connection");
-		ret = su.isStrictlyEqual(connectionVal, "keep-alive");
-	}
-	return ret;
+	return bConnectionKeepAlive;
 }
 
 int RequestHttp::getPort()

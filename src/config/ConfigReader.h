@@ -6,6 +6,7 @@
 #include <sstream>
 #include <filesystem>
 #include <iostream>
+#include <stdlib.h>
 #include "Config.h"
 #include "../util/StringUtil.h"
 #include "ConfigValidator.h"
