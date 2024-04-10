@@ -27,6 +27,8 @@ void HttpServer::init(Config *c)
 	connector->registerIt(this);
 
 	connector->doListen();
+
+	delete config;
 }
 
 void HttpServer::instantiateProcessLocator()
@@ -76,11 +78,12 @@ void HttpServer::instantiateProcessLocator()
 				processor->addProperty(nameProperty, valProperty);
 			}
 		}
-	}
+	} //for
+	delete locations;
 
-	std::vector<LocationToProcessor *> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
-	for (std::vector<LocationToProcessor *>::iterator ite = locationToProcessorVector.begin();
-		 ite != locationToProcessorVector.end(); ite++)
+	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
+	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
+			ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
@@ -102,7 +105,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void)e;
+	(void) e;
 }
 
 bool HttpServer::_checkAccess(Request *request)
@@ -110,7 +113,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -131,7 +134,7 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	if (contentLength > maxBodySize)
 	{
 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-				   request->getUri().getUri().c_str(), contentLength, maxBodySize);
+				request->getUri().getUri().c_str(), contentLength, maxBodySize);
 
 		HttpError *error = HttpErrorFactory().build(413);
 		if (!response)
@@ -158,7 +161,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	//	req->dump();
 
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().getUri().c_str());
-	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
+//	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
 	if (!_checkAccess(request))
@@ -185,15 +188,17 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	resp->setHttpError(error);
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 
 	resp = runProcessorChain(processorList, request, resp);
+	delete processorList;
 
 	if (!resp)
 	{
 		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
 	}
 
+//	TODO Anastasia: ça devrait se faire seulement dans le filtre, et non pas en plusieurs endroits comme ici...
 	HttpError *he = resp->getHttpError();
 	resp->setStatusLine(he->getStatusLine());
 
@@ -210,104 +215,51 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(request, resp);
 }
 
-Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
-										Response *resp)
+Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+		Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
-		 ite != processorList->end();
-		 ite++)
+	bool oneIsExclusif = false;
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
+			ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
-		if (contentDone && processor->getType() == CONTENT_MODIFIER)
+		bool bBypassingExclusif = processor->isBypassingExclusif();
+
+		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
-			harl.debug("HttpServer::runProcessorChain : contentDone==true, skipping [%s]", processor->toString().c_str());
+			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d skipping [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
+					processor->toString().c_str());
 			continue;
 		}
 
 		//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
 		//		processor->setConfig(config);
 
-		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().getUri().c_str(),
-				   processor->toString().c_str());
+		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
+				request->getUri().getUri().c_str(),
+				processor->toString().c_str(),
+				contentDone,
+				oneIsExclusif,
+				bBypassingExclusif
+				);
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
+		if (processor->isExclusif())
+		{
+			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF", processor->toString().c_str());
+			oneIsExclusif = true;
+		}
 
 		if (!contentDone && processor->getType() == CONTENT_MODIFIER)
 		{
 			contentDone = true;
 		}
-		//		delete processor;
 	}
 	return resp;
-}
-
-char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
-{
-	StringUtil stringUtil;
-
-	//	std::ostringstream oss;
-	//	oss << resp->getBodyLength();
-	//	std::string sizeStr = oss.str();
-	//
-	//	resp->getHeader()->addField("Content-Length", sizeStr);
-
-	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
-	{
-		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
-	}
-
-	addUltimateHeaders(resp);
-
-	std::string fieldsString = stringUtil.fromListToString(resp->getHeader()->getFields()) + "\r\n";
-	std::string statusLine = resp->getHeader()->getStatusLine();
-	std::string body = "";
-	char *bodyBin = resp->getBodyBin();
-	if (bodyBin)
-		body = std::string(bodyBin);
-
-	// Send Response
-	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + body;
-
-	int statusLen = statusLine.length();
-	int headerLen = fieldsString.length();
-	int bodyLen = resp->getBodyLength();
-
-	int length = statusLen + headerLen + bodyLen;
-	resp->setTotalLength(length);
-
-	if (length <= 0)
-	{
-		delete request;
-		//		delete processor;
-		delete resp->getHeader();
-		delete resp->getBodyBin();
-		delete resp;
-		//		TODO gérer ce cas
-		harl.warning("Response de taille nulle ?");
-		return NULL;
-	}
-
-	char *cstr = new char[length + 0]();
-	char *cstrSave = cstr;
-	char **cstrPtr = &cstr;
-
-	std::memcpy(*cstrPtr, statusLine.c_str(), statusLen);
-	*cstrPtr += statusLen + 0;
-	std::memcpy(*(cstrPtr), fieldsString.c_str(), headerLen);
-	*cstrPtr += headerLen + 0;
-	std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
-
-	cstr = cstrSave;
-	if (length)
-	{
-		std::ofstream os("out.html", std::ios::binary | std::ios::out);
-		os.write(cstr, length);
-		os.close();
-	}
-	return cstr;
 }
 
 void HttpServer::addUltimateHeaders(Response *resp)
@@ -325,15 +277,17 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-			contentLengthHeader, contentLengthResponse);
+				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+				contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
+//	08/04 fred
 	if (resp->isCgi())
+//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 		header->addField("Transfer-Encoding", "chunked");
 	else // TODO fred : vraiment ?
-		if (transferEncoding == "" && contentLengthHeader == -1)
-			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+	if (transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
@@ -342,19 +296,94 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 	int length = resp->getTotalLength();
 
 	if (request && fdSocket && cstr && length)
+	{
 		send(*fdSocket, cstr, length, 0);
+	}
 	harl.debug("%d sent %d bytes through the wire", *fdSocket, length);
 	harl.trace("%s", cstr);
+	delete[] cstr;
 	return length;
+}
+
+char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+{
+	StringUtil stringUtil;
+
+//		std::ostringstream oss;
+//		oss << resp->getBodyLength();
+//		std::string sizeStr = oss.str();
+//
+//		resp->getHeader()->addField("Content-Length", sizeStr);
+
+	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
+	{
+		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
+	}
+
+	addUltimateHeaders(resp);
+	std::list<std::string> *fields = resp->getHeader()->getFields();
+	std::string fieldsString = stringUtil.fromListToString(fields) + "\r\n";
+	delete fields;
+
+	std::string statusLine = resp->getHeader()->getStatusLine();
+	std::string body = "";
+	char *bodyBin = resp->getBodyBin();
+	if (bodyBin)
+		body = std::string(bodyBin);
+
+	// Send Response
+	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + body;
+
+	int statusLen = statusLine.length();
+	int headerLen = fieldsString.length();
+	int bodyLen = resp->getBodyLength();
+
+	int length = statusLen + headerLen + bodyLen;
+	resp->setTotalLength(length);
+
+//	TODO fred: à mettre ailleurs
+//	if (length <= 0)
+//	{
+//		delete request;
+//		//		delete processor;
+//		delete resp->getHeader();
+//		delete resp->getBodyBin();
+//		delete resp;
+//		//		TODO gérer ce cas
+//		harl.warning("Response de taille nulle ?");
+//		return NULL;
+//	}
+
+	char *cstr = new char[length + 0]();
+	char *cstrSave = cstr;
+	char **cstrPtr = &cstr;
+
+	std::memcpy(*cstrPtr, statusLine.c_str(), statusLen);
+	*cstrPtr += statusLen + 0;
+	std::memcpy(*(cstrPtr), fieldsString.c_str(), headerLen);
+	*cstrPtr += headerLen + 0;
+	std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
+
+	cstr = cstrSave;
+//	if (length)
+//	{
+//		std::ofstream os("out.html", std::ios::binary | std::ios::out);
+//		os.write(cstr, length);
+//		os.close();
+//	}
+	return cstr;
 }
 
 void HttpServer::cleanUp(Request *request, Response *resp)
 {
+	delete request->getBody();
+	delete request->getHeader();
 	delete request;
 	if (resp)
 	{
+		delete resp->getHttpError();
 		delete resp->getHeader();
-		delete resp->getBodyBin();
+		delete[] resp->getBodyBin();
 		delete resp;
 	}
 }

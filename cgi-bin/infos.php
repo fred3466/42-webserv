@@ -1,25 +1,26 @@
-
+#!/usr/bin/php
 <?php
 
 
 
 // Affiche toutes les informations, comme le ferait INFO_ALL
-//phpinfo();
-$arr = get_defined_vars();
-print_r($arr);
+// phpinfo();
 
-//$a = print_r(var_dump($GLOBALS),1);
-//echo '<pre>';
-//echo htmlspecialchars($a);
-//echo '</pre>';
+ $arr = get_defined_vars();
+ print_r($arr);
 
-// Affiche uniquement le module d'information.
-// phpinfo(8) fournirait les mêmes informations.
-//phpinfo(INFO_MODULES);
+$a = print_r(var_dump($GLOBALS),1);
+echo '<pre>';
+echo htmlspecialchars($a);
+echo '</pre>';
 
-//echo "Path: " . $_ENV['Path'];
+// // Affiche uniquement le module d'information.
+// // phpinfo(8) fournirait les mêmes informations.
+// //phpinfo(INFO_MODULES);
 
-// foreach ($_ENV as $k=>$v)
-//   echo $k . " => " . $v . "<br>";
+echo "Path: " . $_ENV['Path'];
+
+foreach ($_ENV as $k=>$v)
+  echo $k . " => " . $v . "<br>";
 ?>
 

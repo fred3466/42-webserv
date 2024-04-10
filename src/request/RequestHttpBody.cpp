@@ -42,6 +42,7 @@ std::string* RequestHttpBody::getContent()
 
 RequestHttpBody::~RequestHttpBody()
 {
+	delete content;
 }
 
 RequestHttpBody::RequestHttpBody(const RequestHttpBody &o) : RequestBody(), content(o.content)

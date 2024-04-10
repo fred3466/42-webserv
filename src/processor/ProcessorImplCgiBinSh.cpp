@@ -1,22 +1,22 @@
-#include "ProcessorImplCgiSh.h"
+#include "ProcessorImplCgiBinSh.h"
 
-ProcessorImplCgiSh::ProcessorImplCgiSh(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
+ProcessorImplCgiBinSh::ProcessorImplCgiBinSh(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
 {
 	this->type = type;
 }
-ProcessorImplCgiSh::~ProcessorImplCgiSh()
+ProcessorImplCgiBinSh::~ProcessorImplCgiBinSh()
 {
 }
 
-void ProcessorImplCgiSh::setConfig(Config *conf)
+void ProcessorImplCgiBinSh::setConfig(Config *conf)
 {
 	config = conf;
 }
 
-Response* ProcessorImplCgiSh::process(Request *request, Response *response,
+Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-//	TODO fred post
+	//	TODO fred post
 	response->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
@@ -25,7 +25,7 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	//	if (isCGIRequest(request->getUri()))
 	//	{
 	// It's a CGI request
-	CGIHandler cgiHandler;
+	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
 
 	// Response *responseHttp;
 
@@ -44,11 +44,20 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
 	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + scriptPath);
 
-	std::string interpreterPath = config->getParamStr("sh", "");
+	std::string interpreterPath = config->getParamStr("sh_exe", "");
 	std::string
-	cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 
-	response->setBodyLength(cgiOutput.length());
+	int bodyLen = cgiOutput.length();
+	std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
+//	bodyLenHexaStr = stringUtil.toHexa(bodyLen + bodyLenHexaStr.length() + 2 + 7);
+
+	cgiOutput = bodyLenHexaStr + "\r\n" + cgiOutput + "\r\n0\r\n\r\n";
+	bodyLen = cgiOutput.length();
+
+//	bodyLen += bodyLenHexaStr.length();
+	response->setBodyLength(bodyLen);
+
 	char *bodybin = new char[cgiOutput.length()];
 	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
 	bodybin[cgiOutput.length()] = '\0';
@@ -79,32 +88,37 @@ Response* ProcessorImplCgiSh::process(Request *request, Response *response,
 	return response;
 }
 
-std::string ProcessorImplCgiSh::getBasePath()
+std::string ProcessorImplCgiBinSh::getBasePath()
 {
-	return config->getParamStr("base_path", "cgi-bin/sh/");
+	return config->getParamStr("base_path", "cgi-bin/toto/");
 }
 
-void ProcessorImplCgiSh::setBasePath(std::string basePath)
+void ProcessorImplCgiBinSh::setBasePath(std::string basePath)
 {
 	config->addParam("base_path", basePath);
 }
 
-void ProcessorImplCgiSh::addProperty(std::string name, std::string value)
+void ProcessorImplCgiBinSh::addProperty(std::string name, std::string value)
 {
 	config->addParam(name, value);
 }
 
-std::string ProcessorImplCgiSh::toString()
+std::string ProcessorImplCgiBinSh::toString()
 {
-	return "ProcessorImplCgiSh";
+	return "ProcessorImplCgiBinSh";
 }
 
-ProcessorTypeEnum ProcessorImplCgiSh::getType()
+ProcessorTypeEnum ProcessorImplCgiBinSh::getType()
 {
 	return type;
 }
 
-bool ProcessorImplCgiSh::isBypassingExclusif()
+bool ProcessorImplCgiBinSh::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinSh::isBypassingExclusif()
 {
 	return false;
 }

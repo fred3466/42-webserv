@@ -27,4 +27,6 @@ public:
 	virtual std::string toString()=0;
 	virtual void addProperty(std::string name, std::string value)=0;
 	virtual ProcessorTypeEnum getType()=0;
+	virtual bool isExclusif()=0;
+	virtual bool isBypassingExclusif()=0;
 };

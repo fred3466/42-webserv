@@ -28,6 +28,9 @@ public:
 	virtual std::string toString();
 	virtual void addProperty(std::string name, std::string value);
 	virtual ProcessorTypeEnum getType();
+	virtual bool isExclusif();
+	virtual bool isBypassingExclusif();
+
 	Response* generateErrorResponse(int errorCode, const std::string &errorMessage);
 	std::string loadErrorPageTemplate();
 	void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);

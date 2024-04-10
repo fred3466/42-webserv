@@ -24,3 +24,19 @@
 #define REQUEST_HANDLER_IMPL_CLASS_POST FiltreRequestPost
 #define REQUEST_HEADER_IMPL_INC_ERROR "FiltreError.h"
 #define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError
+#define REQUEST_HEADER_IMPL_INC_SH "ProcessorImplCgiBinSh.h"
+#define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh
+
+#define REQUEST_HANDLER_IMPL_INC_PERL "ProcessorImplCgiBinPerl.h"
+#define REQUEST_HANDLER_IMPL_CLASS_PERL ProcessorImplCgiBinPerl
+#define CGI_HANDLER_INC_PERL "CGIHandlerPerl.h"
+#define CGI_HANDLER_CLASS_PERL CGIHandlerPerl
+
+#define CGI_HANDLER_INC_PHP "CGIHandlerPHP.h"
+#define CGI_HANDLER_CLASS_PHP CGIHandlerPHP
+
+//#define CGI_HANDLER_INC_PHP "CGIHandlerLeg.h"
+//#define CGI_HANDLER_CLASS_PHP CGIHandlerLeg
+
+#define CGI_HANDLER_INC_SH "CGIHandlerLeg.h"
+#define CGI_HANDLER_CLASS_SH CGIHandlerLeg

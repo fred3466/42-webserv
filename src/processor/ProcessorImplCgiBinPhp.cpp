@@ -13,8 +13,8 @@ void ProcessorImplCgiBinPhp::setConfig(Config *conf)
 	config = conf;
 }
 
-Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
-										  ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* ProcessorImplCgiBinPhp::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	//	TODO fred post
 	response->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
@@ -25,7 +25,7 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 	//	if (isCGIRequest(request->getUri()))
 	//	{
 	// It's a CGI request
-	CGIHandler cgiHandler;
+	CGIHandler *cgiHandler = CGIHandlerFactory().build("PHP_CGI", config);
 
 	// Response *responseHttp;
 
@@ -46,7 +46,7 @@ Response *ProcessorImplCgiBinPhp::process(Request *request, Response *response,
 
 	std::string interpreterPath = config->getParamStr("php_exe", "");
 	std::string
-		cgiOutput = cgiHandler.executeCGIScript(interpreterPath, scriptPath, request, response);
+	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 
 	int bodyLen = cgiOutput.length();
 	std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
@@ -111,4 +111,14 @@ std::string ProcessorImplCgiBinPhp::toString()
 ProcessorTypeEnum ProcessorImplCgiBinPhp::getType()
 {
 	return type;
+}
+
+bool ProcessorImplCgiBinPhp::isExclusif()
+{
+	return true;
+}
+
+bool ProcessorImplCgiBinPhp::isBypassingExclusif()
+{
+	return false;
 }

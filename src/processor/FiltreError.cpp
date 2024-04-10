@@ -118,6 +118,15 @@ void FiltreError::replacePlaceholders(std::string &content, int errorCode, const
 	}
 }
 
+bool FiltreError::isExclusif()
+{
+	return false;
+}
+
+bool FiltreError::isBypassingExclusif()
+{
+	return true;
+}
 // Response *FiltreError::process(Request * /*request*/, Response *response,
 //                                ProcessorAndLocationToProcessor * /*processorAndLocationToProcessor*/)
 // {
