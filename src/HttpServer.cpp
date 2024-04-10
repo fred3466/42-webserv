@@ -78,9 +78,9 @@ void HttpServer::instantiateProcessLocator()
 		}
 	}
 
-	std::vector<LocationToProcessor *> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
-	for (std::vector<LocationToProcessor *>::iterator ite = locationToProcessorVector.begin();
-		 ite != locationToProcessorVector.end(); ite++)
+	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
+	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
+			ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
@@ -102,7 +102,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void)e;
+	(void) e;
 }
 
 bool HttpServer::_checkAccess(Request *request)
@@ -110,7 +110,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -131,7 +131,7 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	if (contentLength > maxBodySize)
 	{
 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-				   request->getUri().getUri().c_str(), contentLength, maxBodySize);
+				request->getUri().getUri().c_str(), contentLength, maxBodySize);
 
 		HttpError *error = HttpErrorFactory().build(413);
 		if (!response)
@@ -158,7 +158,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	//	req->dump();
 
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().getUri().c_str());
-	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
+//	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
 	if (!_checkAccess(request))
@@ -185,7 +185,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	resp->setHttpError(error);
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 
 	resp = runProcessorChain(processorList, request, resp);
 
@@ -207,16 +207,16 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		connector->closeConnection(fdSocket);
 	}
 
-	cleanUp(request, resp);
+//	cleanUp(request, resp);
 }
 
-Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
-										Response *resp)
+Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+		Response *resp)
 {
 	bool contentDone = false;
-	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
-		 ite != processorList->end();
-		 ite++)
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
+			ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -231,7 +231,7 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s]", request->getUri().getUri().c_str(),
-				   processor->toString().c_str());
+				processor->toString().c_str());
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 
@@ -244,7 +244,7 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	return resp;
 }
 
-char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -325,15 +325,15 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-			contentLengthHeader, contentLengthResponse);
+				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+				contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
 	if (resp->isCgi())
 		header->addField("Transfer-Encoding", "chunked");
 	else // TODO fred : vraiment ?
-		if (transferEncoding == "" && contentLengthHeader == -1)
-			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+	if (transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
@@ -353,7 +353,7 @@ void HttpServer::cleanUp(Request *request, Response *resp)
 	delete request;
 	if (resp)
 	{
-		delete resp->getHeader();
+//		delete resp->getHeader();
 		delete resp->getBodyBin();
 		delete resp;
 	}

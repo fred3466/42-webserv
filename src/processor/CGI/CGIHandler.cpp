@@ -24,10 +24,6 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 
 	// Environment variables
 	//	Which request method was used to access the page; e.g. 'GET', 'HEAD', 'POST', 'PUT'.
-	std::string reqMethod = request->getMethod();
-	(*envMap)["REQUEST_METHOD"] = reqMethod;
-	//	The query string, if any, via which the page was accessed.
-	(*envMap)["QUERY_STRING"] = request->getQueryString();
 	//	(*envMap)["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
 
 	//   The Content-Length entity-header field indicates the size of the
@@ -69,10 +65,29 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	//	     transfer-length. The Content-Length header field MUST NOT be sent
 	//	     if these two lengths are different (i.e., if a Transfer-Encoding
 
+	(*envMap)["AUTH_TYPE"] = "";
 	(*envMap)["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
-	//	What revision of the CGI specification the server is using; e.g. 'CGI/1.1'
+	(*envMap)["CONTENT_TYPE"] = ""; //voir processor common et ailleurs
+//	What revision of the CGI specification the server is using; e.g. 'CGI/1.1'
 	(*envMap)["GATEWAY_INTERFACE"] = "CGI/1.1";
+	std::string pathInfo = request->getUri().getPathInfo();
+	(*envMap)["PATH_INFO"] = pathInfo;
+//	The query string, if any, via which the page was accessed.
+	(*envMap)["QUERY_STRING"] = request->getQueryString();
+//	The IP address from which the user is viewing the current page.
+	(*envMap)["REMOTE_ADDR"] = "";
+
 	(*envMap)["SERVER_PROTOCOL"] = "HTTP/1.1";
+
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+
+	std::string reqMethod = request->getMethod();
+	(*envMap)["REQUEST_METHOD"] = reqMethod;
+
 	//	env["SCRIPT_FILENAME"] = "";
 	//	env["SCRIPT_NAME"] = "";
 	(*envMap)["REDIRECT_STATUS"] = "200";
@@ -88,9 +103,8 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 	(*envMap)["HTTPS"] = ""; // TODO a voir
 	//	Server identification string, given in the headers when responding to requests.
 	(*envMap)["SERVER_SOFTWARE"] = request->getHeaderFieldValue("Server"); //"webserv/Anastasia Jean-Baptiste Frédéric";
-																		   //	The IP address from which the user is viewing the current page.
-	(*envMap)["REMOTE_ADDR"] = "";										   // TODO Fred
-	//	The port being used on the user's machine to communicate with the web server.
+//	_childProcess																		 "";										   // TODO Fred
+			//	The port being used on the user's machine to communicate with the web server.
 	(*envMap)["REMOTE_PORT"] = ""; // TODO Fred
 	//	The authenticated user.
 	(*envMap)["REMOTE_USER"] = ""; // TODO Fred
@@ -100,22 +114,6 @@ void CGIHandler::setupEnvironmentVariables(std::map<std::string, std::string> *e
 
 	//	The port on the server machine being used by the web server for communication. For default setups, this will be '80'; using SSL, for instance, will change this to whatever your defined secure HTTP port is.
 	// (*envMap)["PATH_INFO"] = ""; // TODO a voir
-
-	std::string scriptName = "/cgi-bin/anastasia.php";
-	std::string pathInfo = "";
-	std::string fullUri = request->getUri().getUri();
-
-	size_t scriptNamePos = fullUri.find(scriptName);
-	if (scriptNamePos != std::string::npos)
-	{
-		pathInfo = fullUri.substr(scriptNamePos + scriptName.length());
-		if (!pathInfo.empty() && pathInfo[0] != '/')
-		{
-			pathInfo = "/" + pathInfo;
-		}
-	}
-	(*envMap)["SCRIPT_NAME"] = scriptName;
-	(*envMap)["PATH_INFO"] = pathInfo;
 
 	(*envMap)["SERVER_NAME"] = request->getHost();
 	std::string serverPort = "8081";
@@ -224,7 +222,7 @@ void CGIHandler::_childProcess(fdpipe *pipes, std::map<std::string, std::string>
 	close(pipes->fds[1]); // !!!!
 
 //		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
-	(envMap)["SCRIPT_FILENAME"] = request->getFileName();
+	(envMap)["SCRIPT_FILENAME"] = request->getFileName() + request->getFileExtension();
 
 //		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
 	(envMap)["SCRIPT_NAME"] = scriptPath;
@@ -310,9 +308,9 @@ void CGIHandler::_parentProcess(std::string *output, fdpipe *pipes, Request *req
 		(void) written;
 //		close(pipefd_pere_fils[1]);
 //			harl.debug("CGIHandler::executeCGIScript: %d sent %d bytes through the wire", pipefd_pere_fils[1], written);
-//		sleep(1);
 	}
 	close(pipes->fds[1]);
+	sleep(1);
 
 //	sleep(10);
 	int bufferReadSize = 1024;

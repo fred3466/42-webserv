@@ -60,6 +60,23 @@ const std::string Uri::getFileExtension() const
 	return "";
 }
 
+const std::string Uri::getPathInfo() const
+{
+	std::string pathInfo = "";
+	std::string scriptName = getFileName() + getFileExtension();
+	std::string fullUri = _uri;
+	size_t scriptNamePos = fullUri.find(scriptName);
+	if (scriptNamePos != std::string::npos)
+	{
+		pathInfo = fullUri.substr(scriptNamePos + scriptName.length());
+		if (!pathInfo.empty() && pathInfo[0] != '/')
+		{
+			pathInfo = "/" + pathInfo;
+		}
+	}
+	return pathInfo;
+}
+
 const std::string Uri::getFileName() const
 {
 	size_t pos = _uri.rfind("/");

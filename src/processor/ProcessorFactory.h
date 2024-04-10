@@ -12,6 +12,7 @@
 #include REQUEST_HEADER_IMPL_INC_COMMON
 #include REQUEST_HEADER_IMPL_INC_POST
 #include REQUEST_HEADER_IMPL_INC_ERROR
+#include REQUEST_HEADER_IMPL_INC_SH
 
 class ProcessorFactory
 {
@@ -22,6 +23,6 @@ private:
 public:
 	~ProcessorFactory();
 	ProcessorFactory(ProcessorLocator *pl);
-	Processor *build(std::string procName);
-	std::vector<ProcessorAndLocationToProcessor *> *build(Request *request);
+	Processor* build(std::string procName);
+	std::vector<ProcessorAndLocationToProcessor*>* build(Request *request);
 };

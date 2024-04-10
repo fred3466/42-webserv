@@ -370,7 +370,12 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* server.                                           */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_acceptIncomingCon: accept");
-		new_sd = accept(_soListen, NULL, NULL);
+//		sockaddr_in client_addr;
+//		socklen_t client_addr_len = sizeof(client_addr);
+//		new_sd = accept(_soListen, (struct sockaddr*) &client_addr, &client_addr_len);
+		new_sd = accept(_soListen, 0, 0);
+//		char str[INET_ADDRSTRLEN];
+//		inet_ntop( AF_INET, &ipAddr, str, INET_ADDRSTRLEN);
 		if (new_sd < 0)
 		{
 			if (errno != EWOULDBLOCK)

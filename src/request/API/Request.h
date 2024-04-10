@@ -35,4 +35,5 @@ private:
 	virtual bool isConnectionKeepAlive() throw (char*) = 0;
 	virtual void setBody(RequestBody *body) = 0;
 	virtual RequestBody* getBody() = 0;
+	std::string getRemoteIpPort();
 };

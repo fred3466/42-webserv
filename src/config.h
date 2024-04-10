@@ -24,3 +24,5 @@
 #define REQUEST_HANDLER_IMPL_CLASS_POST FiltreRequestPost
 #define REQUEST_HEADER_IMPL_INC_ERROR "FiltreError.h"
 #define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError
+#define REQUEST_HEADER_IMPL_INC_SH "ProcessorImplCgiBinSh.h"
+#define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh

@@ -1,6 +1,6 @@
 #include "ResponseHttpHeader.h"
 
-ResponseHttpHeader::ResponseHttpHeader() : fields(), su()
+ResponseHttpHeader::ResponseHttpHeader() : statusLine(""), fields(), cookies(), cookieHelper(), su(), errorCode(200)
 {
 }
 
