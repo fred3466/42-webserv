@@ -212,7 +212,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		connector->closeConnection(fdSocket);
 	}
 
-	cleanUp(request, resp);
+//	cleanUp(request, resp);
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
