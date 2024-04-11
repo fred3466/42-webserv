@@ -140,7 +140,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				char *path = realpath(base_path.c_str(), NULL);
 				if (path == NULL)
 				{
-//					TODO traiter l'erreur de configuration et abandonner le chargement (erreur fatale)!
+					//					TODO traiter l'erreur de configuration et abandonner le chargement (erreur fatale)!
 				}
 				else
 				{
@@ -200,7 +200,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 // 			return config;
 // 		}
 // 	}
-// 	return nullptr;
+// 	return NULL;
 // }
 
 // bool ConfigReader::buildConfigVector(std::vector<Config *> *ret, std::string path)

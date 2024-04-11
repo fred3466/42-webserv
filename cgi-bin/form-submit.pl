@@ -31,7 +31,7 @@ print <<'BOTTOM';
 <a href="">RETOUR</a>		
 </body></html>
 BOTTOM
- }else{
+ }else{d
 	print <<'END';
 	
 	<HTML>
