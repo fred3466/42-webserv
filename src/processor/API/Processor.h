@@ -1,11 +1,11 @@
 #pragma once
-#include "../config/Config.h"
-#include "../request/API/Request.h"
-#include "../response/API/Response.h"
+#include "../../config/Config.h"
+#include "../../request/API/Request.h"
+#include "../../response/API/Response.h"
 #include <iterator>
+//#include "../ProcessorHelper.h"
 
 class ProcessorAndLocationToProcessor;
-
 enum ProcessorTypeEnum
 {
 	HEADER_MODIFIER, CONTENT_MODIFIER

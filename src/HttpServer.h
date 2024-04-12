@@ -23,7 +23,6 @@
 #include "connector/Connector.h"
 #include "connector/ConnectorFactory.h"
 #include "Harl.h"
-#include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
 #include "request/API/Request.h"
 #include "request/factory/RequestFactory.h"
@@ -35,6 +34,7 @@
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
 #include "error/HttpErrorFactory.h"
+#include "processor/API/Processor.h"
 // #include "response/API/ResponseHeader.h"
 
 // class ResponseHeader;

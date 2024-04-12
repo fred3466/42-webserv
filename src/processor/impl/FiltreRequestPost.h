@@ -2,16 +2,17 @@
 
 #include <iostream>
 
-#include "Processor.h"
-#include "../Harl.h"
-#include "../config.h"
+#include "../../Harl.h"
+#include "../../config.h"
 
-#include "../util/FileUtil.h"
-#include "../util/StringUtil.h"
-#include "../config/Config.h"
-#include "../location/ProcessorAndLocationToProcessor.h"
-#include "../request/factory/RequestBodyFactory.h"
-#include "../error/HttpErrorFactory.h"
+#include "../../util/FileUtil.h"
+#include "../../util/StringUtil.h"
+#include "../../config/Config.h"
+#include "../../location/ProcessorAndLocationToProcessor.h"
+#include "../../request/factory/RequestBodyFactory.h"
+#include "../../error/HttpErrorFactory.h"
+#include "../API/Processor.h"
+#include "../ProcessorHelper.h"
 
 class FiltreRequestPost: public Processor
 {
@@ -21,6 +22,7 @@ private:
 	FileUtil fileUtil;
 	StringUtil stringUtil;
 	ProcessorTypeEnum type;
+	ProcessorHelper processorHelper;
 
 public:
 	FiltreRequestPost(ProcessorTypeEnum type);

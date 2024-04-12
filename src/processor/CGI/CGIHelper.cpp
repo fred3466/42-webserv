@@ -1,33 +1,168 @@
-#include "CGIHandlerLeg.h"
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <unistd.h>
-#include <sstream>
-#include <sys/wait.h>
-#include <sstream>
-#include <cstring>
+#include "CGIHelper.h"
 
-CGIHandlerLeg::CGIHandlerLeg() : harl(), responseBody(""), responseHeaders(), config()
+CGIHelper::CGIHelper() : harl()
 {
 }
 
-CGIHandlerLeg::~CGIHandlerLeg()
+CGIHelper::~CGIHelper()
 {
 }
 
-void CGIHandlerLeg::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response)
+void CGIHelper::_childProcess(CGIHandler *cgiHandler, fdpipe *pipes, std::map<std::string, std::string> envMap, std::string interpreterPath, std::string &scriptPath, Request *request, char **envp)
+{
+	const char **argv = cgiHandler->buildCommandLine(interpreterPath, scriptPath);
+
+	if (dup2(pipes->fd_for_RESPONSE[1], STDOUT_FILENO) == -1 //dup the write end of the pipe to stdout to write the response
+	|| close(pipes->fd_for_RESPONSE[0]) == -1 || close(pipes->fd_for_RESPONSE[1]) == -1
+			|| dup2(pipes->fd_for_REQUEST[0], STDIN_FILENO) == -1 //dup the read end of the pipe to stdin to read the request
+			|| close(pipes->fd_for_REQUEST[1]) == -1 || close(pipes->fd_for_REQUEST[0]) == -1) // close the read and write end of the pipe
+		throw std::runtime_error("CGIHandlerPerl::_childProcess dup2() of close() failed");
+
+//	dup2(pipes->fd_for_REQUEST[1], STDOUT_FILENO); // !!!!
+//	close(pipes->fd_for_REQUEST[0]); // !!!!
+//
+//	dup2(pipes->fd_for_RESPONSE[0], STDIN_FILENO);
+//	close(pipes->fd_for_RESPONSE[1]); // !!!!
+
+//		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
+
+//		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
+	std::string scriptPathRoot = FileUtil().realPathFile(cgiHandler->getConfig()->getParamStr("base_path", "base_path_missing"));
+	(envMap)["PHP_DOCUMENT_ROOT"] = scriptPathRoot;
+	(envMap)["DOCUMENT_ROOT"] = scriptPathRoot;
+
+	std::string SCRIPT_FILENAME = "/" + request->getFileName() + request->getFileExtension();
+	(envMap)["SCRIPT_NAME"] = SCRIPT_FILENAME;
+	(envMap)["SCRIPT_FILENAME"] = scriptPath;
+	std::string pathInfo = request->getUri().getPathInfo();
+	(envMap)["PATH_INFO"] = pathInfo;
+	feedEnv(envp, envMap);
+
+//	dup2(pipes->fils[1], 1);
+//	close(pipes->fils[1]);
+
+	const char *execPath = interpreterPath.c_str();
+	execve(execPath, const_cast<char* const*>(argv), const_cast<char* const*>(envp));
+	exit(EXIT_FAILURE); // execl only returns on error
+}
+
+std::string
+CGIHelper::executeCGIScript(CGIHandler *cgiHandler, std::string interpreterPath, std::string &scriptPath, Request *request,
+		Response *response)
+{
+	std::string output;
+	std::map<std::string, std::string> envMap = std::map<std::string, std::string>();
+	setupEnvironmentVariables(&envMap, request, response);
+
+	fdpipe pipes;
+	pipe(pipes.fd_for_REQUEST);
+	pipe(pipes.fd_for_RESPONSE);
+
+	pid_t pid = fork();
+
+	if (pid == 0)
+	{
+		char **envp = new char*[envMap.size() + 1]; //need to be delete() after it is used, or else it will cause memory leak
+		_childProcess(cgiHandler, &pipes, envMap, interpreterPath, scriptPath, request, envp);
+//TODO truc à faire ici ?
+//		delete envp[envMap.size()];
+	}
+	else
+	{
+		// Parent process
+		_parentProcess(&output, &pipes, request, pid);
+//		harl.debug("CGIHandlerPerl::executeCGIScript: output :\n%s", output.c_str());
+		return output;
+	}
+//	int status;
+//	waitpid(pid, &status, 0);
+
+//	int status;
+//	wait(&status);
+
+	return output;
+}
+
+void CGIHelper::_parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid)
+{
+	RequestBody *reqBody = request->getBody();
+	std::string *reqBodyContentPtr = reqBody->getContent();
+	std::string reqBodyContent = *reqBodyContentPtr;
+
+//	close(pipes->fd_for_REQUEST[1]); // !!!!
+//	close(pipes->fd_for_RESPONSE[0]);
+
+	close(pipes->fd_for_REQUEST[0]); // close the read end of the pipe
+	if (reqBodyContent != "")
+	{
+		char *cstr = (char*) (reqBodyContent.c_str());
+		int length = (int) reqBodyContent.size();
+
+		int written = write(pipes->fd_for_REQUEST[1], cstr, length);
+//		int written = write(pipes->fd_for_RESPONSE[1], cstr, length);
+		(void) written;
+//			harl.debug("CGIHandlerPerl::executeCGIScript: %d sent %d bytes through the wire", pipefd_pere_fils[1], written);
+	}
+	close(pipes->fd_for_REQUEST[1]);
+	close(pipes->fd_for_RESPONSE[1]);
+//	sleep(1);
+
+	int status; // !!!!
+	waitpid(pid, &status, 0); // !!!!
+//	(void) pid;
+
+	//	int bufferReadSize = 1024;
+//	char *buffer = new char[bufferReadSize]();
+//	std::memset(buffer, 0, bufferReadSize);
+
+	int ret = 0;
+	char buffer[1024];
+	do
+	{
+		std::memset(buffer, 0, 1024);
+		ret = read(pipes->fd_for_RESPONSE[0], buffer, 1024);
+		(*output).append(buffer, ret);
+
+	} while (ret > 0);
+
+//	ssize_t count;
+//	while ((count = read(pipes->fd_for_RESPONSE[0], buffer, bufferReadSize)) > 0)
+//	{
+//		*output += buffer;
+//		std::memset(buffer, 0, bufferReadSize);
+//	}
+	close(pipes->fd_for_RESPONSE[0]); // !!!!
+
+//	sleep(1);
+}
+
+void CGIHelper::feedEnv(char **envp, std::map<std::string, std::string> envMap)
+{
+	int i = 0;
+	for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
+	{
+		std::string key = ite->first;
+		std::string val = ite->second;
+		std::string toChar = key + "=" + val;
+//			TODO leak
+//			TODO BUG!!!!
+		int toCharSz = toChar.length();
+		envp[i] = new char[toCharSz + 1]();
+		memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
+		envp[i][toCharSz] = 0;
+		harl.trace("CGIHandlerPerl::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
+		i++;
+	}
+	envp[i] = NULL;
+
+}
+void CGIHelper::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response)
 {
 	(void) response;
 	//	Some server supplied environment variables are not defined in the current » CGI/1.1 specification. Only the following variables are defined there: AUTH_TYPE, CONTENT_LENGTH, CONTENT_TYPE, GATEWAY_INTERFACE, PATH_INFO, PATH_TRANSLATED, QUERY_STRING, REMOTE_ADDR, REMOTE_HOST, REMOTE_IDENT, REMOTE_USER, REQUEST_METHOD, SCRIPT_NAME, SERVER_NAME, SERVER_PORT, SERVER_PROTOCOL, and SERVER_SOFTWARE. Everything else should be treated as 'vendor extensions'.
 
 	// Environment variables
 	//	Which request method was used to access the page; e.g. 'GET', 'HEAD', 'POST', 'PUT'.
-	std::string reqMethod = request->getMethod();
-	(*envMap)["REQUEST_METHOD"] = reqMethod;
-	//	The query string, if any, via which the page was accessed.
-	(*envMap)["QUERY_STRING"] = request->getQueryString();
 	//	(*envMap)["CONTENT_TYPE"] = request->getHeaderFieldValue("Content-Type");
 
 	//   The Content-Length entity-header field indicates the size of the
@@ -68,11 +203,30 @@ void CGIHandlerLeg::setupEnvironmentVariables(std::map<std::string, std::string>
 	//	     decimal value in OCTETs represents both the entity-length and the
 	//	     transfer-length. The Content-Length header field MUST NOT be sent
 	//	     if these two lengths are different (i.e., if a Transfer-Encoding
-
+	StringUtil su = StringUtil();
+	(*envMap)["AUTH_TYPE"] = "";
 	(*envMap)["CONTENT_LENGTH"] = request->getHeaderFieldValue("Content-Length");
-	//	What revision of the CGI specification the server is using; e.g. 'CGI/1.1'
+	(*envMap)["CONTENT_TYPE"] = ""; //voir processor common et ailleurs
+//	What revision of the CGI specification the server is using; e.g. 'CGI/1.1'
 	(*envMap)["GATEWAY_INTERFACE"] = "CGI/1.1";
+	(*envMap)["PATH_INFO"] = ""; //  voir plus bas
+
+//	The query string, if any, via which the page was accessed.
+	(*envMap)["QUERY_STRING"] = request->getQueryString();
+//	The IP address from which the user is viewing the current page.
+	(*envMap)["REMOTE_ADDR"] = "";
+
 	(*envMap)["SERVER_PROTOCOL"] = "HTTP/1.1";
+
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+	(*envMap)["AUTH_TYPE"] = "";
+
+	std::string reqMethod = request->getMethod();
+	(*envMap)["REQUEST_METHOD"] = reqMethod;
+
 	//	env["SCRIPT_FILENAME"] = "";
 	//	env["SCRIPT_NAME"] = "";
 	(*envMap)["REDIRECT_STATUS"] = "200";
@@ -81,16 +235,15 @@ void CGIHandlerLeg::setupEnvironmentVariables(std::map<std::string, std::string>
 	(*envMap)["REQUEST_URI"] = request->getUri().getUri();
 	(*envMap)["DOCUMENT_URI"] = request->getUri().getUri(); // TODO a voir
 	//	The document root directory under which the current script is executing, as defined in the server's configuration file.
-	(*envMap)["DOCUMENT_ROOT"] = request->getUri().getUri(); // TODO a voir
+	(*envMap)["DOCUMENT_ROOT"] = "";	//  voir plus bas
 	//	Name and revision of the information protocol via which the page was requested; e.g. 'HTTP/1.0';
 	(*envMap)["REQUEST_SCHEME"] = "http"; // TODO a voir
 	//	Set to a non-empty value if the script was queried through the HTTPS protocol.
 	(*envMap)["HTTPS"] = ""; // TODO a voir
 	//	Server identification string, given in the headers when responding to requests.
 	(*envMap)["SERVER_SOFTWARE"] = request->getHeaderFieldValue("Server"); //"webserv/Anastasia Jean-Baptiste Frédéric";
-																		   //	The IP address from which the user is viewing the current page.
-	(*envMap)["REMOTE_ADDR"] = "";										   // TODO Fred
-	//	The port being used on the user's machine to communicate with the web server.
+//	_childProcess																		 "";										   // TODO Fred
+			//	The port being used on the user's machine to communicate with the web server.
 	(*envMap)["REMOTE_PORT"] = ""; // TODO Fred
 	//	The authenticated user.
 	(*envMap)["REMOTE_USER"] = ""; // TODO Fred
@@ -101,21 +254,17 @@ void CGIHandlerLeg::setupEnvironmentVariables(std::map<std::string, std::string>
 	//	The port on the server machine being used by the web server for communication. For default setups, this will be '80'; using SSL, for instance, will change this to whatever your defined secure HTTP port is.
 	// (*envMap)["PATH_INFO"] = ""; // TODO a voir
 
-	std::string pathInfo = "";
-	std::string fullUri = request->getUri().getUri();
-
-	(*envMap)["PATH_INFO"] = pathInfo;
-
 	(*envMap)["SERVER_NAME"] = request->getHost();
-	std::string serverPort = StringUtil().strFromInt(request->getPort());
+	std::string serverPort = su.strFromInt(request->getPort());
 	(*envMap)["SERVER_PORT"] = serverPort;
+
+	(*envMap)["REDIRECT_STATUS"] = "200";
 
 	if (reqMethod == "POST")
 	{
-		//		(*envMap)["HTTP_RAW_POST_DATA"] = request->getBody()->getContent()->c_str();
+		(*envMap)["HTTP_RAW_POST_DATA"] = request->getBody()->getContent()->c_str();
 	}
 
-	StringUtil su = StringUtil();
 	std::list<std::string> request_headers = request->getHeader()->getFields();
 	for (std::list<std::string>::iterator it = request_headers.begin();
 			it != request_headers.end(); ++it)
@@ -182,163 +331,4 @@ void CGIHandlerLeg::setupEnvironmentVariables(std::map<std::string, std::string>
 	//	fastcgi_param  SERVER_ADDR        $server_addr;
 	//	fastcgi_param  SERVER_PORT        $server_port;
 	//	fastcgi_param  SERVER_NAME        $server_name;
-}
-
-void CGIHandlerLeg::feedEnv(char **envp, std::map<std::string, std::string> envMap)
-{
-	int i = 0;
-	for (std::map<std::string, std::string>::iterator ite = envMap.begin(); ite != envMap.end(); ++ite)
-	{
-		std::string key = ite->first;
-		std::string val = ite->second;
-		std::string toChar = key + "=" + val;
-//			TODO leak
-//			TODO BUG!!!!
-		int toCharSz = toChar.length();
-		envp[i] = new char[toCharSz + 1]();
-		memcpy((char*) envp[i], toChar.c_str(), toCharSz + 1);
-		harl.trace("CGIHandlerLeg::executeCGIScript env script\n[%s=%s] => [%s]", key.c_str(), val.c_str(), envp[i]);
-		i++;
-	}
-	envp[i] = NULL;
-
-}
-
-void CGIHandlerLeg::_childProcess(fdpipe *pipes, std::map<std::string, std::string> envMap, std::string interpreterPath, std::string &scriptPath, Request *request, char **envp)
-{
-	const char *argv[9];
-	int i = 0;
-	argv[i++] = interpreterPath.c_str();
-	argv[i++] = "-c";
-	argv[i++] = "/home/fbourgue/0-wsp/webserv/php.ini";
-	argv[i++] = "-d";
-	argv[i++] = "root_dir=/home/fbourgue/0-wsp/webserv/cgi-bin";
-	argv[i++] = "-d";
-	argv[i++] = "cgi.force_redirect=1";
-	std::string stp = scriptPath;
-//		std::string stp = "\"" + scriptPath + "\"";
-	argv[i++] = "-f";
-	argv[i++] = stp.c_str();
-	argv[i++] = NULL;
-
-	std::string cmdLine = StringUtil().fromCArrayToString(argv);
-	harl.debug("CGIHandlerPHP::executeCGIScript [%s : %s] ???", interpreterPath.c_str(), cmdLine.c_str());
-
-	dup2(pipes->fd_for_REQUEST[1], STDOUT_FILENO); // !!!!
-	close(pipes->fd_for_REQUEST[0]); // !!!!
-
-	dup2(pipes->fd_for_RESPONSE[0], STDIN_FILENO);
-	close(pipes->fd_for_RESPONSE[1]); // !!!!
-
-//		TODO SCRIPT_NAME et SCRIPT_FILENAME à verifier
-//		Contains the current script's path. This is useful for pages which need to point to themselves. The __FILE__ constant contains the full path and filename of the current (i.e. included) file.
-	std::string scriptPathRoot = "/home/fbourgue/0-wsp/webserv/cgi-bin";
-	(envMap)["PHP_DOCUMENT_ROOT"] = scriptPathRoot;
-
-	std::string SCRIPT_FILENAME = request->getFileName() + request->getFileExtension();
-	(envMap)["SCRIPT_NAME"] = SCRIPT_FILENAME;
-	(envMap)["SCRIPT_FILENAME"] = scriptPath;
-
-	feedEnv(envp, envMap);
-
-//	dup2(pipes->fils[1], 1);
-//	close(pipes->fils[1]);
-
-	const char *execPath = interpreterPath.c_str();
-	execve(execPath, const_cast<char* const*>(argv), const_cast<char* const*>(envp));
-	exit(EXIT_FAILURE); // execl only returns on error
-}
-
-std::string
-CGIHandlerLeg::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request,
-		Response *response)
-{
-	std::string output;
-	std::map<std::string, std::string> envMap = std::map<std::string, std::string>();
-	setupEnvironmentVariables(&envMap, request, response);
-
-	std::string cmdLine = "-f " + scriptPath;
-	harl.debug("CGIHandlerLeg::executeCGIScript [%s %s] ???", interpreterPath.c_str(), cmdLine.c_str());
-
-	fdpipe pipes;
-	pipe(pipes.fd_for_REQUEST);
-	pipe(pipes.fd_for_RESPONSE);
-
-	pid_t pid = fork();
-
-	if (pid == 0)
-	{
-		// Child process
-		char **envp = new char*[envMap.size()]; //need to be delete() after it is used, or else it will cause memory leak
-		_childProcess(&pipes, envMap, interpreterPath, scriptPath, request, envp);
-		delete envp[envMap.size()];
-	}
-	else
-	{
-		// Parent process
-		_parentProcess(&output, &pipes, request, pid);
-//		harl.debug("CGIHandlerLeg::executeCGIScript: output :\n%s", output.c_str());
-		return output;
-	}
-//	int status;
-//	waitpid(pid, &status, 0);
-
-//	int status;
-//	wait(&status);
-
-	return output;
-}
-
-void CGIHandlerLeg::_parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid)
-{
-//	dup2(1, pipes->fd_for_REQUEST[1]);
-//	dup2(0, pipes->fd_for_RESPONSE[0]);
-
-	close(pipes->fd_for_REQUEST[1]); // !!!!
-	close(pipes->fd_for_RESPONSE[0]);
-
-	RequestBody *reqBody = request->getBody();
-	std::string *reqBodyContentPtr = reqBody->getContent();
-	std::string reqBodyContent = *reqBodyContentPtr;
-
-	if (reqBodyContent != "")
-	{
-		char *cstr = (char*) (reqBodyContent.c_str());
-		int length = (int) reqBodyContent.length();
-
-//		send(pipefd[1], cstr, length, 0);
-
-		int written = write(pipes->fd_for_RESPONSE[1], cstr, length);
-		(void) written;
-//		close(pipefd_pere_fils[1]);
-//			harl.debug("CGIHandlerLeg::executeCGIScript: %d sent %d bytes through the wire", pipefd_pere_fils[1], written);
-//		sleep(1);
-	}
-	close(pipes->fd_for_RESPONSE[1]);
-
-//	sleep(10);
-	int bufferReadSize = 1024;
-	char *buffer = new char[bufferReadSize]();
-
-	ssize_t count;
-	while ((count = read(pipes->fd_for_REQUEST[0], buffer, bufferReadSize)) > 0)
-	{
-		buffer[count] = '\0';
-		*output += buffer;
-	}
-	close(pipes->fd_for_REQUEST[0]); // !!!!
-	int status; // !!!!
-	waitpid(pid, &status, 0); // !!!!
-
-//	sleep(1);
-}
-
-std::string CGIHandlerLeg::toString()
-{
-	return "CGIHandlerLeg";
-}
-
-void CGIHandlerLeg::setConfig(Config *conf)
-{
-	config = conf;
 }

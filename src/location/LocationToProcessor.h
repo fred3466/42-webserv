@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
 
-#include "../processor/Processor.h"
+#include "../processor/API/Processor.h"
 
+class Processor;
 class LocationToProcessor
 {
 private:

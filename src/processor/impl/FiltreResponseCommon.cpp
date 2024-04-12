@@ -1,6 +1,6 @@
 #include "FiltreResponseCommon.h"
 
-FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil()
+FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper()
 {
 	this->type = type;
 }

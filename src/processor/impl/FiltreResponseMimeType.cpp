@@ -1,7 +1,8 @@
 #include "FiltreResponseMimeType.h"
+
 #include <algorithm>
 
-FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : type(type)
+FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : type(type), processorHelper()
 {
 	mimeTypeHelper = new MimeTypeHelper();
 }

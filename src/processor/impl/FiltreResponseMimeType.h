@@ -1,12 +1,13 @@
 #pragma once
-#include "../mimeType/MimeTypeHelper.h"
-#include "../request/RequestHttp.h"
-#include "../response/ResponseHttp.h"
-#include "../response/factory/ResponseHeaderFactory.h"
-#include "../response/factory/ResponseFactory.h"
-#include "Processor.h"
+#include "../../mimeType/MimeTypeHelper.h"
+#include "../../request/RequestHttp.h"
+#include "../../response/ResponseHttp.h"
+#include "../../response/factory/ResponseHeaderFactory.h"
+#include "../../response/factory/ResponseFactory.h"
 #include <sstream>
 #include <map>
+#include "../API/Processor.h"
+#include "../ProcessorHelper.h"
 
 class FiltreResponseMimeType: public Processor
 {
@@ -14,6 +15,7 @@ private:
 	MimeTypeHelper *mimeTypeHelper;
 	std::map<std::string, std::string> properties;
 	ProcessorTypeEnum type;
+	ProcessorHelper processorHelper;
 
 public:
 	FiltreResponseMimeType(ProcessorTypeEnum type);

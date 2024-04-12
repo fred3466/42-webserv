@@ -36,21 +36,22 @@ SRC_FILES	= \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
 	request/factory/RequestBodyFactory\
- 	processor/Processor \
+ 	processor/API/Processor \
 	processor/ProcessorFactory \
-	processor/ProcessorImplDirectFs \
-	processor/ProcessorImplCgiBinPhp \
-	processor/ProcessorImplCgiBinSh \
-	processor/ProcessorImplCgiBinPerl \
-	processor/FiltreResponseMimeType \
-	processor/FiltreResponseCommon \
-	processor/FiltreRequestPost \
+	processor/impl/ProcessorImplDirectFs \
+	processor/impl/ProcessorImplCgiBinPhp \
+	processor/impl/ProcessorImplCgiBinSh \
+	processor/impl/ProcessorImplCgiBinPerl \
+	processor/impl/FiltreResponseMimeType \
+	processor/impl/FiltreResponseCommon \
+	processor/impl/FiltreRequestPost \
+	processor/impl/FiltreError \
+	processor/CGI/CGIHelper \
 	processor/CGI/CGIHandler \
 	processor/CGI/CGIHandlerFactory \
 	processor/CGI/CGIHandlerPHP \
-	processor/CGI/CGIHandlerLeg \
 	processor/CGI/CGIHandlerPerl \
-	processor/FiltreError \
+	processor/ProcessorHelper \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \
  	location/ProcessorLocator \

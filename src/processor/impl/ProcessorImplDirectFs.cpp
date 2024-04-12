@@ -10,7 +10,7 @@
 #include <ostream>
 #include <cstring>
 
-ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil()
+ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil(), processorHelper()
 {
 	this->type = type;
 }

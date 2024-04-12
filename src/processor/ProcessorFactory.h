@@ -2,18 +2,18 @@
 #include <string>
 
 #include "../config.h"
-#include "Processor.h"
 #include "../location/ProcessorLocator.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
 #include "../util/StringUtil.h"
-#include REQUEST_HEADER_IMPL_INC_PHP
-#include REQUEST_HEADER_IMPL_INC_STATIC
-#include REQUEST_HEADER_IMPL_INC_MIMETYPE
-#include REQUEST_HEADER_IMPL_INC_COMMON
-#include REQUEST_HEADER_IMPL_INC_POST
-#include REQUEST_HEADER_IMPL_INC_ERROR
-#include REQUEST_HEADER_IMPL_INC_SH
-#include REQUEST_HANDLER_IMPL_INC_PERL
+#include "API/Processor.h"
+#include "impl/FiltreError.h"
+#include "impl/FiltreRequestPost.h"
+#include "impl/FiltreResponseCommon.h"
+#include "impl/FiltreResponseMimeType.h"
+#include "impl/ProcessorImplCgiBinPerl.h"
+#include "impl/ProcessorImplCgiBinPhp.h"
+#include "impl/ProcessorImplCgiBinSh.h"
+#include "impl/ProcessorImplDirectFs.h"
 
 class ProcessorFactory
 {

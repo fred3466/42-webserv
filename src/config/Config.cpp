@@ -6,8 +6,7 @@
 
 //int Config::idRef = 0;
 
-Config::Config() :
-		kv()
+Config::Config() : kv(), alias("")
 {
 //	if (idRef == NULL)
 //		idRef = 0;

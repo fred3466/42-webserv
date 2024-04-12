@@ -1,6 +1,6 @@
 #include "FiltreRequestPost.h"
 
-FiltreRequestPost::FiltreRequestPost(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil()
+FiltreRequestPost::FiltreRequestPost(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper()
 {
 	this->type = type;
 }

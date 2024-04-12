@@ -127,14 +127,13 @@ bool HttpServer::_checkAccess(Request *request)
 
 bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 {
-	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
-	int contentLength = StringUtil().intFromStr(contentLengthStr);
+	int requestBodySize = request->getBody()->getContent()->length();
 	int maxBodySize = this->config->getParamInt("max_body_size", 4096);
 
-	if (contentLength > maxBodySize)
+	if (requestBodySize > maxBodySize)
 	{
 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-				request->getUri().getUri().c_str(), contentLength, maxBodySize);
+				request->getUri().getUri().c_str(), requestBodySize, maxBodySize);
 
 		HttpError *error = HttpErrorFactory().build(413);
 		if (!response)
@@ -212,7 +211,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		connector->closeConnection(fdSocket);
 	}
 
-//	cleanUp(request, resp);
+	cleanUp(request, resp);
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
@@ -329,7 +328,7 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	std::string body = "";
 	char *bodyBin = resp->getBodyBin();
 	if (bodyBin)
-		body = std::string(bodyBin);
+		body = std::string(bodyBin, resp->getBodyLength());
 
 	// Send Response
 	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + body;

@@ -1,7 +1,6 @@
 #include "FiltreError.h"
-#include "../error/HttpReturnCodeHelper.h"
 
-FiltreError::FiltreError(ProcessorTypeEnum type) : Processor(), type(type), config()
+FiltreError::FiltreError(ProcessorTypeEnum type) : Processor(), type(type), config(), processorHelper()
 {
 }
 

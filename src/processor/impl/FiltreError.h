@@ -1,21 +1,24 @@
 #pragma once
 #include <cstring>
 #include <sstream>
-#include "Processor.h"
-#include "../response/factory/ResponseHeaderFactory.h"
-#include "../response/factory/ResponseFactory.h"
-#include "../util/FileUtilFactory.h"
+#include "../../response/factory/ResponseHeaderFactory.h"
+#include "../../response/factory/ResponseFactory.h"
+#include "../../util/FileUtilFactory.h"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "../error/HttpErrorFactory.h"
+#include "../../error/HttpErrorFactory.h"
+#include "../API/Processor.h"
+#include "../../error/HttpReturnCodeHelper.h"
+#include "../ProcessorHelper.h"
 
 class FiltreError: public Processor
 {
 private:
 	ProcessorTypeEnum type;
 	Config *config;
+	ProcessorHelper processorHelper;
 
 public:
 	FiltreError(/* args */);

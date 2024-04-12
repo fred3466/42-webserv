@@ -1,15 +1,15 @@
 #pragma once
-#include "Processor.h"
+#include "../../Harl.h"
+#include "../../response/API/ResponseHeader.h"
+#include "../../response/factory/ResponseHeaderFactory.h"
 
-#include "../Harl.h"
-#include "../response/API/ResponseHeader.h"
-#include "../response/factory/ResponseHeaderFactory.h"
-
-#include "../util/FileUtilFactory.h"
-#include "../util/StringUtil.h"
-#include "../config/Config.h"
-#include "../response/factory/ResponseFactory.h"
-#include "../location/ProcessorAndLocationToProcessor.h"
+#include "../../util/FileUtilFactory.h"
+#include "../../util/StringUtil.h"
+#include "../../config/Config.h"
+#include "../../response/factory/ResponseFactory.h"
+#include "../../location/ProcessorAndLocationToProcessor.h"
+#include "../API/Processor.h"
+#include "../ProcessorHelper.h"
 
 class ProcessorImplDirectFs: public Processor
 {
@@ -19,6 +19,7 @@ private:
 	Config *config;
 	FileUtil fileUtil;
 	ProcessorTypeEnum type;
+	ProcessorHelper processorHelper;
 
 public:
 	ProcessorImplDirectFs(ProcessorTypeEnum type);
