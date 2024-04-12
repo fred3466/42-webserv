@@ -15,11 +15,12 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include "../../request/API/Request.h"
-#include "../../response/API/Response.h"
+
+#include "../../API/CGIHandler.h"
+#include "../../API/Request.h"
+#include "../../API/Response.h"
 #include "../../Harl.h"
 #include "../../util/FileUtil.h"
-#include "CGIHandler.h"
 // Structure avec des tubes full-duplex
 typedef struct fdpipe
 {

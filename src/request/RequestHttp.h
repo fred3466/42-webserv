@@ -1,12 +1,12 @@
 #pragma once
 
-#include "API/Request.h"
-#include "API/RequestHeader.h"
-#include "API/RequestBody.h"
 #include "../util/StringUtil.h"
 #include <map>
 #include <iterator>
 #include <string>
+#include "../API/Request.h"
+#include "../API/RequestBody.h"
+#include "../API/RequestHeader.h"
 
 // TODO En faire une Coplien
 class RequestHttp: public Request

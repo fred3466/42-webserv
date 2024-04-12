@@ -1,7 +1,7 @@
 #pragma once
 //#include "../ResponseHttp.h"
-#include "../API/ResponseHeader.h"
-#include "../API/Response.h"
+#include "../../API/ResponseHeader.h"
+#include "../../API/Response.h"
 #include "../../config.h"
 #include RESPONSE_IMPL_INC
 

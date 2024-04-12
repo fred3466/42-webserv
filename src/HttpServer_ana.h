@@ -18,17 +18,17 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
+#include "API/Connector.h"
+#include "API/Processor.h"
+#include "API/Request.h"
 #include "HttpServer.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
-#include "connector/Connector.h"
 #include "connector/ConnectorFactory.h"
-#include "connector/TcpConnector.h"
+#include "connector/impl/TcpConnector.h"
 #include "Harl.h"
-#include "processor/API/Processor.h"
-#include "processor/CGI/CGIHandlerPHP.h"
+#include "processor/CGI/impl/CGIHandlerPHP.h"
 #include "processor/ProcessorFactory.h"
-#include "request/API/Request.h"
 #include "request/RequestHttp.h"
 #include "request/factory/RequestFactory.h"
 

@@ -18,27 +18,27 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
+#include "API/Connector.h"
+#include "API/Processor.h"
+#include "API/Request.h"
+#include "API/RequestHeader.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
-#include "connector/Connector.h"
 #include "connector/ConnectorFactory.h"
 #include "Harl.h"
 #include "processor/ProcessorFactory.h"
-#include "request/API/Request.h"
 #include "request/factory/RequestFactory.h"
 #include "request/factory/RequestBodyFactory.h"
-#include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
 #include "error/HttpErrorFactory.h"
-#include "processor/API/Processor.h"
-// #include "response/API/ResponseHeader.h"
+#include "Server.h"
 
 // class ResponseHeader;
-class HttpServer : public ConnectorListener
+class HttpServer: public ConnectorListener, public Server
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -48,14 +48,15 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
-	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
-								Response *resp);
-	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
+			Response *resp);
+	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
 	void addUltimateHeaders(Response *resp);
 	bool _checkAccess(Request *request);
+	bool checkRequestBodySize(Request *request, Response *&response);
 
 public:
 	HttpServer();
@@ -64,8 +65,6 @@ public:
 	virtual void init(Config *conf);
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
-
-	bool checkRequestBodySize(Request *request, Response *&response);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);

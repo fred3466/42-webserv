@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConnectorEvent.h"
+#include "../connector/ConnectorEvent.h"
 //#include "../request/API/Request.h"
 //#include "../response/API/Response.h"
 

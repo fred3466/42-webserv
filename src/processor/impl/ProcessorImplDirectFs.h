@@ -1,6 +1,6 @@
 #pragma once
+#include "../../API/ResponseHeader.h"
 #include "../../Harl.h"
-#include "../../response/API/ResponseHeader.h"
 #include "../../response/factory/ResponseHeaderFactory.h"
 
 #include "../../util/FileUtilFactory.h"
@@ -8,7 +8,7 @@
 #include "../../config/Config.h"
 #include "../../response/factory/ResponseFactory.h"
 #include "../../location/ProcessorAndLocationToProcessor.h"
-#include "../API/Processor.h"
+#include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
 class ProcessorImplDirectFs: public Processor

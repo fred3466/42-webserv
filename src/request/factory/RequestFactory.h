@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 
+#include "../../API/Request.h"
+#include "../../API/RequestHeader.h"
 #include "../../config.h"
-#include "../API/RequestHeader.h"
-#include "../API/Request.h"
 #include "../RequestHttp.h"
 
 class RequestFactory

@@ -1,4 +1,4 @@
-#include "ConnectorEventPublisher.h"
+#include "../API/ConnectorEventPublisher.h"
 
 ConnectorEventPublisher::ConnectorEventPublisher()
 {

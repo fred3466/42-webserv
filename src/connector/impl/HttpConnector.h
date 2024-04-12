@@ -19,10 +19,10 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
-#include "ConnectorListener.h"
-#include "Connector.h"
-#include "../Harl.h"
-#include "../config/Config.h"
+#include "../../API/ConnectorListener.h"
+#include "../../API/Connector.h"
+#include "../../Harl.h"
+#include "../../config/Config.h"
 
 struct netStruct
 {

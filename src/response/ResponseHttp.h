@@ -1,6 +1,6 @@
 #pragma once
-#include "API/ResponseHeader.h"
-#include "API/Response.h"
+#include "../API/Response.h"
+#include "../API/ResponseHeader.h"
 #include "../error/HttpError.h"
 
 class HttpError;

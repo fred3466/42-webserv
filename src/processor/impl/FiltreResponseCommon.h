@@ -6,10 +6,10 @@
 #include "../../util/FileUtilFactory.h"
 #include "../../util/StringUtil.h"
 #include "../../config/Config.h"
-#include "../../response/API/Response.h"
+#include "../../API/Response.h"
 #include "../../location/ProcessorAndLocationToProcessor.h"
 #include "../../error/HttpErrorFactory.h"
-#include "../API/Processor.h"
+#include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
 class FiltreResponseCommon: public Processor

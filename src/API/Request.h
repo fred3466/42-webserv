@@ -3,10 +3,10 @@
 #include <map>
 #include <string>
 #include <iostream>
-#include "../API/RequestHeader.h"
-#include "../API/RequestBody.h"
-#include "../../Uri/Uri.h"
+#include "../Uri/Uri.h"
 #include <sstream>
+#include "../API/RequestBody.h"
+#include "../API/RequestHeader.h"
 
 class Request
 {

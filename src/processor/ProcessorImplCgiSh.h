@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+
+#include "../API/Processor.h"
 #include "../Harl.h"
 #include "../response/API/ResponseHeader.h"
 #include "../response/factory/ResponseHeaderFactory.h"
@@ -9,9 +11,8 @@
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
-#include "CGI/CGIHandlerPHP.h"
 #include "../error/HttpErrorFactory.h"
-#include "API/Processor.h"
+#include "CGI/impl/CGIHandlerPHP.h"
 // #include "../error/HttpError.h"
 // #include "../error/HttpReturnCodeHelper.h"
 

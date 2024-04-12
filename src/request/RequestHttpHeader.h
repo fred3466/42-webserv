@@ -1,13 +1,13 @@
 #pragma once
 
-#include "API/Request.h"
-#include "API/RequestHeader.h"
 #include "../util/StringUtil.h"
 #include "../cookie/CookieHelper.h"
 #include "../cookie/factory/CookieFactory.h"
 #include "../Uri/Uri.h"
 #include <list>
 #include <map>
+#include "../API/Request.h"
+#include "../API/RequestHeader.h"
 
 class RequestHttpHeader: public RequestHeader
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <list>
-#include "../../cookie/Cookie.h"
-#include "../../Uri/Uri.h"
+#include "../cookie/Cookie.h"
+#include "../Uri/Uri.h"
 
 class RequestHeader
 {

@@ -8,11 +8,11 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-#include "../../request/API/Request.h"
-#include "../../response/API/Response.h"
-#include "../../Harl.h"
-#include "../../util/StringUtil.h"
-#include "../../config/Config.h"
+#include "../Harl.h"
+#include "../util/StringUtil.h"
+#include "../config/Config.h"
+#include "Request.h"
+#include "Response.h"
 
 class CGIHandler
 {

@@ -2,7 +2,8 @@
 
 #include <string>
 #include <sstream>
-#include "API/RequestBody.h"
+
+#include "../API/RequestBody.h"
 
 class RequestHttpBody: public RequestBody
 {

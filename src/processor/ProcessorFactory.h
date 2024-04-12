@@ -1,11 +1,11 @@
 #pragma once
 #include <string>
 
+#include "../API/Processor.h"
 #include "../config.h"
 #include "../location/ProcessorLocator.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
 #include "../util/StringUtil.h"
-#include "API/Processor.h"
 #include "impl/FiltreError.h"
 #include "impl/FiltreRequestPost.h"
 #include "impl/FiltreResponseCommon.h"

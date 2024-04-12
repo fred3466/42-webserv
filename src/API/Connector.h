@@ -1,6 +1,6 @@
 #pragma once
-#include "ConnectorListener.h"
 #include "ConnectorEventPublisher.h"
+#include "ConnectorListener.h"
 
 class Connector /*: public ConnectorEventPublisher*/
 {

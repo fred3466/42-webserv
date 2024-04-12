@@ -6,7 +6,7 @@
 #include "../../response/factory/ResponseFactory.h"
 #include <sstream>
 #include <map>
-#include "../API/Processor.h"
+#include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
 class FiltreResponseMimeType: public Processor

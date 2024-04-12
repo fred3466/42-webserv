@@ -1,18 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <map>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <unistd.h>
+#include "../../../API/Request.h"
+#include "../../../API/Response.h"
+#include "../../../util/FileUtil.h"
+#include "../CGIHelper.h"
 
-#include "../../request/API/Request.h"
-#include "../../response/API/Response.h"
-#include "CGIHelper.h"
-
-class CGIHandlerPHP: public CGIHandler
+class CGIHandlerPerl: public CGIHandler
 {
 private:
 	Harl harl;
@@ -21,15 +14,19 @@ private:
 	Config *config;
 	CGIHelper cgiHelper;
 
-public:
-	CGIHandlerPHP();
-	virtual ~CGIHandlerPHP();
-	virtual void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response);
+//	void feedEnv(char **envp, std::map<std::string, std::string> envMap);
+//	virtual void _parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid);
+//	virtual void _childProcess(fdpipe *pipes, std::map<std::string, std::string> envMap, std::string interpreterPath, std::string &scriptPath, Request *request, char **envp);
 
+public:
+	CGIHandlerPerl();
+	virtual ~CGIHandlerPerl();
+	virtual void setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response);
 	virtual const char** buildCommandLine(std::string interpreterPath, std::string &scriptPath);
 	virtual std::string executeCGIScript(std::string interpreterPath, std::string &scriptPath,
 			Request *request, Response *response);
 	virtual std::string toString();
 	virtual void setConfig(Config *conf);
 	Config* getConfig();
+
 };

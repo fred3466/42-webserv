@@ -20,23 +20,29 @@ CYAN = \033[0;96m
 WHITE = \033[0;97m
 
 SRC_FILES	= \
+   	main \
 	Harl\
-	connector/Connector  \
+    Server \
+    HttpServer \
+ 	API/Connector  \
+	API/Request \
+ 	API/Processor \
+	API/RequestHeader \
+	API/RequestBody \
+	API/CGIHandler \
+	API/Response \
+	API/ResponseHeader \
+	API/ConnectorListener \
 	connector/ConnectorEvent \
 	connector/ConnectorFactory \
-	connector/ConnectorListener \
-	connector/HttpConnector \
-	connector/TcpConnector \
-	request/API/Request \
-	request/API/RequestHeader \
-	request/API/RequestBody \
+	connector/impl/HttpConnector \
+	connector/impl/TcpConnector \
+	request/RequestHttp \
 	request/RequestHttpHeader \
 	request/RequestHttpBody \
-	request/RequestHttp \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
 	request/factory/RequestBodyFactory\
- 	processor/API/Processor \
 	processor/ProcessorFactory \
 	processor/impl/ProcessorImplDirectFs \
 	processor/impl/ProcessorImplCgiBinPhp \
@@ -47,25 +53,21 @@ SRC_FILES	= \
 	processor/impl/FiltreRequestPost \
 	processor/impl/FiltreError \
 	processor/CGI/CGIHelper \
-	processor/CGI/CGIHandler \
 	processor/CGI/CGIHandlerFactory \
-	processor/CGI/CGIHandlerPHP \
-	processor/CGI/CGIHandlerPerl \
+	processor/CGI/impl/CGIHandlerPHP \
+	processor/CGI/impl/CGIHandlerPerl \
 	processor/ProcessorHelper \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \
  	location/ProcessorLocator \
 	mimeType/MimeType \
 	mimeType/MimeTypeHelper \
-    HttpServer \
-    config/Config \
+  	config/Config \
     config/ConfigFactory \
    	config/ConfigReader \
    	config/ConfigValidator \
 	config/ResponseConfig \
 	config/RequestConfig \
-	response/API/Response \
-	response/API/ResponseHeader \
 	response/ResponseHttp \
 	response/ResponseHttpHeader \
  	response/ResponseTools \
@@ -81,9 +83,8 @@ SRC_FILES	= \
 	error/HttpErrorFactory \
 	error/HttpReturnCodeHelper \
 	Uri/Uri \
-	Uri/UriValidator \
-    main 
-#    parser/MultipartParser \
+	Uri/UriValidator 
+ #    parser/MultipartParser \
 
 SRC 		= 	$(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC_FILES)))
 OBJ 		= 	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))

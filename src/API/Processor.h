@@ -1,8 +1,9 @@
 #pragma once
-#include "../../config/Config.h"
-#include "../../request/API/Request.h"
-#include "../../response/API/Response.h"
+#include "../config/Config.h"
 #include <iterator>
+
+#include "Request.h"
+#include "Response.h"
 //#include "../ProcessorHelper.h"
 
 class ProcessorAndLocationToProcessor;

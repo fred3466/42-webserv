@@ -3,7 +3,7 @@
 #include <map>
 #include <sstream>
 #include "../../Harl.h"
-#include "../../response/API/ResponseHeader.h"
+#include "../../API/ResponseHeader.h"
 #include "../../response/factory/ResponseHeaderFactory.h"
 #include "../../util/FileUtilFactory.h"
 #include "../../util/StringUtil.h"
@@ -12,9 +12,9 @@
 #include "../../location/ProcessorAndLocationToProcessor.h"
 #include "../../error/HttpErrorFactory.h"
 #include "../../error/HttpReturnCodeHelper.h"
-#include "../API/Processor.h"
+#include "../../API/Processor.h"
 #include "../CGI/CGIHandlerFactory.h"
-#include "../CGI/CGIHandler.h"
+#include "../../API/CGIHandler.h"
 #include "../ProcessorHelper.h"
 
 class LocationToProcessor;
