@@ -18,9 +18,9 @@ int main(int ac, char **av)
 	if (ac == 2)
 	{
 		std::string path = std::string(av[1]);
-//				std::string path = "conf/webserv.conf";
+		//				std::string path = "conf/webserv.conf";
 		ConfigReader cr = ConfigReader();
-		std::vector<Config*> configVector = std::vector<Config*>();
+		std::vector<Config *> configVector = std::vector<Config *>();
 		if (!fu.fileExists(path))
 		{
 			harl.error("Config file missing for path : [%s]", path.c_str());
@@ -31,16 +31,46 @@ int main(int ac, char **av)
 		if (bValidated)
 		{
 			server.init(configVector[0]);
-		} else
+		}
+		else
 		{
 			harl.error("ERROR");
 		}
-//	TODO ne pas oublier de nettoyer le vecteur de config*
+		//	TODO ne pas oublier de nettoyer le vecteur de config*
 	}
 	else
 	{
 		std::cout
-		<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
-				<< std::endl;
+			<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
+			<< std::endl;
 	}
 }
+
+// int main(int argc, char **argv)
+// {
+// 	if (argc != 2)
+// 	{
+// 		std::cerr << "Usage: webserv <configuration file path>\n";
+// 		return 1;
+// 	}
+
+// 	std::string path = argv[1];
+// 	ConfigReader cr;
+// 	std::vector<Config *> configVector;
+
+// 	if (!cr.buildConfigVector(&configVector, path))
+// 	{
+// 		std::cerr << "Failed to read configuration from " << path << std::endl;
+// 		return 1;
+// 	}
+
+// 	HttpServer server;
+// 	server.init(configVector[0]);
+
+// 	for (size_t i = 0; i < configVector.size(); ++i)
+// 	{
+// 		delete configVector[i];
+// 	}
+
+// 	return 0;
+// }

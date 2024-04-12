@@ -35,6 +35,16 @@ int Config::getParamInt(std::string param, int intDefault)
 	return intDefault;
 }
 
+int Config::getParamInt(const std::string &key)
+{
+	int value;
+	if (!tryGetValue(key, value))
+	{
+		throw std::runtime_error("Required configuration parameter missing: " + key);
+	}
+	return value;
+}
+
 void Config::addParam(std::string param, std::string value)
 {
 	kv[param] = value;
@@ -124,6 +134,21 @@ Config *Config::clone()
 	}
 	//	this->kv = bis.kv;
 	return ret;
+}
+
+bool Config::tryGetValue(const std::string &key, int &value)
+{
+	std::map<std::string, std::string>::iterator it = kv.find(key);
+	if (it != kv.end())
+	{
+		std::istringstream iss(it->second);
+		if (!(iss >> value))
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 // Config::Config(Config &bis) : kv(bis.kv), alias(bis.alias) {}

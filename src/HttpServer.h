@@ -67,6 +67,9 @@ public:
 
 	bool checkRequestBodySize(Request *request, Response *&response);
 
+	Response *createErrorResponse(int errorCode);
+	std::string determineServerBlockKey(Request *request);
+
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
 
