@@ -1,17 +1,18 @@
 #pragma once
 
 #include <map>
+
+#include "../API/Processor.h"
 #include "../Harl.h"
 #include "../response/API/ResponseHeader.h"
 #include "../response/factory/ResponseHeaderFactory.h"
-#include "Processor.h"
 #include "../util/FileUtilFactory.h"
 #include "../util/StringUtil.h"
 #include "../config/Config.h"
 #include "../response/factory/ResponseFactory.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
-#include "CGI/CGIHandlerPHP.h"
 #include "../error/HttpErrorFactory.h"
+#include "CGI/impl/CGIHandlerPHP.h"
 // #include "../error/HttpError.h"
 // #include "../error/HttpReturnCodeHelper.h"
 
@@ -26,6 +27,7 @@ private:
 	Config *config;
 	FileUtil fileUtil;
 	ProcessorTypeEnum type;
+	ProcessorHelper ProcessorHelper;
 	//	std::map<std::string, std::string> env;
 
 protected:

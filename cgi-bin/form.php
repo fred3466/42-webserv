@@ -40,7 +40,7 @@ if(!$_POST['age']){
 // $input_data = file_get_contents("php://stdin");
 // echo("<br>input_data=<hr>$input_data<hr>");
 
-phpinfo();
+phpinfo(INFO_ENVIRONMENT|INFO_VARIABLES);
 ?>
 </body>
 </html>

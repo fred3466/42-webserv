@@ -1,13 +1,12 @@
 #pragma once
 #include <string>
+
+#include "../../API/CGIHandler.h"
 #include "../../config.h"
 
 #include "../../Harl.h"
-#include "CGIHandler.h"
-
-#include CGI_HANDLER_INC_PHP
-#include CGI_HANDLER_INC_SH
-#include CGI_HANDLER_INC_PERL
+#include "impl/CGIHandlerPerl.h"
+#include "impl/CGIHandlerPHP.h"
 
 class CGIHandlerFactory
 {

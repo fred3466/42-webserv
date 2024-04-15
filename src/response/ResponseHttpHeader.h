@@ -3,7 +3,8 @@
 #include <list>
 #include <map>
 #include <stdexcept>
-#include "API/ResponseHeader.h"
+
+#include "../API/ResponseHeader.h"
 #include "../cookie/Cookie.h"
 #include "../cookie/CookieHelper.h"
 #include "../util/StringUtil.h"

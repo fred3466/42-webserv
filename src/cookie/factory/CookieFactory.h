@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../Cookie.h"
-#include "../../request/RequestHttpHeader.h"
+#include "../../API/RequestHeader.h"
 
 class CookieFactory
 {
 private:
-public:
+	public:
 	CookieFactory();
 	~CookieFactory();
 	void build(RequestHeader *header);

@@ -4,16 +4,17 @@
 #include <sstream>
 #include <iostream>
 
+//TODO Anastasia : à mon avis cette classe fait doublon avec Config
 class ResponseConfig
 {
 private:
-    std::map<std::string, std::string> kv;
+	std::map<std::string, std::string> kv;
 
 public:
-    ResponseConfig();
-    ~ResponseConfig();
+	ResponseConfig();
+	~ResponseConfig();
 
-    int getParamInt(std::string param, int intDefault);
-    std::string getParamStr(std::string param, std::string stringDefault);
-    void addParam(std::string param, std::string value);
+	int getParamInt(std::string param, int intDefault);
+	std::string getParamStr(std::string param, std::string stringDefault);
+	void addParam(std::string param, std::string value);
 };

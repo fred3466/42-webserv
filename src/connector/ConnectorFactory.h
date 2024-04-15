@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 
-#include "Connector.h"
-#include "HttpConnector.h"
+#include "../API/Connector.h"
 #include "../config/Config.h"
+#include "impl/HttpConnector.h"
 
 class ConnectorFactory
 {

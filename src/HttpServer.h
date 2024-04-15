@@ -18,27 +18,27 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
+#include "API/Connector.h"
+#include "API/Processor.h"
+#include "API/Request.h"
+#include "API/RequestHeader.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
-#include "connector/Connector.h"
 #include "connector/ConnectorFactory.h"
 #include "Harl.h"
-#include "processor/Processor.h"
 #include "processor/ProcessorFactory.h"
-#include "request/API/Request.h"
 #include "request/factory/RequestFactory.h"
 #include "request/factory/RequestBodyFactory.h"
-#include "request/API/RequestHeader.h"
 #include "request/factory/RequestHeaderFactory.h"
 #include "location/ProcessorLocator.h"
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
 #include "cookie/factory/CookieFactory.h"
 #include "error/HttpErrorFactory.h"
-// #include "response/API/ResponseHeader.h"
+#include "Server.h"
 
 // class ResponseHeader;
-class HttpServer : public ConnectorListener
+class HttpServer : public ConnectorListener, public Server
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -56,6 +56,7 @@ private:
 	void instantiateProcessLocator();
 	void addUltimateHeaders(Response *resp);
 	bool _checkAccess(Request *request);
+	bool checkRequestBodySize(Request *request, Response *&response);
 
 public:
 	HttpServer();

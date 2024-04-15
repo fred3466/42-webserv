@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 
-#include "../request/API/Request.h"
-#include "../response/API/Response.h"
+#include "../API/Request.h"
+#include "../API/Response.h"
 
 class Connector;
 
