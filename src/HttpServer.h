@@ -66,8 +66,6 @@ public:
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 
-	bool checkRequestBodySize(Request *request, Response *&response);
-
 	Response *createErrorResponse(int errorCode);
 	std::string determineServerBlockKey(Request *request);
 
