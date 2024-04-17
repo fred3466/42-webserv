@@ -22,7 +22,7 @@ std::string StringUtil::fromListToString(std::list<std::string> *l)
 {
 	std::string ret;
 	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end();
-			ite++)
+		 ite++)
 	{
 		ret += *ite;
 	}
@@ -47,7 +47,7 @@ std::string StringUtil::fromCArrayToString(const char *a[])
 	return ret;
 }
 
-//supprime les espaces en fin de chaine
+// supprime les espaces en fin de chaine
 std::string StringUtil::rtrim(std::string &s)
 {
 	if (s.empty())
@@ -55,13 +55,7 @@ std::string StringUtil::rtrim(std::string &s)
 	;
 
 	std::string::iterator p;
-	for (p = s.end() - 1; p != s.begin()
-			&& (
-			*p == ' '
-					|| *p == '\t'
-					|| *p == '\n' || *p == '\r'
-			)
-			;)
+	for (p = s.end() - 1; p != s.begin() && (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r');)
 		p--;
 
 	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' && *p != '\0')
@@ -72,31 +66,26 @@ std::string StringUtil::rtrim(std::string &s)
 	return s;
 }
 
-//supprime les espaces en début de chaine
+// supprime les espaces en début de chaine
 std::string StringUtil::ltrim(std::string &s)
 {
 	if (s.empty())
 		return "";
 
 	std::string::iterator p;
-	for (p = s.begin(); p != s.end()
-			&& (
-			*p == ' '
-					|| *p == '\t'
-					|| *p == '\n' || *p == '\r'
-			); p++)
+	for (p = s.begin(); p != s.end() && (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r'); p++)
 		;
-//			p++;
+	//			p++;
 
-//	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
-//		p--;
+	//	if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\0')
+	//		p--;
 
 	if (p != s.begin())
 		s.erase(s.begin(), p);
 	return s;
 }
 
-//supprime les espaces en début et fin de chaine
+// supprime les espaces en début et fin de chaine
 std::string StringUtil::trim(std::string &s)
 {
 	std::string rtrimmed = rtrim(s);
@@ -112,7 +101,7 @@ bool StringUtil::isCommented(std::string s)
 {
 	bool bMoreSpaces = true;
 	int i;
-	for (i = 0; bMoreSpaces && (i < (int) s.length()); i++)
+	for (i = 0; bMoreSpaces && (i < (int)s.length()); i++)
 	{
 		bMoreSpaces = isSpace(s[i]);
 	}
@@ -128,7 +117,7 @@ bool StringUtil::isalnum(std::string s)
 	const char *cstr = s.c_str();
 	while (ret && std::isalnum(cstr[i]))
 		i++;
-	return i == (int) s.length();
+	return i == (int)s.length();
 }
 
 std::string StringUtil::dedoublonne(std::string s, std::string cherche)
@@ -146,20 +135,18 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	char *cstrWithNoTab = new char[s.length()];
 	memccpy(cstrWithNoTab, s.c_str(), 0, s.length());
 
-	for (int i = 0; i < (int) s.length(); i++)
+	for (int i = 0; i < (int)s.length(); i++)
 	{
 		bool bIsSpaces = isSpace(cstrWithNoTab[i]) && cstrWithNoTab[i] != ' ';
 		if (bIsSpaces)
 			cstrWithNoTab[i] = ' ';
 	}
-	if (isSpace(cstrWithNoTab[s.length() - 1])
-			&& cstrWithNoTab[s.length() - 1] != ' ')
+	if (isSpace(cstrWithNoTab[s.length() - 1]) && cstrWithNoTab[s.length() - 1] != ' ')
 		cstrWithNoTab[s.length() - 1] = ' ';
 
-	for (int i = 0; i < (int) s.length(); i++)
+	for (int i = 0; i < (int)s.length(); i++)
 	{
-		bool bTwosSpaces = isSpace(cstrWithNoTab[i]) && i > 0
-				&& isSpace(cstrWithNoTab[i - 1]);
+		bool bTwosSpaces = isSpace(cstrWithNoTab[i]) && i > 0 && isSpace(cstrWithNoTab[i - 1]);
 		if (!bTwosSpaces && i > 0)
 			ret += cstrWithNoTab[i - 1];
 	}
@@ -198,7 +185,8 @@ std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSep
 			getline(ss, word, sep);
 			ret.push_back(word);
 		}
-	} else
+	}
+	else
 	{
 		int nbSeparatorsToProcess = nbSeparatorsToProcessParam;
 		while (!ss.eof() && nbSeparatorsToProcess--)
@@ -214,10 +202,10 @@ std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSep
 }
 
 std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
-		int index,
-		std::string defaultValue)
+											int index,
+											std::string defaultValue)
 {
-	if ((int) v.size() > index)
+	if ((int)v.size() > index)
 		return v[index];
 	else
 		return defaultValue;
@@ -236,7 +224,6 @@ std::string StringUtil::strFromInt(int i)
 	ss >> ret;
 
 	return ret;
-
 }
 int StringUtil::intFromStr(std::string s)
 {
@@ -245,7 +232,6 @@ int StringUtil::intFromStr(std::string s)
 	ss >> resInt;
 
 	return resInt;
-
 }
 
 std::string StringUtil::formatDate(time_t mtime, std::string strFormat)
@@ -265,4 +251,14 @@ std::string StringUtil::toHexa(int i)
 	stream >> ret;
 
 	return ret;
+}
+
+std::string StringUtil::getAliasFromVal(const std::string &val)
+{
+	std::vector<std::string> tokens = tokenize(val, ' ');
+	if (tokens.size() >= 2)
+	{
+		return tokens[1];
+	}
+	return "";
 }

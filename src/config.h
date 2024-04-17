@@ -35,8 +35,10 @@
 #define CGI_HANDLER_INC_PHP "CGIHandlerPHP.h"
 #define CGI_HANDLER_CLASS_PHP CGIHandlerPHP
 
-//#define CGI_HANDLER_INC_PHP "CGIHandlerLeg.h"
-//#define CGI_HANDLER_CLASS_PHP CGIHandlerLeg
+// #define CGI_HANDLER_INC_PHP "CGIHandlerLeg.h"
+// #define CGI_HANDLER_CLASS_PHP CGIHandlerLeg
 
-//#define CGI_HANDLER_INC_SH "CGIHandlerLeg.h"
-//#define CGI_HANDLER_CLASS_SH CGIHandlerLeg
+// #define CGI_HANDLER_INC_SH "CGIHandlerLeg.h"
+// #define CGI_HANDLER_CLASS_SH CGIHandlerLeg
+
+#define MAX_BODY_SIZE 4098

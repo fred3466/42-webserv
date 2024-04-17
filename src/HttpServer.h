@@ -38,7 +38,7 @@
 #include "Server.h"
 
 // class ResponseHeader;
-class HttpServer: public ConnectorListener, public Server
+class HttpServer : public ConnectorListener, public Server
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -48,9 +48,9 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
-	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-			Response *resp);
-	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+								Response *resp);
+	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
@@ -65,6 +65,9 @@ public:
 	virtual void init(Config *conf);
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
+
+	Response *createErrorResponse(int errorCode);
+	std::string determineServerBlockKey(Request *request);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
