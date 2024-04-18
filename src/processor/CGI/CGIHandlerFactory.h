@@ -7,6 +7,7 @@
 #include "../../Harl.h"
 #include "impl/CGIHandlerPerl.h"
 #include "impl/CGIHandlerPHP.h"
+#include "impl/CGIHandlerSh.h"
 
 class CGIHandlerFactory
 {
