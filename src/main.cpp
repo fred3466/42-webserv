@@ -8,6 +8,12 @@
 
 // }
 
+void signalHandler(int signum)
+{
+	std::cout << "GoodBye.\n";
+	exit(signum);
+}
+
 int main(int ac, char **av)
 {
 	Harl harl = Harl();
@@ -20,6 +26,7 @@ int main(int ac, char **av)
 		std::string path = std::string(av[1]);
 		//				std::string path = "conf/webserv.conf";
 		ConfigReader cr = ConfigReader();
+		signal(SIGINT, signalHandler);
 		std::vector<Config *> configVector = std::vector<Config *>();
 		if (!fu.fileExists(path))
 		{
