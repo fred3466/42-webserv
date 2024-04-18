@@ -67,7 +67,6 @@ SRC_FILES	= \
    	config/ConfigReader \
    	config/ConfigValidator \
 	config/ResponseConfig \
-	config/RequestConfig \
 	response/ResponseHttp \
 	response/ResponseHttpHeader \
  	response/ResponseTools \

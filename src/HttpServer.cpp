@@ -127,83 +127,26 @@ bool HttpServer::_checkAccess(Request *request)
 
 bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 {
-	int requestBodySize = request->getBody()->getContent()->length();
+	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
+	int contentLength = StringUtil().intFromStr(contentLengthStr);
 	int maxBodySize = this->config->getParamInt("max_body_size", 4096);
 
-	if (requestBodySize > maxBodySize)
+	if (contentLength > maxBodySize)
 	{
 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-				   request->getUri().getUri().c_str(), requestBodySize, maxBodySize);
+				   request->getUri().getUri().c_str(), contentLength, maxBodySize);
 
+		HttpError *error = HttpErrorFactory().build(413);
 		if (!response)
 		{
-			response = createErrorResponse(413);
+			ResponseHeader *header = ResponseHeaderFactory().build();
+			response = ResponseFactory().build(header);
 		}
-		else
-		{
-			HttpError *error = HttpErrorFactory().build(413);
-			response->setHttpError(error);
-			response->setStatusLine(error->getStatusLine());
-		}
+		response->setHttpError(error);
 		return false;
 	}
 	return true;
 }
-
-// bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
-// {
-// 	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
-// 	int contentLength = StringUtil().intFromStr(contentLengthStr);
-
-// 	// Dynamically determine the server block key based on the request
-// 	std::string serverBlockKey = determineServerBlockKey(request);
-// 	std::string configKey = serverBlockKey + ".max_body_size";
-
-// 	// Fetch the max body size from config without default here
-// 	int maxBodySize;
-// 	try
-// 	{
-// 		maxBodySize = this->config->getParamInt(configKey);
-// 		if (maxBodySize <= 0)
-// 		{
-// 			throw std::runtime_error("Invalid max body size configuration.");
-// 		}
-// 	}
-// 	catch (const std::exception &e)
-// 	{
-// 		harl.error("Configuration error for [%s]: %s", serverBlockKey.c_str(), e.what());
-// 		if (!response)
-// 		{
-// 			response = createErrorResponse(500); // 500 Internal Server Error
-// 		}
-// 		else
-// 		{
-// 			HttpError *error = HttpErrorFactory().build(500);
-// 			response->setHttpError(error);
-// 			response->setStatusLine(error->getStatusLine());
-// 		}
-// 		return false;
-// 	}
-
-// 	if (contentLength > maxBodySize)
-// 	{
-// 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-// 				   request->getUri().getUri().c_str(), contentLength, maxBodySize);
-
-// 		if (!response)
-// 		{
-// 			response = createErrorResponse(413);
-// 		}
-// 		else
-// 		{
-// 			HttpError *error = HttpErrorFactory().build(413);
-// 			response->setHttpError(error);
-// 			response->setStatusLine(error->getStatusLine());
-// 		}
-// 		return false;
-// 	}
-// 	return true;
-// }
 
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
@@ -212,56 +155,47 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
 	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e.getFdClient());
-	// seg fault
 	CookieFactory().build(reqHeader);
-	//	req->dump();
 
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().getUri().c_str());
-	//	harl.debug("HttpServer::onDataReceiving Request HEADER: \n%s", request->getHeader()->toString().c_str());
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
+
+	Response *resp = createErrorResponse(200);
 
 	if (!_checkAccess(request))
 	{
-		Response *resp = createErrorResponse(403);
+		delete resp;
+		resp = handleHttpError(403);
 		int *fdSocket = e.getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
 		return;
 	}
-
-	Response *resp = createErrorResponse(200);
 
 	if (!checkRequestBodySize(request, resp))
 	{
 		int *fdSocket = e.getFdClient();
+		delete resp;
+		resp = handleHttpError(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
 		return;
 	}
 
-	int errorCode = 200;
-	HttpError *error = HttpErrorFactory().build(errorCode);
-	resp->setHttpError(error);
-
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
 	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
-
 	resp = runProcessorChain(processorList, request, resp);
 	delete processorList;
 
 	if (!resp)
 	{
-		harl.error("HttpServer::onDataReceiving : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
+		harl.error("HttpServer::onDataReceiving : Problem with response for [%s]", request->getUri().getUri().c_str());
+		resp = handleHttpError(500);
 	}
-
-	//	TODO Anastasia: ça devrait se faire seulement dans le filtre, et non pas en plusieurs endroits comme ici...
-	HttpError *he = resp->getHttpError();
-	resp->setStatusLine(he->getStatusLine());
 
 	int *fdSocket = e.getFdClient();
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 
-	//	TODO Fred keepalive
 	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
 		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().getUri().c_str());
@@ -464,47 +398,11 @@ Response *HttpServer::createErrorResponse(int errorCode)
 	return resp;
 }
 
-std::string HttpServer::determineServerBlockKey(Request *request)
+Response *HttpServer::handleHttpError(int errorCode)
 {
-	std::string hostname = request->getHeader()->getFieldValue("Host");
-	if (hostname.empty() || hostname == "default")
-	{
-		return "default"; // Ensure there is a 'default' configuration in your system
-	}
-	if (hostname == "s1.org")
-	{
-		return "s1";
-	}
-	if (hostname == "s2.org")
-	{
-		return "s1"; // Assuming you want to map s2.org to s1 configuration for now
-	}
-	return "default"; // Fallback to default if no matching hostname
+	HttpError *error = HttpErrorFactory::build(errorCode);
+	Response *response = createErrorResponse(errorCode);
+	response->setHttpError(error);
+	response->setStatusLine(error->getStatusLine());
+	return response;
 }
-
-// std::string HttpServer::determineServerBlockKey(Request *request)
-// {
-// 	// Get the hostname from the HTTP request
-// 	std::string hostname = request->getHeader()->getFieldValue("Host");
-
-// 	// Example logic to determine the server block key based on the hostname
-// 	if (hostname.empty())
-// 	{
-// 		return "default"; // Use a default if no hostname is provided
-// 	}
-
-// 	// Simple mapping based on hostname
-// 	if (hostname == "s1.org")
-// 	{
-// 		return "s1";
-// 	}
-// 	else if (hostname == "s2.org")
-// 	{
-// 		return "s2";
-// 	}
-
-// 	// Add more conditions as necessary for different hostnames
-
-// 	// Default fallback
-// 	return "default";
-// }
