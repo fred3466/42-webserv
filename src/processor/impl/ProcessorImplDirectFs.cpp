@@ -51,6 +51,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 	{
 		std::string bodyStr = "";
 
+//		DIRECTORY
 		if (_stat.st_mode & S_IFDIR)
 		{
 			std::vector<std::string> files = fu.listDir(path);
@@ -64,8 +65,8 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 			char *body = new char[bodyStrSize];
 			response->setBodyLength(bodyStrSize);
 			bodyStr.copy(body, bodyStrSize, 0);
-		}
-		else if (_stat.st_mode & S_IFREG)
+//		FILE
+		} else if (_stat.st_mode & S_IFREG)
 		{
 			std::string fileExt = path.substr(
 					path.rfind(".", std::string::npos));
@@ -87,47 +88,46 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 				// something else
 			}
 		}
-		else
-		{
-			// error
-			harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
-			// response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
-			response->setErrorCodeTmp(404);
-		}
-		//---------------------testing cooking------------------
-		/*	Cookie cookie;
-		 cookie.setName("TEST");
-		 cookie.setValue("42");
-		 long age = 3600;
-		 cookie.setMaxAge(age);
-		 cookie.setDomain("localhost");
-		 cookie.setPath("/");
-		 resp->getHeader()->addCookie(cookie);
-
-		 cookie.setName("SID");
-		 cookie.setValue("123456");
-		 age = 3600;
-		 cookie.setMaxAge(age);
-		 cookie.setDomain("localhost");
-		 cookie.setPath("/");
-		 resp->getHeader()->addCookie(cookie);
-
-		 cookie.setName("VAL");
-		 cookie.setValue("bonjour");
-		 age = 3600;
-		 cookie.setMaxAge(age);
-		 cookie.setDomain("localhost");
-		 cookie.setPath("/");
-		 resp->getHeader()->addCookie(cookie);*/
-		//-----------------------------------------------------
-		//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
-		//    _response_content.append(statusCodeString(_code));
-		//    _response_content.append("\r\n");
-		////	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-		//	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-		////	resp->setBody("<html><body>" + body + "</body></html>");
-		//	resp->setBody(body);
+	} else
+	{
+		// error
+		harl.warning("ProcessorImplDirectFs::process : %s n'existe pas.", path.c_str());
+		// response->getHeader()->setStatusLine("HTTP/1.1 404 NOT FOUND\r\n");
+		response->setErrorCodeTmp(404);
 	}
+	//---------------------testing cooking------------------
+	/*	Cookie cookie;
+	 cookie.setName("TEST");
+	 cookie.setValue("42");
+	 long age = 3600;
+	 cookie.setMaxAge(age);
+	 cookie.setDomain("localhost");
+	 cookie.setPath("/");
+	 resp->getHeader()->addCookie(cookie);
+
+	 cookie.setName("SID");
+	 cookie.setValue("123456");
+	 age = 3600;
+	 cookie.setMaxAge(age);
+	 cookie.setDomain("localhost");
+	 cookie.setPath("/");
+	 resp->getHeader()->addCookie(cookie);
+
+	 cookie.setName("VAL");
+	 cookie.setValue("bonjour");
+	 age = 3600;
+	 cookie.setMaxAge(age);
+	 cookie.setDomain("localhost");
+	 cookie.setPath("/");
+	 resp->getHeader()->addCookie(cookie);*/
+	//-----------------------------------------------------
+	//    _response_content.append("HTTP/1.1 " + toString(_code) + " ");
+	//    _response_content.append(statusCodeString(_code));
+	//    _response_content.append("\r\n");
+	////	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
+	//	resp->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
+	////	resp->setBody("<html><body>" + body + "</body></html>");
+	//	resp->setBody(body);
 	return response;
 }
 
@@ -136,14 +136,12 @@ void ProcessorImplDirectFs::addProperty(std::string name, std::string value)
 	config->addParam(name, value);
 }
 
-std::string
-ProcessorImplDirectFs::toString()
+std::string ProcessorImplDirectFs::toString()
 {
 	return "ProcessorImplDirectFs";
 }
 
-ProcessorTypeEnum
-ProcessorImplDirectFs::getType()
+ProcessorTypeEnum ProcessorImplDirectFs::getType()
 {
 	return type;
 }

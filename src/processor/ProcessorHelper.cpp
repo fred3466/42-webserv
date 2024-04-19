@@ -43,7 +43,8 @@ void ProcessorHelper::applyTransferEncodingOrContentLengthAndFinalize(Response *
 	{
 		*cgiOutput = "\r\n" + *cgiOutput + "\r\n\r\n";
 	}
-	response->setBodyLength(bodyLen);
+//	response->setBodyLength(bodyLen);
+	response->setBodyLength((*cgiOutput).length());
 	char *bodybin = new char[(*cgiOutput).length() + 1];
 	std::copy((*cgiOutput).begin(), (*cgiOutput).end(), bodybin);
 	bodybin[(*cgiOutput).length()] = '\0';
