@@ -56,6 +56,7 @@ SRC_FILES	= \
 	processor/CGI/CGIHandlerFactory \
 	processor/CGI/impl/CGIHandlerPHP \
 	processor/CGI/impl/CGIHandlerPerl \
+	processor/CGI/impl/CGIHandlerSh \
 	processor/ProcessorHelper \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \
@@ -67,7 +68,6 @@ SRC_FILES	= \
    	config/ConfigReader \
    	config/ConfigValidator \
 	config/ResponseConfig \
-	config/RequestConfig \
 	response/ResponseHttp \
 	response/ResponseHttpHeader \
  	response/ResponseTools \

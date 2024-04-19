@@ -35,5 +35,6 @@ public:
 	int intFromStr(std::string s);
 	std::string formatDate(time_t mtime, std::string strFormat);
 	std::string toHexa(int i);
+	std::string getAliasFromVal(const std::string &val);
 	std::string replace_all(std::string &s, std::string const &toReplace, std::string const &replaceWith);
 };

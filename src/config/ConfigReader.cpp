@@ -8,10 +8,10 @@ ConfigReader::~ConfigReader()
 {
 }
 
-Config* findConfigByAlias(std::vector<Config*> *v, std::string alias)
+Config *findConfigByAlias(std::vector<Config *> *v, std::string alias)
 {
 	Config *ret = NULL;
-	std::vector<Config*>::iterator ite;
+	std::vector<Config *>::iterator ite;
 	for (ite = v->begin(); ite != v->end(); ite++)
 	{
 		std::string aliasTmp = (*ite)->getAlias();
@@ -21,15 +21,15 @@ Config* findConfigByAlias(std::vector<Config*> *v, std::string alias)
 	return ret;
 }
 
-bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
-		std::string path)
+bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
+									 std::string path)
 {
 	ConfigFactory factory = ConfigFactory();
 	Harl harl = Harl();
 	std::string fullKey, val;
 	StringUtil su = StringUtil();
 	std::ifstream is(path.c_str());
-//	TODO et la factory alors?
+	//	TODO et la factory alors?
 	ConfigValidator validator = ConfigValidator();
 	int lineNumber = 0;
 	bool bValidated = true;
@@ -44,9 +44,9 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			Config *c = NULL;
 			std::vector<std::string> toksFullKey;
 			if (is.peek() == '0' || line.empty()
-					//					|| line.length() == 0
-//					|| !line.c_str()
-					)
+				//					|| line.length() == 0
+				//					|| !line.c_str()
+			)
 			{
 				continue;
 			}
@@ -58,9 +58,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			harl.info(line);
 
 			su.trim(line);
-			if (is.peek() == '0' || line.empty() || line + "" == ""
-					|| line.length() == 0
-					|| !line.c_str())
+			if (is.peek() == '0' || line.empty() || line + "" == "" || line.length() == 0 || !line.c_str())
 			{
 				continue;
 			}
@@ -85,18 +83,17 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			std::stringstream ss(line);
 			std::getline(ss, fullKey, '=');
 			su.ltrim(fullKey);
-			if (fullKey.empty() || fullKey == "" || fullKey.length() == 0
-					|| !fullKey.c_str())
+			if (fullKey.empty() || fullKey == "" || fullKey.length() == 0 || !fullKey.c_str())
 			{
 				continue;
 			}
 			std::getline(ss, val, '=');
-//			std::string alias;
+			//			std::string alias;
 			std::vector<std::string> toksVal = su.tokenize(val, ' ');
 			std::string key = "";
-//			std
+			//			std
 
-//			SERVER
+			//			SERVER
 			if (fullKey == "server")
 			{
 				c = factory.build();
@@ -104,17 +101,17 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				getcwd(webservPath, 1024);
 				c->addParam("ROOT_PATH", webservPath);
 
-//				toksVal = su.tokenize(val, ' ');
+				//				toksVal = su.tokenize(val, ' ');
 
-//				Validating
-				//alias must be unique
+				//				Validating
+				// alias must be unique
 				std::string alias = c->getAlias();
 				if (!validator.checkAlias(*ret, c, alias))
 				{
 					bValidated = false;
 					harl.error(
-							"Multiple occurrence of the same alias/name for [%s] in line %i",
-							alias.c_str(), lineNumber);
+						"Multiple occurrence of the same alias/name for [%s] in line %i",
+						alias.c_str(), lineNumber);
 				}
 				else
 				{
@@ -128,7 +125,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			}
 			else
 			{
-//				exemple : s1.listen=8080
+				//				exemple : s1.listen=8080
 				toksFullKey = su.tokenize(fullKey, '.');
 				std::string aliasKey = su.getNthTokenIfExists(toksFullKey, 0, "");
 				su.trim(aliasKey);
@@ -136,14 +133,14 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				c = findConfigByAlias(ret, aliasKey);
 			}
 
-//			base_path
+			//			base_path
 			if (key == "base_path")
 			{
 				std::string base_path = su.getNthTokenIfExists(toksVal, 0, "");
 				char *path = realpath(base_path.c_str(), NULL);
 				if (path == NULL)
 				{
-//					TODO traiter l'erreur de configuration et abandonner le chargement (erreur fatale)!
+					//					TODO traiter l'erreur de configuration et abandonner le chargement (erreur fatale)!
 				}
 				else
 				{
@@ -157,10 +154,10 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 			else if (key == "server_name")
 			{
 				c->addParam("server_name",
-						su.getNthTokenIfExists(toksVal, 0, ""));
+							su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 
-//			listen
+			//			listen
 			else if (key == "listen")
 			{
 				std::string ip = su.getNthTokenIfExists(toksVal, 0, "127.0.0.1");
@@ -169,7 +166,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 				c->addParam("port", port);
 			}
 
-//			listen
+			//			listen
 			else if (key == "location")
 			{
 				std::string urlPath = su.getNthTokenIfExists(toksFullKey, 2, "");
@@ -194,8 +191,85 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 	return bValidated;
 }
 
-//Config
-//ConfigReader::read(std::string path)
+// Config *findConfigByAlias(std::vector<Config *> *v, std::string alias)
+// {
+// 	for (auto &config : *v)
+// 	{
+// 		if (config->getAlias() == alias)
+// 		{
+// 			return config;
+// 		}
+// 	}
+// 	return NULL;
+// }
+
+// bool ConfigReader::buildConfigVector(std::vector<Config *> *ret, std::string path)
+// {
+// 	ConfigFactory factory;
+// 	Harl harl;
+// 	StringUtil su;
+// 	std::ifstream is(path.c_str());
+// 	ConfigValidator validator;
+// 	int lineNumber = 0;
+// 	bool bValidated = true;
+
+// 	std::string line;
+// 	if (is.is_open())
+// 	{
+// 		while (std::getline(is, line))
+// 		{
+// 			lineNumber++;
+// 			// No need to clear the std::ifstream here in this context.
+// 			if (line.empty() || su.isCommented(line))
+// 			{
+// 				continue; // Skip empty or commented lines early.
+// 			}
+
+// 			line = su.normalizeSpaces(line);
+// 			harl.info(line);
+
+// 			std::stringstream ss(line); // Using std::stringstream from C++98
+// 			std::string fullKey, val;
+// 			std::getline(ss, fullKey, '=');
+// 			fullKey = su.ltrim(fullKey); // Assuming ltrim returns the trimmed string.
+// 			if (fullKey.empty())
+// 			{
+// 				continue; // Skip if the key is empty after trim.
+// 			}
+
+// 			if (std::getline(ss, val, '='))
+// 			{
+// 				val = su.trim(val); // Assuming trim returns the trimmed string.
+
+// 				if (fullKey == "server")
+// 				{
+// 					Config *c = factory.build(); // Properly define the Config object here
+// 					std::string alias = su.getAliasFromVal(val);
+// 					if (!validator.checkAlias(*ret, c, alias))
+// 					{
+// 						bValidated = false;
+// 						harl.error("Duplicate server alias [%s] found in line %i", alias.c_str(), lineNumber);
+// 						delete c; // Clean up to avoid memory leak
+// 						continue;
+// 					}
+// 					// After validation passes, use the alias for further configuration setup
+// 					c->setAlias(alias); // Make sure setAlias is called before pushing to vector
+// 					ret->push_back(c);
+// 				}
+// 				else
+// 				{
+// 					// Assuming 'c' is previously defined and valid here for processing other keys
+// 					// Process other configurations.
+// 				}
+// 			}
+// 		}
+// 		is.close();
+// 	}
+// 	return bValidated;
+// }
+
+// Config
+// ConfigReader::read(std::string path)
 //{
 //	Config config = Config();
 //	Harl harl = Harl();
@@ -217,4 +291,4 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 //		is.close();
 //	}
 //	return config;
-//}
+// }
