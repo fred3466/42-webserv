@@ -88,7 +88,7 @@ std::vector<ProcessorAndLocationToProcessor*>* ProcessorLocator::listOrderedProc
 			continue;
 		}
 
-//		TODO : matcher le plus long urlPathIte sur l'url =>classer les motifs url par ordre décroissant de taille
+//		matcher le plus long urlPathIte sur l'url =>classer les motifs url par ordre décroissant de taille
 		int pos = 0;
 		int len = urlPath.length();
 		int nbCharMatching = pathReq.compare(pos, len, urlPath);

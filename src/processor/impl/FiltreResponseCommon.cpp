@@ -31,19 +31,10 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	std::string path;
 	path = request->getUri().getUri();
 
-	//	PHP
-//	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
+	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
 //	header->addField("Access-Control-Allow-Origin", "*");
-	header->addField("Server", "nginx/1.22.1");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
 	header->addField("Date", date);
-	//	Voir filtre MimeType
-	//	header->addField("Content-Type", "");
-	//	TODO fred post à vérifier 29/03
-	//	TODO on s'en fout ??? => 02/04 fred: on dirait que non !
-//	header->addField("Transfer-Encoding", "chunked"); // chunked
-	//	le contraire de keep-alive
-	//	TODO fred à vérifier 29/03
 	bool isKeepAlive = request->isConnectionKeepAlive();
 	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
 
@@ -68,25 +59,10 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 		}
 	}
 
-	//	html jpg
-	//	TODO à implémenter ! fred => voir HttpServer
 	int length = response->getBodyLength();
 	std::string lString = stringUtil.strFromInt(length);
 	header->addField("Content-Length", lString);
-
-	//	TODO la date du fichier si statique , idem si html statique, absent si dynamique (php)
-	header->addField("Last-Modified", "");
-	//	TODO si implémenté, devrait être dans chaque implémentation de Processor (selon que c'est une ressource statique ou pas)
-	header->addField("ETag", ""); // 65f5bc3b-17e9
-	//	TODO présent partout !
 //	header->addField("Accept-Ranges", "bytes");
-	//	header->addField("", "");
-	//	header->addField("", "");
-	//	header->addField("", "");
-	//	header->addField("", "");
-	//	header->addField("", "");
-	//	header->addField("", "");
-	//	header->addField("", "");
 
 	return response;
 }

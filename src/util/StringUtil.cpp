@@ -22,7 +22,7 @@ std::string StringUtil::fromListToString(std::list<std::string> *l)
 {
 	std::string ret;
 	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end();
-		 ite++)
+			ite++)
 	{
 		ret += *ite;
 	}
@@ -101,7 +101,7 @@ bool StringUtil::isCommented(std::string s)
 {
 	bool bMoreSpaces = true;
 	int i;
-	for (i = 0; bMoreSpaces && (i < (int)s.length()); i++)
+	for (i = 0; bMoreSpaces && (i < (int) s.length()); i++)
 	{
 		bMoreSpaces = isSpace(s[i]);
 	}
@@ -117,7 +117,7 @@ bool StringUtil::isalnum(std::string s)
 	const char *cstr = s.c_str();
 	while (ret && std::isalnum(cstr[i]))
 		i++;
-	return i == (int)s.length();
+	return i == (int) s.length();
 }
 
 std::string StringUtil::dedoublonne(std::string s, std::string cherche)
@@ -135,7 +135,7 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	char *cstrWithNoTab = new char[s.length()];
 	memccpy(cstrWithNoTab, s.c_str(), 0, s.length());
 
-	for (int i = 0; i < (int)s.length(); i++)
+	for (int i = 0; i < (int) s.length(); i++)
 	{
 		bool bIsSpaces = isSpace(cstrWithNoTab[i]) && cstrWithNoTab[i] != ' ';
 		if (bIsSpaces)
@@ -144,7 +144,7 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	if (isSpace(cstrWithNoTab[s.length() - 1]) && cstrWithNoTab[s.length() - 1] != ' ')
 		cstrWithNoTab[s.length() - 1] = ' ';
 
-	for (int i = 0; i < (int)s.length(); i++)
+	for (int i = 0; i < (int) s.length(); i++)
 	{
 		bool bTwosSpaces = isSpace(cstrWithNoTab[i]) && i > 0 && isSpace(cstrWithNoTab[i - 1]);
 		if (!bTwosSpaces && i > 0)
@@ -202,10 +202,10 @@ std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSep
 }
 
 std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
-											int index,
-											std::string defaultValue)
+		int index,
+		std::string defaultValue)
 {
-	if ((int)v.size() > index)
+	if ((int) v.size() > index)
 		return v[index];
 	else
 		return defaultValue;
@@ -251,6 +251,30 @@ std::string StringUtil::toHexa(int i)
 	stream >> ret;
 
 	return ret;
+}
+
+std::string StringUtil::replace_all(std::string &s, std::string const &toReplace, std::string const &replaceWith)
+{
+	std::string buf;
+	std::size_t pos = 0;
+	std::size_t prevPos;
+
+	buf.reserve(s.size());
+
+	while (true)
+	{
+		prevPos = pos;
+		pos = s.find(toReplace, pos);
+		if (pos == std::string::npos)
+			break;
+		buf.append(s, prevPos, pos - prevPos);
+		buf += replaceWith;
+		pos += toReplace.size();
+	}
+
+	buf.append(s, prevPos, s.size() - prevPos);
+	s.swap(buf);
+	return s;
 }
 
 std::string StringUtil::getAliasFromVal(const std::string &val)

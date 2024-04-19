@@ -67,7 +67,7 @@ public:
 	virtual void onDataReceiving(ConnectorEvent e);
 
 	Response *createErrorResponse(int errorCode);
-	std::string determineServerBlockKey(Request *request);
+	Response *handleHttpError(int errorCode);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
@@ -82,6 +82,6 @@ public:
 	//	int getClientFd(int clientId);
 };
 
-// yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s1.org:8081/cgi-bin_fred/anastasia.php
+// yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s2.org:8082/cgi-bin_fred/anastasia.php
 
-// curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit" http://s1.org:8081/cgi-bin_fred/anastasia.php
+// curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit" http://s2.org:8082/cgi-bin_fred/anastasia.php

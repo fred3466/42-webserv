@@ -2,11 +2,13 @@
 
 Processor::Processor(ProcessorTypeEnum type)
 {
-	(void) type;
+	this->type = type;
 }
-Processor::Processor()
+
+Processor::Processor() : type(CONTENT_MODIFIER)
 {
 }
+
 Processor::~Processor()
 {
 }
