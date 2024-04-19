@@ -225,7 +225,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
-		Processor *processor = processorAndLocationToProcessor->getProcessor(); //		processorList->at(0);
+		Processor *processor = processorAndLocationToProcessor->getProcessor();
 		bool bBypassingExclusif = processor->isBypassingExclusif();
 
 		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
@@ -234,9 +234,6 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 					processor->toString().c_str());
 			continue;
 		}
-
-		//		harl.debug("HttpServer::runProcessorChain : injecting Config [%s]", config->getAlias().c_str());
-		//		processor->setConfig(config);
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
 				request->getUri().getUri().c_str(),
@@ -249,7 +246,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 		if (processor->isExclusif())
 		{
-			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF", processor->toString().c_str());
+			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF pour la constitution du corps de la réponse", processor->toString().c_str());
 			oneIsExclusif = true;
 		}
 
@@ -264,7 +261,44 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 void HttpServer::addUltimateHeaders(Response *resp)
 {
 	ResponseHeader *header = resp->getHeader();
+	//   The Content-Length entity-header field indicates the size of the
+	//   entity-body, in decimal number of OCTETs, sent to the recipient or,
+	//   in the case of the HEAD method, the size of the entity-body that
+	//   would have been sent had the request been a GET.
+	//
+	//       Content-Length    = "Content-Length" ":" 1*DIGIT
+	//
+	//   An example is
+	//
+	//       Content-Length: 3495
+	//
+	//   Applications SHOULD use this field to indicate the transfer-length of
+	//   the message-body, unless this is prohibited by the rules in section
+	//   4.4.
 
+	//	4.4 Message Length
+	//
+	//	   The transfer-length of a message is the length of the message-body as
+	//	   it appears in the message; that is, after any transfer-codings have
+	//	   been applied. When a message-body is included with a message, the
+	//	   transfer-length of that body is determined by one of the following
+	//	   (in order of precedence):
+	//
+	//	   1.Any response message which "MUST NOT" include a message-body (such
+	//	     as the 1xx, 204, and 304 responses and any response to a HEAD
+	//	     request) is always terminated by the first empty line after the
+	//	     header fields, regardless of the entity-header fields present in
+	//	     the message.
+	//
+	//	   2.If a Transfer-Encoding header field (section 14.41) is present and
+	//	     has any value other than "identity", then the transfer-length is
+	//	     defined by use of the "chunked" transfer-coding (section 3.6),
+	//	     unless the message is terminated by closing the connection.
+	//
+	//	   3.If a Content-Length header field (section 14.13) is present, its
+	//	     decimal value in OCTETs represents both the entity-length and the
+	//	     transfer-length. The Content-Length header field MUST NOT be sent
+	//	     if these two lengths are different (i.e., if a Transfer-Encoding
 	std::string transferEncoding = header->getFieldAsStr("Transfer-Encoding", "");
 	int contentLengthHeader = header->getFieldAsInt("Content-Length", -1);
 	int contentLengthResponse = resp->getBodyLength();

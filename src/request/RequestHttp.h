@@ -45,5 +45,5 @@ public:
 	virtual RequestBody* getBody();
 
 	virtual bool isConnectionKeepAlive() throw (char*);
-	std::string getRemoteIpPort();
+	virtual std::string getRemoteIpPort();
 };

@@ -28,9 +28,9 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 
 Processor* ProcessorFactory::build(std::string procName)
 {
-	//	TODO new
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
 	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
+	//	TODO new
 	if (procName == "PHP_PROCESSOR")
 	{
 		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
