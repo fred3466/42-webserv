@@ -5,7 +5,7 @@
 #include "Uri/Uri.h"
 
 // void bye(){
-
+HttpServer server;
 // }
 
 void signalHandler(int signum)
@@ -18,7 +18,6 @@ int main(int ac, char **av)
 {
 	Harl harl = Harl();
 	FileUtil fu = FileUtil();
-	HttpServer server;
 	// TODO gestion des erreurs
 
 	if (ac == 2)
