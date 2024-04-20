@@ -234,6 +234,19 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 				bBypassingExclusif);
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
+
+		if (resp->getErrorCodeTmp() != 200)
+		{
+			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
+			HttpReturnCodeHelper errHelper = HttpReturnCodeHelper();
+
+//			1- get error page template
+//			2- search and replace placeholders in page
+//			3- destroy current response and generate new response (statusline, headers, body - error page content)
+//			4- send error response to browser
+//			5- stop request processing
+		}
+
 		if (processor->isExclusif())
 		{
 			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF pour la constitution du corps de la réponse", processor->toString().c_str());
