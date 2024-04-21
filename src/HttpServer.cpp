@@ -81,9 +81,9 @@ void HttpServer::instantiateProcessLocator()
 	} // for
 	delete locations;
 
-	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
-	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
-			ite != locationToProcessorVector.end(); ite++)
+	std::vector<LocationToProcessor *> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
+	for (std::vector<LocationToProcessor *>::iterator ite = locationToProcessorVector.begin();
+		 ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
@@ -105,7 +105,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void) e;
+	(void)e;
 }
 
 bool HttpServer::_checkAccess(Request *request)
@@ -113,7 +113,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -125,17 +125,41 @@ bool HttpServer::_checkAccess(Request *request)
 	return false;
 }
 
+// bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
+// {
+// 	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
+// 	int contentLength = StringUtil().intFromStr(contentLengthStr);
+// 	int maxBodySize = this->config->getParamInt("max_body_size", 4096);
+
+// 	if (contentLength > maxBodySize)
+// 	{
+// 		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
+// 				   request->getUri().getUri().c_str(), contentLength, maxBodySize);
+
+// 		HttpError *error = HttpErrorFactory().build(413);
+// 		if (!response)
+// 		{
+// 			ResponseHeader *header = ResponseHeaderFactory().build();
+// 			response = ResponseFactory().build(header);
+// 		}
+// 		response->setHttpError(error);
+// 		return false;
+// 	}
+// 	return true;
+// }
+
 bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 {
 	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
 	int contentLength = StringUtil().intFromStr(contentLengthStr);
-	int maxBodySize = this->config->getParamInt("max_body_size", 4096);
+	std::string uri = request->getUri().getUri();
+
+	// Get the maximum body size specific to the route or use the default.
+	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
 
 	if (contentLength > maxBodySize)
 	{
-		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).",
-				request->getUri().getUri().c_str(), contentLength, maxBodySize);
-
+		harl.error("Request for [%s] rejected: body size (%d bytes) exceeds the maximum allowed (%d bytes).", uri.c_str(), contentLength, maxBodySize);
 		HttpError *error = HttpErrorFactory().build(413);
 		if (!response)
 		{
@@ -183,7 +207,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	}
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
 	resp = runProcessorChain(processorList, request, resp);
 	delete processorList;
 
@@ -205,14 +229,14 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(request, resp);
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-		Response *resp)
+Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+										Response *resp)
 {
 	bool contentDone = false;
 	bool oneIsExclusif = false;
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -222,16 +246,16 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
 			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d skipping [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
-					processor->toString().c_str());
+					   processor->toString().c_str());
 			continue;
 		}
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
-				request->getUri().getUri().c_str(),
-				processor->toString().c_str(),
-				contentDone,
-				oneIsExclusif,
-				bBypassingExclusif);
+				   request->getUri().getUri().c_str(),
+				   processor->toString().c_str(),
+				   contentDone,
+				   oneIsExclusif,
+				   bBypassingExclusif);
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 
@@ -239,12 +263,13 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		{
 			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
 			HttpReturnCodeHelper errHelper = HttpReturnCodeHelper();
+			(void)errHelper;
 
-//			1- get error page template
-//			2- search and replace placeholders in page
-//			3- destroy current response and generate new response (statusline, headers, body - error page content)
-//			4- send error response to browser
-//			5- stop request processing
+			//			1- get error page template
+			//			2- search and replace placeholders in page
+			//			3- destroy current response and generate new response (statusline, headers, body - error page content)
+			//			4- send error response to browser
+			//			5- stop request processing
 		}
 
 		if (processor->isExclusif())
@@ -313,8 +338,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-				contentLengthHeader, contentLengthResponse);
+			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+			contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
 	//	08/04 fred
@@ -322,8 +347,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 		//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 		header->addField("Transfer-Encoding", "chunked");
 	else // TODO fred : vraiment ?
-	if (transferEncoding == "" && contentLengthHeader == -1)
-		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+		if (transferEncoding == "" && contentLengthHeader == -1)
+			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
@@ -341,7 +366,7 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 	return length;
 }
 
-char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -434,7 +459,7 @@ void shutFd(int fd)
 	}
 }
 
-Response* HttpServer::createErrorResponse(int errorCode)
+Response *HttpServer::createErrorResponse(int errorCode)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -445,7 +470,7 @@ Response* HttpServer::createErrorResponse(int errorCode)
 	return resp;
 }
 
-Response* HttpServer::handleHttpError(int errorCode)
+Response *HttpServer::handleHttpError(int errorCode)
 {
 	HttpError *error = HttpErrorFactory::build(errorCode);
 	Response *response = createErrorResponse(errorCode);

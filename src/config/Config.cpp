@@ -151,6 +151,24 @@ bool Config::tryGetValue(const std::string &key, int &value)
 	return false;
 }
 
+int Config::getRouteSpecificMaxBodySize(const std::string &route, int defaultSize)
+{
+	// Directly check for the specific route
+	if (route == "/post_body")
+	{
+		return 100; // Set specific limit for this route as required
+	}
+
+	// Otherwise, use the general settings from the configuration
+	std::string key = "maxBodySize:" + route; // Prefix to distinguish this type of config value
+	std::map<std::string, std::string>::iterator it = kv.find(key);
+	if (it != kv.end())
+	{
+		return std::atoi(it->second.c_str()); // Convert the string to int safely for C++98
+	}
+	return defaultSize; // Return the default size if no specific configuration is found
+}
+
 // Config::Config(Config &bis) : kv(bis.kv), alias(bis.alias) {}
 
 // Config &Config::operator=(Config &bis)

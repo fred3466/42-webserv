@@ -39,7 +39,7 @@
 #include "Server.h"
 
 // class ResponseHeader;
-class HttpServer: public ConnectorListener, public Server
+class HttpServer : public ConnectorListener, public Server
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -49,9 +49,9 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
-	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-			Response *resp);
-	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
+								Response *resp);
+	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
@@ -67,8 +67,8 @@ public:
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 
-	Response* createErrorResponse(int errorCode);
-	Response* handleHttpError(int errorCode);
+	Response *createErrorResponse(int errorCode);
+	Response *handleHttpError(int errorCode);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
@@ -86,3 +86,15 @@ public:
 // yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s2.org:8082/cgi-bin_fred/anastasia.php
 
 // curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit" http://s2.org:8082/cgi-bin_fred/anastasia.php
+
+// - Create a string with exactly 100 bytes
+// data=$(printf '%*s' 100 | tr ' ' 'x')
+
+// - Send the request
+// curl -X POST -d "$data" http://127.0.0.2:8082/post_body
+
+// - Create a string with 101 bytes
+// data=$(printf '%*s' 101 | tr ' ' 'x')
+
+// - Send the request
+// curl -X POST -d "$data" http://127.0.0.2:8082/post_body
