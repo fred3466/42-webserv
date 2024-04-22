@@ -8,7 +8,7 @@ class ResponseHttp: public Response
 {
 private:
 	ResponseHeader *header;
-	std::string body;
+	//	std::string body;
 	char *bodyBin;
 	int bodyLength;
 	int totalLength;

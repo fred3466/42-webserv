@@ -49,8 +49,7 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
-	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-			Response *resp);
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp);
 	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
@@ -68,19 +67,19 @@ public:
 	virtual void onDataReceiving(ConnectorEvent e);
 
 	Response* createErrorResponse(int errorCode);
-	Response* handleHttpError(int errorCode);
+//	Response* handleHttpError(int errorCode);
 
-	//	ProcessorLocator getProcessorLocator();
-	//	void addLocationToProcessor(std::string ext, Processor *processor);
+//	ProcessorLocator getProcessorLocator();
+//	void addLocationToProcessor(std::string ext, Processor *processor);
 
-	//	std::string readRequest(int clientFd);
-	//	void sendResponse(int clientFd, const std::string &response);
-	//	void closeClient(int clientFd);
-	//	int getListenFd();
-	//	bool isCGIRequest(const std::string &uri);
-	//	std::string getScriptPath(const std::string &uri);
-	//	std::string generateHttpResponse(const std::string &cgiOutput);
-	//	int getClientFd(int clientId);
+//	std::string readRequest(int clientFd);
+//	void sendResponse(int clientFd, const std::string &response);
+//	void closeClient(int clientFd);
+//	int getListenFd();
+//	bool isCGIRequest(const std::string &uri);
+//	std::string getScriptPath(const std::string &uri);
+//	std::string generateHttpResponse(const std::string &cgiOutput);
+//	int getClientFd(int clientId);
 };
 
 // yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s2.org:8082/cgi-bin_fred/anastasia.php

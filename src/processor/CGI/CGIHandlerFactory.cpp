@@ -3,8 +3,8 @@
 CGIHandler* CGIHandlerFactory::build(std::string cgiName, Config *config)
 {
 	CGIHandler *cgi = NULL;
-	if (cgiName == "PHP_CGI")
-		cgi = new CGI_HANDLER_CLASS_PHP();
+//	if (cgiName == "PHP_CGI")
+//		cgi = new CGI_HANDLER_CLASS_PHP();
 	if (cgiName == "PERL_CGI")
 		cgi = new CGI_HANDLER_CLASS_PERL();
 	else if (cgiName == "SH_CGI")

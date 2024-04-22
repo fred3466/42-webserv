@@ -31,12 +31,12 @@ Processor* ProcessorFactory::build(std::string procName)
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
 	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
 	//	TODO new
-	if (procName == "PHP_PROCESSOR")
-	{
-		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
-		return proc;
-	}
-	else if (procName == "PERL_PROCESSOR")
+//	if (procName == "PHP_PROCESSOR")
+//	{
+//		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
+//		return proc;
+//	}
+	if (procName == "PERL_PROCESSOR")
 		return new REQUEST_HANDLER_IMPL_CLASS_PERL(typeContentModifier);
 	else if (procName == "SH_PROCESSOR")
 		return new REQUEST_HANDLER_IMPL_CLASS_SH(typeContentModifier);

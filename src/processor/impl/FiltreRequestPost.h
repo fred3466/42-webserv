@@ -34,4 +34,5 @@ public:
 	virtual void addProperty(std::string name, std::string value);
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
+	virtual std::string getProperty(std::string name, std::string defaultVal);
 };

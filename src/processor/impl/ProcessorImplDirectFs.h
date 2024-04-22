@@ -32,4 +32,5 @@ public:
 	virtual ProcessorTypeEnum getType();
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
+	virtual std::string getProperty(std::string name, std::string defaultVal);
 };

@@ -156,16 +156,19 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e.getFdClient());
 	CookieFactory().build(reqHeader);
+	int *fdSocket = e.getFdClient();
+	Uri uri = request->getUri();
 
-	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", request->getUri().getUri().c_str());
+	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", uri.getUri().c_str());
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
+//	TODO à virer
 	Response *resp = createErrorResponse(200);
 
 	if (!_checkAccess(request))
 	{
-		delete resp;
-		resp = handleHttpError(403);
+//		delete resp;
+		resp = createErrorResponse(403);
 		int *fdSocket = e.getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -174,9 +177,8 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-		int *fdSocket = e.getFdClient();
-		delete resp;
-		resp = handleHttpError(413);
+//		delete resp;
+		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
 		return;
@@ -184,32 +186,49 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
 	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+
+	if (processorList->size() == 0)
+	{
+		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
+//		delete resp;
+		resp = createErrorResponse(404);
+		pushItIntoTheWire(fdSocket, request, resp);
+		delete processorList;
+		cleanUp(request, resp);
+		return;
+	}
+
 	resp = runProcessorChain(processorList, request, resp);
+
 	delete processorList;
 
 	if (!resp)
 	{
-		harl.error("HttpServer::onDataReceiving : Problem with response for [%s]", request->getUri().getUri().c_str());
-		resp = handleHttpError(500);
+		harl.error("HttpServer::onDataReceiving : Problem with response for [%s]", uri.getUri().c_str());
+		resp = createErrorResponse(500);
 	}
 
-	int *fdSocket = e.getFdClient();
-	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
+	int errCode = resp->getHttpError()->getCode();
+	if (errCode != 200)
+	{
+		//	http error traitée dans runProcessorChain
+		harl.debug("HttpServer::onDataReceiving : Http Error response sent in runProcessorChain for code [%i]", errCode);
+	}
 
+	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
 	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
-		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, request->getUri().getUri().c_str());
+		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, uri.getUri().c_str());
 		connector->closeConnection(fdSocket);
 	}
-
 	cleanUp(request, resp);
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request,
-		Response *resp)
+Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp)
 {
 	bool contentDone = false;
 	bool oneIsExclusif = false;
+
 	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
 			ite != processorList->end();
 			ite++)
@@ -218,6 +237,8 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
 		Processor *processor = processorAndLocationToProcessor->getProcessor();
 		bool bBypassingExclusif = processor->isBypassingExclusif();
+
+		harl.debug("\n***");
 
 		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
@@ -233,18 +254,46 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 				oneIsExclusif,
 				bBypassingExclusif);
 
+		Uri uri = request->getUri();
+		if (uri.isDirectory())
+		{
+			harl.debug("HttpServer::runProcessorChain requested URI is a dir for [%s]", uri.getUri().c_str());
+			std::string defaultIndexName = processor->getProperty("default_index_name", "NONE");
+			harl.debug("HttpServer::runProcessorChain defaultIndexName=[%s]", defaultIndexName.c_str());
+			if (defaultIndexName != "NONE")
+			{
+				Uri uriDefaultIndexNameFileNameAndFileExt(defaultIndexName);
+				std::string fName = uriDefaultIndexNameFileNameAndFileExt.getFileName();
+				std::string fExt = uriDefaultIndexNameFileNameAndFileExt.getFileExtension();
+
+				Uri uriTemp(uri);
+				uriTemp.setFileName(fName);
+				uriTemp.setFileExt(fExt);
+				uriTemp.updateUriStr();
+				uri = uriTemp;
+				request->getHeader()->setUri(uri);
+				harl.debug("HttpServer::runProcessorChain UPDATED uri=[%s]", uri.getUri().c_str());
+			}
+		}
+
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 
-		if (resp->getErrorCodeTmp() != 200)
+		int errCode = resp->getErrorCodeTmp();
+		if (errCode != 200)
 		{
 			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
-			HttpReturnCodeHelper errHelper = HttpReturnCodeHelper();
+
+			delete resp;
+			resp = createErrorResponse(errCode);
+//			pushItIntoTheWire(fdClient, request, resp);
+//			cleanUp(request, resp);
 
 //			1- get error page template
 //			2- search and replace placeholders in page
 //			3- destroy current response and generate new response (statusline, headers, body - error page content)
 //			4- send error response to browser
 //			5- stop request processing
+			return resp;
 		}
 
 		if (processor->isExclusif())
@@ -258,6 +307,33 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			contentDone = true;
 		}
 	}
+	return resp;
+}
+
+Response* HttpServer::createErrorResponse(int errorCode)
+{
+	ResponseHeader *header = ResponseHeaderFactory().build();
+	Response *resp = ResponseFactory().build(header);
+
+	HttpError *error = HttpErrorFactory().build(errorCode);
+	resp->setHttpError(error);
+	resp->setStatusLine(error->getStatusLine());
+	resp->getHeader()->addField("Content-Type", "text/html;");
+
+	HttpReturnCodeHelper errHelper = HttpReturnCodeHelper(errorCode);
+	char *pageContentArray;
+	FileUtil().readFile("htdocs/error.html", &pageContentArray);
+	std::string pageContent = std::string(pageContentArray);
+	errHelper.replacePlaceholders(pageContent, error->getDescription());
+
+	char *bodybin = new char[pageContent.length() + 1];
+	std::copy(pageContent.begin(), pageContent.end(), bodybin);
+	bodybin[pageContent.length()] = '\0';
+	resp->setBodyBin(bodybin);
+
+	int len = pageContent.length();
+	resp->setBodyLength(len);
+
 	return resp;
 }
 
@@ -419,7 +495,8 @@ void HttpServer::cleanUp(Request *request, Response *resp)
 	{
 		delete resp->getHttpError();
 		delete resp->getHeader();
-		delete[] resp->getBodyBin();
+//		TODO ne m'oubliez pas !
+//		delete[] resp->getBodyBin();
 		delete resp;
 	}
 }
@@ -434,22 +511,3 @@ void shutFd(int fd)
 	}
 }
 
-Response* HttpServer::createErrorResponse(int errorCode)
-{
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
-
-	HttpError *error = HttpErrorFactory().build(errorCode);
-	resp->setHttpError(error);
-	resp->setStatusLine(error->getStatusLine());
-	return resp;
-}
-
-Response* HttpServer::handleHttpError(int errorCode)
-{
-	HttpError *error = HttpErrorFactory::build(errorCode);
-	Response *response = createErrorResponse(errorCode);
-	response->setHttpError(error);
-	response->setStatusLine(error->getStatusLine());
-	return response;
-}

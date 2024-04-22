@@ -45,7 +45,6 @@ SRC_FILES	= \
 	request/factory/RequestBodyFactory\
 	processor/ProcessorFactory \
 	processor/impl/ProcessorImplDirectFs \
-	processor/impl/ProcessorImplCgiBinPhp \
 	processor/impl/ProcessorImplCgiBinSh \
 	processor/impl/ProcessorImplCgiBinPerl \
 	processor/impl/FiltreResponseMimeType \

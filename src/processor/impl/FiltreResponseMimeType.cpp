@@ -55,6 +55,8 @@ Response* FiltreResponseMimeType::process(Request *request, Response *response,
 void FiltreResponseMimeType::setConfig(Config *conf)
 {
 	// Use the correct method to retrieve configuration parameters
+	this->config = conf;
+
 	std::string mimeTypesFilePath = conf->getParamStr("mimeTypesFilePath", "example/mime.types");
 	if (!mimeTypesFilePath.empty())
 	{
@@ -78,38 +80,29 @@ std::string FiltreResponseMimeType::toString()
 //     properties[name] = value;
 // }
 
-std::string FiltreResponseMimeType::getProperty(const std::string &name) const
-{
-	std::map<std::string, std::string>::const_iterator it = properties.find(name);
-	if (it != properties.end())
-	{
-		return it->second;
-	}
-	return ""; // Return empty string if the property is not found
-}
-
 void FiltreResponseMimeType::addProperty(std::string name, std::string value)
 {
-	properties[name] = value;
-
-	// If a specific property is updated, perform an action
-	if (name == "configReloadTrigger" && value == "true")
-	{
-		// Perform the reload or reset action
-		reloadConfigurations();
-		// Optionally, reset the trigger
-		properties[name] = "false";
-	}
+	config->addParam(name, value);
+//	properties[name] = value;
+//
+//	// If a specific property is updated, perform an action
+//	if (name == "configReloadTrigger" && value == "true")
+//	{
+//		// Perform the reload or reset action
+//		reloadConfigurations();
+//		// Optionally, reset the trigger
+//		properties[name] = "false";
+//	}
 }
 
-void FiltreResponseMimeType::reloadConfigurations()
-{
-	std::string mimeTypesFilePath = getProperty("exemple/mime.types");
-	if (!mimeTypesFilePath.empty())
-	{
-		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
-	}
-}
+//void FiltreResponseMimeType::reloadConfigurations()
+//{
+//	std::string mimeTypesFilePath = getProperty("exemple/mime.types");
+//	if (!mimeTypesFilePath.empty())
+//	{
+//		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
+//	}
+//}
 
 ProcessorTypeEnum FiltreResponseMimeType::getType()
 {
@@ -124,6 +117,12 @@ bool FiltreResponseMimeType::isExclusif()
 bool FiltreResponseMimeType::isBypassingExclusif()
 {
 	return false;
+}
+
+std::string FiltreResponseMimeType::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
 }
 // Response *FiltreResponseMimeType::process(Request *request, Response *response,
 //                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)

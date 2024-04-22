@@ -3,6 +3,13 @@
 
 Uri::Uri()
 {
+	_uri = "";
+	_path = "";
+	_fileName = "";
+	_fileExt = "";
+	_pathInfo = "";
+	_query = "";
+	bDirectory = false;
 }
 
 Uri::~Uri()
@@ -19,6 +26,7 @@ Uri::Uri(const std::string &uri)
 	std::string fileExt = "";
 	std::string pathInfo = "";
 	std::string query = "";
+	this->bDirectory = false;
 
 	size_t posQM = uri.find("?");
 //	bool bGotQuery = posQM != std::string::npos;
@@ -32,11 +40,18 @@ Uri::Uri(const std::string &uri)
 	int pathLength = path.size();
 
 //	fileName
-	fileName = uri.substr(pathLength, posFirstDotFromStart - pathLength);
-
+	if (posFirstDotFromStart != std::string::npos)
+	{
+		fileName = uri.substr(pathLength, posFirstDotFromStart - pathLength);
 //	fileExt
-	size_t endExt = posFirstSlashAfterDot != std::string::npos ? posFirstSlashAfterDot : posQM;
-	fileExt = uri.substr(posFirstDotFromStart, endExt - posFirstDotFromStart);
+		size_t endExt = posFirstSlashAfterDot != std::string::npos ? posFirstSlashAfterDot : posQM;
+		fileExt = uri.substr(posFirstDotFromStart, endExt - posFirstDotFromStart);
+	}
+
+	if (fileName == "" && fileExt == "")
+	{
+		bDirectory = true;
+	}
 
 	if (posFirstSlashAfterDot != std::string::npos)
 	{
@@ -95,6 +110,16 @@ void Uri::setPath(const std::string &path)
 	_path = path;
 }
 
+void Uri::setFileName(const std::string &fileName)
+{
+	_fileName = fileName;
+}
+
+void Uri::setFileExt(const std::string &fileExt)
+{
+	_fileExt = fileExt;
+}
+
 void Uri::setQuery(const std::string &query)
 {
 	_query = query;
@@ -113,4 +138,40 @@ void Uri::dump() const
 	Harl().debug("Query: " + getQuery());
 	Harl().debug("File extension: " + getFileExtension());
 	Harl().debug("File name: " + getFileName());
+}
+
+bool Uri::isDirectory()
+{
+	return bDirectory;
+}
+
+Uri::Uri(Uri const &other) : bDirectory(other.bDirectory)
+{
+	_uri = other._uri;
+	_path = other._path;
+	_fileName = other._fileName;
+	_fileExt = other._fileExt;
+	_pathInfo = other._pathInfo;
+	_query = other._query;
+	bDirectory = other.bDirectory;
+	if (this != &other)
+		*this = other;
+}
+
+Uri& Uri::operator =(Uri const &other)
+{
+	_uri = other._uri;
+	_path = other._path;
+	_fileName = other._fileName;
+	_fileExt = other._fileExt;
+	_pathInfo = other._pathInfo;
+	_query = other._query;
+	bDirectory = other.bDirectory;
+	return *this;
+
+}
+
+void Uri::updateUriStr()
+{
+	_uri = "http://" + _path + _fileName + _fileExt + _pathInfo + _query;
 }

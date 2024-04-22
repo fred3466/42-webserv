@@ -13,7 +13,8 @@ class FiltreResponseMimeType: public Processor
 {
 private:
 	MimeTypeHelper *mimeTypeHelper;
-	std::map<std::string, std::string> properties;
+	//	std::map<std::string, std::string> properties;
+	Config *config;
 	ProcessorTypeEnum type;
 	ProcessorHelper processorHelper;
 
@@ -31,7 +32,8 @@ public:
 	virtual ProcessorTypeEnum getType();
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
+	virtual std::string getProperty(std::string name, std::string defaultVal);
 
-	std::string getProperty(const std::string &name) const;
-	void reloadConfigurations();
+//	std::string getProperty(const std::string &name) const;
+//	void reloadConfigurations();
 };

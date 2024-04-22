@@ -94,10 +94,10 @@ void ResponseHttp::setHttpError(HttpError *error)
 	this->error = error;
 	this->flagError = error->getCode() != 200;
 
-//	std::ostringstream statusLine;
-//	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
-	// TODO remettre setStatusLine
-	// this->header->setStatusLine(statusLine.str());
+	std::ostringstream statusLine;
+	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
+	this->header->setStatusLine(statusLine.str());
+	setErrorCodeTmp(error->getCode());
 }
 
 HttpError* ResponseHttp::getHttpError()
