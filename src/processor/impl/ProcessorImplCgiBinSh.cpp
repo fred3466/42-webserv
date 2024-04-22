@@ -17,74 +17,25 @@ Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	//	TODO fred post
-	response->getHeader()->addField("Content-Type", "text/html; charset=UTF-8");
+	response->getHeader()->addField("Content-Type", "text/html;");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	//	char *body;
-	//
-	//	if (isCGIRequest(request->getUri()))
-	//	{
-	// It's a CGI request
 	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
+	std::string
+	uriLessPathInfoAndQueryString = request->getUri().getPath() + request->getUri().getFileName() + request->getUri().getFileExtension();
 
-	// Response *responseHttp;
+	processorHelper.suppressRouteFromURI(processorAndLocationToProcessor, &uriLessPathInfoAndQueryString);
+	std::string interpreterPath, scriptPath;
+	processorHelper.setInterpreterAndScriptPath(&interpreterPath, &scriptPath, request, config, harl, (Processor*) this, base_path, uriLessPathInfoAndQueryString);
 
-	LocationToProcessor *locationToProcessor = processorAndLocationToProcessor->getLocationToProcessor();
-	std::string patPath = locationToProcessor->getUrlPath();
-	int patPathLen = patPath.length();
-	std::string uri = request->getUri().getUri();
-	//	std::string proto = "http:://";
-	//	size_t itePostProtocole = proto.length();
-	size_t ite = uri.find(patPath);
-	if (ite == 0)
-	{
-		uri.erase(0, patPathLen);
-	}
-
-	std::string scriptPath = config->getParamStr("ROOT_PATH", "./") + "/" + base_path + uri;
-	harl.debug(toString() + ":\t" + request->getUri().getUri() + " -> " + scriptPath);
-
-	std::string interpreterPath = config->getParamStr("sh_exe", "");
 	std::string
 	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
 
-	int bodyLen = cgiOutput.length();
-	std::string bodyLenHexaStr = stringUtil.toHexa(bodyLen);
-//	bodyLenHexaStr = stringUtil.toHexa(bodyLen + bodyLenHexaStr.length() + 2 + 7);
+	delete cgiHandler;
 
-	cgiOutput = bodyLenHexaStr + "\r\n" + cgiOutput + "\r\n0\r\n\r\n";
-	bodyLen = cgiOutput.length();
-
-//	bodyLen += bodyLenHexaStr.length();
-	response->setBodyLength(bodyLen);
-
-	char *bodybin = new char[cgiOutput.length()];
-	std::copy(cgiOutput.begin(), cgiOutput.end(), bodybin);
-	bodybin[cgiOutput.length()] = '\0';
-
-	// char *bodybin = new char[cgiOutput.length()];
-	// memcpy(bodybin, cgiOutput.data(), cgiOutput.length());
-	//	bodybin = const_cast<char*>(cgiOutput.data());
-
-	response->setBodyBin(bodybin);
-	// Generate HTTP response from CGI output
-	//	TODO : adapter le code retour HTTP dans la réponse, au résultat de l'exécution de process()
-	//	response->getHeader()->setStatusLine("HTTP/1.1 200 OK\r\n");
-
-	response->setCgi(true);
-	//	response->setHttpError(HttpErrorFactory.build(200));
-	//
-	//
-	//	Dans filtre:
-	//	response->getHttpError()
-
-	//		resp->getHeader()->addField("\r\n");
-
-	//	std::string httpResponse = generateHttpResponse(cgiOutput);
-	// Send HTTP response back to the client
-	//		sendResponse(e.getFdClient(), httpResponse);
-	//	}
-	//
+	//	TODO fred ???
+	bool bTransferEncoding = true; // "" != response->getHeader()->getFieldAsStr("Transfer-Encoding", "");
+	processorHelper.applyTransferEncodingOrContentLengthAndFinalize(response, &cgiOutput, bTransferEncoding);
 	return response;
 }
 
