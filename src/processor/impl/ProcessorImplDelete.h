@@ -26,6 +26,7 @@ public:
     virtual void setConfig(Config *conf);
     virtual std::string toString();
     virtual void addProperty(std::string name, std::string value);
+    virtual std::string getProperty(std::string name, std::string defaultVal);
     virtual ProcessorTypeEnum getType();
     virtual bool isExclusif();
     virtual bool isBypassingExclusif();

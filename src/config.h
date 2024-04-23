@@ -29,7 +29,7 @@
 #define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh
 #define REQUEST_HANDLER_IMPL_INC_PERL "impl/ProcessorImplCgiBinPerl.h"
 #define REQUEST_HANDLER_IMPL_CLASS_PERL ProcessorImplCgiBinPerl
-#define REQUEST_HEADER_IMPL_INC_DELETE "ProcessorImplDelete.h"
+#define REQUEST_HEADER_IMPL_INC_DELETE "impl/ProcessorImplDelete.h"
 #define REQUEST_HANDLER_IMPL_CLASS_DELETE ProcessorImplDelete
 #define CGI_HANDLER_INC_PERL "impl/CGIHandlerPerl.h"
 #define CGI_HANDLER_CLASS_PERL CGIHandlerPerl

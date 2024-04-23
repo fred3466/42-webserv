@@ -97,6 +97,12 @@ void ProcessorImplDelete::addProperty(std::string name, std::string value)
     config->addParam(name, value);
 }
 
+std::string ProcessorImplDelete::getProperty(std::string name, std::string defaultVal)
+{
+    std::string val = config->getParamStr(name, defaultVal);
+    return val;
+}
+
 ProcessorTypeEnum ProcessorImplDelete::getType()
 {
     return type;

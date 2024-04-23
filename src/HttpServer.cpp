@@ -546,16 +546,16 @@ void shutFd(int fd)
 	}
 }
 
-Response *HttpServer::createErrorResponse(int errorCode)
-{
-	ResponseHeader *header = ResponseHeaderFactory().build();
-	Response *resp = ResponseFactory().build(header);
+// Response *HttpServer::createErrorResponse(int errorCode)
+// {
+// 	ResponseHeader *header = ResponseHeaderFactory().build();
+// 	Response *resp = ResponseFactory().build(header);
 
-	HttpError *error = HttpErrorFactory().build(errorCode);
-	resp->setHttpError(error);
-	resp->setStatusLine(error->getStatusLine());
-	return resp;
-}
+// 	HttpError *error = HttpErrorFactory().build(errorCode);
+// 	resp->setHttpError(error);
+// 	resp->setStatusLine(error->getStatusLine());
+// 	return resp;
+// }
 
 Response *HttpServer::handleHttpError(int errorCode)
 {
