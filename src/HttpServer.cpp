@@ -51,6 +51,7 @@ void HttpServer::instantiateProcessLocator()
 		val = su.trim(val);
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
+		std::vector<Processor*> processorsVector = std::vector<Processor*>();
 		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
 		{
 			std::string directive = *iteVal;
@@ -60,12 +61,15 @@ void HttpServer::instantiateProcessLocator()
 			std::vector<std::string> toksDirective = su.tokenize(directive, ' ');
 			std::string dirName = su.getNthTokenIfExists(toksDirective, 0, "");
 			dirName = su.trim(dirName);
-			Processor *processor;
+//			Processor *processor;
 			if (dirName == "SetHandler")
 			{
 				std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
 				std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
-				processor = processorFactory.build(processorName);
+
+				Processor *processor = processorFactory.build(processorName);
+				processorsVector.push_back(processor);
+
 				Config *configProc = config->clone();
 				processor->setConfig(configProc);
 
@@ -75,7 +79,13 @@ void HttpServer::instantiateProcessLocator()
 			{
 				std::string nameProperty = su.getNthTokenIfExists(toksDirective, 0, "");
 				std::string valProperty = su.getNthTokenIfExists(toksDirective, 1, "");
-				processor->addProperty(nameProperty, valProperty);
+
+				for (std::vector<Processor*>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
+				{
+					Processor *processor = *iteProcessor;
+					processor->addProperty(nameProperty, valProperty);
+					harl.debug("HttpServer::instantiateProcessLocator %s.addProperty(%s , %s)", processor->toString().c_str(), nameProperty.c_str(), valProperty.c_str());
+				}
 			}
 		}
 	} // for
@@ -273,6 +283,14 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 				uri = uriTemp;
 				request->getHeader()->setUri(uri);
 				harl.debug("HttpServer::runProcessorChain UPDATED uri=[%s]", uri.getUri().c_str());
+			} else
+			{
+				harl.warning("HttpServer::onDataReceiving : defaultIndexName=NONE => 404", uri.getUri().c_str());
+				//		delete resp;
+				resp = createErrorResponse(404);
+//				pushItIntoTheWire(fdSocket, request, resp);
+//				cleanUp(request, resp);
+				return resp;
 			}
 		}
 
@@ -285,14 +303,6 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 
 			delete resp;
 			resp = createErrorResponse(errCode);
-//			pushItIntoTheWire(fdClient, request, resp);
-//			cleanUp(request, resp);
-
-//			1- get error page template
-//			2- search and replace placeholders in page
-//			3- destroy current response and generate new response (statusline, headers, body - error page content)
-//			4- send error response to browser
-//			5- stop request processing
 			return resp;
 		}
 
