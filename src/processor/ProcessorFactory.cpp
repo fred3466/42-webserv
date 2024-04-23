@@ -1,11 +1,11 @@
 #include "ProcessorFactory.h"
 
-std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
+std::vector<ProcessorAndLocationToProcessor *> *ProcessorFactory::build(Request *request)
 {
 	//	std::string ext = request->getFileExtension();
 	//	std::string uri = request->getUri();
 
-	std::vector<ProcessorAndLocationToProcessor*> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
+	std::vector<ProcessorAndLocationToProcessor *> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
 	//	procs->insert(procs->begin(), new ProcessorImplDirectFs());
 
 	//	StringUtil stringUtil;
@@ -26,7 +26,7 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 	processorLocator = pl;
 }
 
-Processor* ProcessorFactory::build(std::string procName)
+Processor *ProcessorFactory::build(std::string procName)
 {
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
 	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
@@ -50,6 +50,8 @@ Processor* ProcessorFactory::build(std::string procName)
 		return new REQUEST_HANDLER_IMPL_CLASS_POST(typeHeaderModifier);
 	else if (procName == "ERROR_FILTER")
 		return new REQUEST_HANDLER_IMPL_CLASS_ERROR(typeHeaderModifier);
+	else if (procName == "DELETE_PROCESSOR")
+		return new REQUEST_HANDLER_IMPL_CLASS_DELETE(typeHeaderModifier);
 	//	TODO doit être configurable
 	return new ProcessorImplDirectFs(typeContentModifier);
 }

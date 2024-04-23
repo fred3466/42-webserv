@@ -107,11 +107,11 @@ void HttpServer::onIncomming(ConnectorEvent e)
 {
 	(void)e;
 }
-
+// TODO virifier Anastasia pour DELETE
 bool HttpServer::_checkAccess(Request *request)
 {
 	std::string metReq = request->getHeader()->getMethod();
-	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET"));
+	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET DELETE"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
 	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
 	{

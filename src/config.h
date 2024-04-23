@@ -26,6 +26,8 @@
 #define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError
 #define REQUEST_HEADER_IMPL_INC_SH "ProcessorImplCgiBinSh.h"
 #define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh
+#define REQUEST_HEADER_IMPL_INC_DELETE "ProcessorImplDelete.h"
+#define REQUEST_HANDLER_IMPL_CLASS_DELETE ProcessorImplDelete
 
 #define REQUEST_HANDLER_IMPL_INC_PERL "ProcessorImplCgiBinPerl.h"
 #define REQUEST_HANDLER_IMPL_CLASS_PERL ProcessorImplCgiBinPerl
@@ -38,7 +40,7 @@
 // #define CGI_HANDLER_INC_PHP "CGIHandlerLeg.h"
 // #define CGI_HANDLER_CLASS_PHP CGIHandlerLeg
 
- #define CGI_HANDLER_INC_SH "CGIHandlerSh.h"
- #define CGI_HANDLER_CLASS_SH CGIHandlerSh
+#define CGI_HANDLER_INC_SH "CGIHandlerSh.h"
+#define CGI_HANDLER_CLASS_SH CGIHandlerSh
 
 #define MAX_BODY_SIZE 4098

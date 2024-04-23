@@ -24,10 +24,9 @@ RequestHttp::RequestHttp(RequestHeader *head, RequestBody *body) : fdClient(NULL
 		std::string connectionVal = header->getFieldValue("Connection");
 		bConnectionKeepAlive = StringUtil().isStrictlyEqual(connectionVal, "keep-alive");
 	}
-
 }
 
-RequestHeader* RequestHttp::getHeader() const
+RequestHeader *RequestHttp::getHeader() const
 {
 	return header;
 }
@@ -44,16 +43,16 @@ const std::string RequestHttp::getFileName() const
 
 const std::string RequestHttp::getHost()
 {
-//	return getHeaderFieldValue("Host");
+	//	return getHeaderFieldValue("Host");
 	return host;
 }
 
-const std::string& RequestHttp::getPath()
+const std::string &RequestHttp::getPath()
 {
 	return header->getPath();
 }
 
-const std::string& RequestHttp::getQueryString() const
+const std::string &RequestHttp::getQueryString() const
 {
 	return header->getQueryString();
 }
@@ -69,22 +68,22 @@ void RequestHttp::addField(std::string rawField) const
 	getHeader()->addField(rawField);
 }
 
-const std::list<std::string>& RequestHttp::getFields() const
+const std::list<std::string> &RequestHttp::getFields() const
 {
 	return header->getFields();
 }
 
-const Uri& RequestHttp::getUri() const
+const Uri &RequestHttp::getUri() const
 {
 	return header->getUri();
 }
 
-const std::string& RequestHttp::getMethod() const
+const std::string &RequestHttp::getMethod() const
 {
 	return header->getMethod();
 }
 
-int* RequestHttp::getFdClient() const
+int *RequestHttp::getFdClient() const
 {
 	return fdClient;
 }
@@ -98,12 +97,12 @@ void RequestHttp::setBody(RequestBody *body)
 	this->body = body;
 }
 
-RequestBody* RequestHttp::getBody()
+RequestBody *RequestHttp::getBody()
 {
 	return body;
 }
 
-bool RequestHttp::isConnectionKeepAlive() throw (char*)
+bool RequestHttp::isConnectionKeepAlive() throw(char *)
 {
 	return bConnectionKeepAlive;
 }
@@ -111,7 +110,6 @@ bool RequestHttp::isConnectionKeepAlive() throw (char*)
 int RequestHttp::getPort()
 {
 	return port;
-
 }
 
 std::string RequestHttp::getRemoteIpPort()
@@ -119,3 +117,30 @@ std::string RequestHttp::getRemoteIpPort()
 
 	return remoteIpPort;
 }
+
+// http://127.0.0.2:8082/del?file=toto.txt
+
+std::string RequestHttp::getUrlParam(std::string paramName)
+{
+	std::string queryString = getQueryString();
+	StringUtil su;
+	std::vector<std::string> params = su.tokenize(queryString, '&');
+	for (size_t i = 0; i < params.size(); ++i)
+	{
+		std::vector<std::string> key_value = su.tokenize(params[i], '=');
+		if (key_value.size() == 2 && key_value[0] == paramName)
+		{
+			return key_value[1]; // Return the value associated with the parameter name
+		}
+	}
+	return ""; // Return empty if the parameter is not found
+}
+// recuperer uri, query str
+// tokenize query str sur ?
+// -- sur =
+// recuperer vector
+// parcourir vector
+// chercher nom du parametre (premier el)
+// premdre deuxieme el (chemin relatif)
+// apelle file util realPath
+//

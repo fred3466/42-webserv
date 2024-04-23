@@ -10,6 +10,10 @@ echo "Request Method: " . $_SERVER['REQUEST_METHOD'] . "\n";
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     echo "Query Parameters: \n";
     print_r($_GET);
+} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    parse_str(file_get_contents("php://input"), $delete_vars);
+    echo "Delete Parameters: \n";
+    print_r($delete_vars);
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "Post Parameters: \n";
     print_r($_POST);

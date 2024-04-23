@@ -49,6 +49,7 @@ private:
 	Config *config;
 	ProcessorLocator *processorLocator;
 	StringUtil su;
+	HttpErrorFactory errorFactory;
 	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
 								Response *resp);
 	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
@@ -98,3 +99,7 @@ public:
 
 // - Send the request
 // curl -X POST -d "$data" http://127.0.0.2:8082/post_body
+
+// DELETE
+//  curl -X DELETE -d "key=value&anotherkey=anothervalue" http://127.0.0.2:8082/cgi-bin_fred/anastasia.php
+//  curl -v -X DELETE -d "key=value&anotherkey=anothervalue" http://127.0.0.2:8082/cgi-bin_fred/anastasia.php

@@ -52,6 +52,7 @@ SRC_FILES	= \
 	processor/impl/FiltreResponseCommon \
 	processor/impl/FiltreRequestPost \
 	processor/impl/FiltreError \
+	processor/impl/ProcessorImplDelete \
 	processor/CGI/CGIHelper \
 	processor/CGI/CGIHandlerFactory \
 	processor/CGI/impl/CGIHandlerPHP \

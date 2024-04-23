@@ -14,6 +14,7 @@
 #include "impl/ProcessorImplCgiBinPhp.h"
 #include "impl/ProcessorImplCgiBinSh.h"
 #include "impl/ProcessorImplDirectFs.h"
+#include "impl/ProcessorImplDelete.h"
 
 class ProcessorFactory
 {
@@ -24,6 +25,6 @@ private:
 public:
 	~ProcessorFactory();
 	ProcessorFactory(ProcessorLocator *pl);
-	Processor* build(std::string procName);
-	std::vector<ProcessorAndLocationToProcessor*>* build(Request *request);
+	Processor *build(std::string procName);
+	std::vector<ProcessorAndLocationToProcessor *> *build(Request *request);
 };
