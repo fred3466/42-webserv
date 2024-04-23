@@ -46,7 +46,8 @@ protected:
 	virtual ProcessorTypeEnum getType();
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
-	void addProperty(std::string name, std::string value);
+	virtual void addProperty(std::string name, std::string value);
+	virtual std::string getProperty(std::string name, std::string defaultVal);
 
 	std::string readRequest(int clientFd);
 	//	void closeClient(int clientFd);

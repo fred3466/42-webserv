@@ -1,5 +1,6 @@
 #pragma once
 #include "../response/ResponseTools.h"
+#include "../util/StringUtil.h"
 #include <sstream>
 #include <string>
 #include <fstream>
@@ -7,9 +8,14 @@
 
 class HttpReturnCodeHelper
 {
-public:
+private:
 	HttpReturnCodeHelper();
-	static std::string getStatusLine(int httpReturnCode);
-	std::string loadErrorPageTemplate();
-	void replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage);
+
+	int httpReturnCode;
+
+public:
+	HttpReturnCodeHelper(int httpReturnCode);
+	~HttpReturnCodeHelper();
+	//	static std::string getStatusLine();
+	void replacePlaceholders(std::string &content, const std::string &errorMessage);
 };

@@ -55,6 +55,7 @@ bool locationToProcessorComparator(LocationToProcessor *me, LocationToProcessor 
 
 void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string ext, Processor *processor, std::string host)
 {
+	harl.debug("ProcessorLocator::addLocationToProcessor (%s ; %s) => %s", urlPath.c_str(), ext.c_str(), processor->toString().c_str());
 //	TODO new ici
 	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor, host);
 

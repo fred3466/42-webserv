@@ -11,10 +11,8 @@
 #include "impl/FiltreResponseCommon.h"
 #include "impl/FiltreResponseMimeType.h"
 #include "impl/ProcessorImplCgiBinPerl.h"
-#include "impl/ProcessorImplCgiBinPhp.h"
 #include "impl/ProcessorImplCgiBinSh.h"
 #include "impl/ProcessorImplDirectFs.h"
-#include "impl/ProcessorImplDelete.h"
 
 class ProcessorFactory
 {

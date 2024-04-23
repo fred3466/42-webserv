@@ -66,3 +66,9 @@ bool FiltreRequestPost::isBypassingExclusif()
 {
 	return false;
 }
+
+std::string FiltreRequestPost::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
+}

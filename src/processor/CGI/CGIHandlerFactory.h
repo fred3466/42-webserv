@@ -5,9 +5,9 @@
 #include "../../config.h"
 
 #include "../../Harl.h"
-#include "impl/CGIHandlerPerl.h"
-#include "impl/CGIHandlerPHP.h"
-#include "impl/CGIHandlerSh.h"
+#include CGI_HANDLER_INC_PERL
+//#include "impl/CGIHandlerPHP.h"
+#include CGI_HANDLER_INC_SH
 
 class CGIHandlerFactory
 {

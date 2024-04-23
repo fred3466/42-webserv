@@ -76,3 +76,8 @@ bool ProcessorImplCgiBinPerl::isBypassingExclusif()
 	return false;
 }
 
+std::string ProcessorImplCgiBinPerl::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
+}
