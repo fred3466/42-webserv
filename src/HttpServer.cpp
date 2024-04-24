@@ -301,15 +301,8 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			harl.debug("HttpServer::runProcessorChain defaultIndexName=[%s]", defaultIndexName.c_str());
 			if (defaultIndexName != "NONE")
 			{
-				Uri uriDefaultIndexNameFileNameAndFileExt(defaultIndexName);
-				std::string fName = uriDefaultIndexNameFileNameAndFileExt.getFileName();
-				std::string fExt = uriDefaultIndexNameFileNameAndFileExt.getFileExtension();
-
-				Uri uriTemp(uri);
-				uriTemp.setFileName(fName);
-				uriTemp.setFileExt(fExt);
-				uriTemp.updateUriStr();
-				uri = uriTemp;
+				uri.setFileNameAndExt(defaultIndexName);
+				uri.updateUriStr();
 				request->getHeader()->setUri(uri);
 				harl.debug("HttpServer::runProcessorChain UPDATED uri=[%s]", uri.getUri().c_str());
 			}

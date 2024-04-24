@@ -3,11 +3,14 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 #include "UriValidator.h"
+#include "../util/StringUtil.h"
 
 class Uri
 {
 private:
+	StringUtil su;
 	std::string _uri;
 	//	std::string _scheme;
 	std::string _path;
@@ -40,6 +43,8 @@ public:
 	void dump() const;
 	bool isDirectory();
 	void updateUriStr();
+	void setFileNameAndExt(const std::string &fileNameAndExt);
+	std::string getFileNameAndExt();
 };
 
 // validator:

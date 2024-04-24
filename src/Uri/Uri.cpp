@@ -1,7 +1,7 @@
 #include "Uri.h"
 #include "../Harl.h"
 
-Uri::Uri()
+Uri::Uri() : su()
 {
 	_uri = "";
 	_path = "";
@@ -16,53 +16,7 @@ Uri::~Uri()
 {
 }
 
-// Uri::Uri(const std::string &uri)
-// {
-// 	setUri(uri);
-// ///cgi-perl/form-submit.pl/path/info?q=fred&titi=toto
-
-// 	std::string path = "";
-// 	std::string fileName = "";
-// 	std::string fileExt = "";
-// 	std::string pathInfo = "";
-// 	std::string query = "";
-
-// 	size_t posQM = uri.find("?");
-// //	bool bGotQuery = posQM != std::string::npos;
-// 	size_t posFirstDotFromStart = uri.find(".");
-// 	size_t posFirstSlashAfterDot = uri.find("/", posFirstDotFromStart + 1);
-// 	size_t posLastSlashBeforeDot = uri.rfind("/", posFirstDotFromStart);
-// //	size_t posLastSlashAfterDot = uri.rfind("/", posFirstDotFromStart);
-
-// //	path
-// 	path = uri.substr(0, posLastSlashBeforeDot + 1);
-// 	int pathLength = path.size();
-
-// //	fileName
-// 	fileName = uri.substr(pathLength, posFirstDotFromStart - pathLength);
-
-// //	fileExt
-// 	size_t endExt = posFirstSlashAfterDot != std::string::npos ? posFirstSlashAfterDot : posQM;
-// 	fileExt = uri.substr(posFirstDotFromStart, endExt - posFirstDotFromStart);
-
-// 	if (posFirstSlashAfterDot != std::string::npos)
-// 	{
-// 		size_t endPathInfo = posQM != std::string::npos ? posQM : posFirstSlashAfterDot;
-// 		pathInfo = uri.substr(posFirstSlashAfterDot, endPathInfo - posFirstSlashAfterDot);
-// 	}
-
-// 	if (posQM != std::string::npos)
-// 		query = uri.substr(posQM + 1);
-
-// 	_fileName = fileName;
-// 	_fileExt = fileExt;
-
-// 	setPath(path);
-// 	setPathInfo(pathInfo);
-// 	setQuery(query);
-// }
-
-Uri::Uri(const std::string &uri)
+Uri::Uri(const std::string &uri) : su()
 {
 	setUri(uri);
 	std::string path = "";
@@ -87,6 +41,7 @@ Uri::Uri(const std::string &uri)
 	if (fileName == "")
 	{
 		path = uri;
+		this->bDirectory = true;
 	} else
 	{
 		if (posLastSlashBeforeDot != std::string::npos)
@@ -172,6 +127,27 @@ void Uri::setFileExt(const std::string &fileExt)
 	_fileExt = fileExt;
 }
 
+std::string Uri::getFileNameAndExt()
+{
+	return _fileName + _fileExt;
+}
+
+void Uri::setFileNameAndExt(const std::string &fileNameAndExt)
+{
+	std::vector<std::string> toks = su.tokenize(fileNameAndExt, '.');
+	if (toks.empty())
+		_fileName = fileNameAndExt;
+	else
+	{
+		_fileExt = "." + toks.at(toks.size() - 1);
+		_fileName = "";
+		for (size_t i = 0; i < toks.size() - 1; i++)
+		{
+			_fileName += toks.at(i);
+		}
+	}
+}
+
 void Uri::setQuery(const std::string &query)
 {
 	_query = query;
@@ -199,6 +175,7 @@ bool Uri::isDirectory()
 
 Uri::Uri(Uri const &other) : bDirectory(other.bDirectory)
 {
+	su = other.su;
 	_uri = other._uri;
 	_path = other._path;
 	_fileName = other._fileName;
@@ -212,6 +189,7 @@ Uri::Uri(Uri const &other) : bDirectory(other.bDirectory)
 
 Uri& Uri::operator=(Uri const &other)
 {
+	su = other.su;
 	_uri = other._uri;
 	_path = other._path;
 	_fileName = other._fileName;
@@ -224,5 +202,7 @@ Uri& Uri::operator=(Uri const &other)
 
 void Uri::updateUriStr()
 {
-	_uri = "http://" + _path + _fileName + _fileExt + _pathInfo + _query;
+	Uri uriTmp(_path + _fileName + _fileExt + _pathInfo + _query);
+	bDirectory = uriTmp.bDirectory;
+	_uri = uriTmp._uri;
 }
