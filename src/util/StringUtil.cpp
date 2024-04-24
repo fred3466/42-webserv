@@ -227,7 +227,13 @@ std::string StringUtil::strFromInt(int i)
 }
 int StringUtil::intFromStr(std::string s)
 {
-	std::stringstream ss(s);
+	std::string trimmed = trim(s);
+	if (trimmed == "")
+	{
+		return 0;
+	}
+
+	std::stringstream ss(trimmed);
 	int resInt;
 	ss >> resInt;
 

@@ -21,7 +21,7 @@ ProcessorTypeEnum FiltreRequestPost::getType()
 
 std::string FiltreRequestPost::toString()
 {
-	return "FiltreRequestPost " + type;
+	return "FiltreRequestPost";
 }
 // TODO http error
 /*

@@ -35,9 +35,10 @@ HttpError* HttpErrorFactory::build(int errorCode)
 {
 	for (std::vector<HttpError>::const_iterator it = errorList.begin(); it != errorList.end(); ++it)
 	{
-		if (it->getCode() == errorCode)
+		HttpError httpError = *it;
+		if (httpError.getCode() == errorCode)
 		{
-			return new HttpError(it->getCode(), it->getDescription());
+			return new HttpError(httpError.getCode(), httpError.getDescription());
 		}
 	}
 	return new HttpError(errorCode, "Unknown Error");

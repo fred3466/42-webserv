@@ -25,13 +25,13 @@ public:
 	virtual int getTotalLength() = 0;
 	virtual void setTotalLength(int len) = 0;
 	virtual bool isCgi() = 0;
-	virtual bool isError() = 0;
+	virtual bool isRedirect() = 0;
 	//	virtual HttpError* getError()=0;
 
 	virtual void setCgi(bool cgi) = 0;
 	//	virtual void setError(HttpError *error)=0;
 	//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
-	virtual void setIsError(bool isError) = 0;
+	virtual void setIsRedirect(bool isRedirect) = 0;
 	// virtual void setHttpError(const HttpError *error) = 0;
 	virtual void setHttpError(HttpError *error) = 0;
 	virtual HttpError* getHttpError() = 0;
