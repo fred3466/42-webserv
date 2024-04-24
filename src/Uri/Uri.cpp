@@ -77,30 +77,36 @@ Uri::Uri(const std::string &uri)
 	size_t posFirstSlashAfterDot = uri.find("/", posFirstDotFromStart + 1);
 	size_t posLastSlashBeforeDot = uri.rfind("/", posFirstDotFromStart);
 
-	// Path
-	if (posLastSlashBeforeDot != std::string::npos)
-	{
-		path = uri.substr(0, posLastSlashBeforeDot + 1);
-	}
-
 	// fileName
 	if (posLastSlashBeforeDot != std::string::npos && posFirstDotFromStart != std::string::npos && posFirstDotFromStart > posLastSlashBeforeDot)
 	{
 		fileName = uri.substr(posLastSlashBeforeDot + 1, posFirstDotFromStart - posLastSlashBeforeDot - 1);
 	}
 
-	// fileExt
-	if (posFirstDotFromStart != std::string::npos)
+	// Path
+	if (fileName == "")
 	{
-		size_t endExt = (posFirstSlashAfterDot != std::string::npos) ? posFirstSlashAfterDot : ((posQM != std::string::npos) ? posQM : uri.length());
-		fileExt = uri.substr(posFirstDotFromStart, endExt - posFirstDotFromStart);
-	}
+		path = uri;
+	} else
+	{
+		if (posLastSlashBeforeDot != std::string::npos)
+		{
+			path = uri.substr(0, posLastSlashBeforeDot + 1);
+		}
 
-	// pathInfo
-	if (posFirstSlashAfterDot != std::string::npos)
-	{
-		size_t endPathInfo = (posQM != std::string::npos) ? posQM : uri.length();
-		pathInfo = uri.substr(posFirstSlashAfterDot, endPathInfo - posFirstSlashAfterDot);
+		// fileExt
+		if (posFirstDotFromStart != std::string::npos)
+		{
+			size_t endExt = (posFirstSlashAfterDot != std::string::npos) ? posFirstSlashAfterDot : ((posQM != std::string::npos) ? posQM : uri.length());
+			fileExt = uri.substr(posFirstDotFromStart, endExt - posFirstDotFromStart);
+		}
+
+		// pathInfo
+		if (posFirstSlashAfterDot != std::string::npos)
+		{
+			size_t endPathInfo = (posQM != std::string::npos) ? posQM : uri.length();
+			pathInfo = uri.substr(posFirstSlashAfterDot, endPathInfo - posFirstSlashAfterDot);
+		}
 	}
 
 	// query
@@ -116,22 +122,22 @@ Uri::Uri(const std::string &uri)
 	setQuery(query);
 }
 
-const std::string &Uri::getUri() const
+const std::string& Uri::getUri() const
 {
 	return _uri;
 }
 
-const std::string &Uri::getPath() const
+const std::string& Uri::getPath() const
 {
 	return _path;
 }
 
-const std::string &Uri::getQuery() const
+const std::string& Uri::getQuery() const
 {
 	return _query;
 }
 
-const std::string &Uri::getPathInfo() const
+const std::string& Uri::getPathInfo() const
 {
 	return _pathInfo;
 }
@@ -204,7 +210,7 @@ Uri::Uri(Uri const &other) : bDirectory(other.bDirectory)
 		*this = other;
 }
 
-Uri &Uri::operator=(Uri const &other)
+Uri& Uri::operator=(Uri const &other)
 {
 	_uri = other._uri;
 	_path = other._path;
