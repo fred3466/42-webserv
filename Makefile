@@ -45,13 +45,13 @@ SRC_FILES	= \
 	request/factory/RequestBodyFactory\
 	processor/ProcessorFactory \
 	processor/impl/ProcessorImplDirectFs \
-	processor/impl/ProcessorImplCgiBinPhp \
 	processor/impl/ProcessorImplCgiBinSh \
 	processor/impl/ProcessorImplCgiBinPerl \
 	processor/impl/FiltreResponseMimeType \
 	processor/impl/FiltreResponseCommon \
 	processor/impl/FiltreRequestPost \
 	processor/impl/FiltreError \
+	processor/impl/ProcessorImplDelete \
 	processor/CGI/CGIHelper \
 	processor/CGI/CGIHandlerFactory \
 	processor/CGI/impl/CGIHandlerPHP \

@@ -1,5 +1,6 @@
 #include "ResponseTools.h"
 
+//TODO Deprecated
 ResponseTools::ResponseTools() :
 		codeReasonMap()
 {

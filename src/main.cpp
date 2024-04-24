@@ -36,6 +36,7 @@ int main(int ac, char **av)
 		bool bValidated = cr.buildConfigVector(&configVector, path);
 		if (bValidated)
 		{
+//			TOTO lancer tous les serveurs, et pas seulement le premier
 			server.init(configVector[0]);
 		}
 		else
@@ -47,8 +48,8 @@ int main(int ac, char **av)
 	else
 	{
 		std::cout
-			<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
-			<< std::endl;
+		<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
+				<< std::endl;
 	}
 }
 

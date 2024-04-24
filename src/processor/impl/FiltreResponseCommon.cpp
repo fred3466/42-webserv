@@ -31,13 +31,14 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	std::string path;
 	path = request->getUri().getUri();
 
-	header->addField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
+	header->addNoReplaceField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
 //	header->addField("Access-Control-Allow-Origin", "*");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
-	header->addField("Date", date);
+	header->addNoReplaceField("Date", date);
 	bool isKeepAlive = request->isConnectionKeepAlive();
-	header->addField("Connection", isKeepAlive ? "keep-alive" : "close");
+	header->addNoReplaceField("Connection", isKeepAlive ? "keep-alive" : "close");
 
+//	TODO caduque ?
 	std::string directoryHandlingMethod = config->getParamStr("directory_default", "auto");
 	if (fileUtil.isDirectory(path))
 	{
@@ -58,10 +59,11 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 			path += "/" + directoryHandlingMethod;
 		}
 	}
+//	TODO FIN caduque ?
 
 	int length = response->getBodyLength();
 	std::string lString = stringUtil.strFromInt(length);
-	header->addField("Content-Length", lString);
+	header->addNoReplaceField("Content-Length", lString);
 //	header->addField("Accept-Ranges", "bytes");
 
 	return response;
@@ -80,4 +82,10 @@ bool FiltreResponseCommon::isExclusif()
 bool FiltreResponseCommon::isBypassingExclusif()
 {
 	return false;
+}
+
+std::string FiltreResponseCommon::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
 }

@@ -12,33 +12,35 @@
 #define REQUEST_HEADER_IMPL_CLASS RequestHttpHeader
 #define REQUEST_BODY_IMPL_INC "../RequestHttpBody.h"
 #define REQUEST_BODY_IMPL_CLASS RequestHttpBody
-#define REQUEST_HEADER_IMPL_INC_PHP "ProcessorImplCgiBinPhp.h"
-#define REQUEST_HANDLER_IMPL_CLASS_PHP ProcessorImplCgiBinPhp
-#define REQUEST_HEADER_IMPL_INC_STATIC "ProcessorImplDirectFs.h"
-#define REQUEST_HANDLER_IMPL_CLASS_STATIC ProcessorImplDirectFs
-#define REQUEST_HEADER_IMPL_INC_MIMETYPE "FiltreResponseMimeType.h"
-#define REQUEST_HANDLER_IMPL_CLASS_MIMETYPE FiltreResponseMimeType
-#define REQUEST_HEADER_IMPL_INC_COMMON "FiltreResponseCommon.h"
-#define REQUEST_HANDLER_IMPL_CLASS_COMMON FiltreResponseCommon
-#define REQUEST_HEADER_IMPL_INC_POST "FiltreRequestPost.h"
-#define REQUEST_HANDLER_IMPL_CLASS_POST FiltreRequestPost
-#define REQUEST_HEADER_IMPL_INC_ERROR "FiltreError.h"
-#define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError
-#define REQUEST_HEADER_IMPL_INC_SH "ProcessorImplCgiBinSh.h"
-#define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh
 
-#define REQUEST_HANDLER_IMPL_INC_PERL "ProcessorImplCgiBinPerl.h"
+// #define REQUEST_HEADER_IMPL_INC_PHP "impl/ProcessorImplCgiBinPhp.h"
+// #define REQUEST_HANDLER_IMPL_CLASS_PHP ProcessorImplCgiBinPhp
+#define REQUEST_HEADER_IMPL_INC_STATIC "impl/ProcessorImplDirectFs.h"
+#define REQUEST_HANDLER_IMPL_CLASS_STATIC ProcessorImplDirectFs
+#define REQUEST_HEADER_IMPL_INC_MIMETYPE "impl/FiltreResponseMimeType.h"
+#define REQUEST_HANDLER_IMPL_CLASS_MIMETYPE FiltreResponseMimeType
+#define REQUEST_HEADER_IMPL_INC_COMMON "impl/FiltreResponseCommon.h"
+#define REQUEST_HANDLER_IMPL_CLASS_COMMON FiltreResponseCommon
+#define REQUEST_HEADER_IMPL_INC_POST "impl/FiltreRequestPost.h"
+#define REQUEST_HANDLER_IMPL_CLASS_POST FiltreRequestPost
+#define REQUEST_HEADER_IMPL_INC_ERROR "impl/FiltreError.h"
+#define REQUEST_HANDLER_IMPL_CLASS_ERROR FiltreError
+#define REQUEST_HEADER_IMPL_INC_SH "impl/ProcessorImplCgiBinSh.h"
+#define REQUEST_HANDLER_IMPL_CLASS_SH ProcessorImplCgiBinSh
+#define REQUEST_HANDLER_IMPL_INC_PERL "impl/ProcessorImplCgiBinPerl.h"
 #define REQUEST_HANDLER_IMPL_CLASS_PERL ProcessorImplCgiBinPerl
-#define CGI_HANDLER_INC_PERL "CGIHandlerPerl.h"
+#define REQUEST_HEADER_IMPL_INC_DELETE "impl/ProcessorImplDelete.h"
+#define REQUEST_HANDLER_IMPL_CLASS_DELETE ProcessorImplDelete
+#define CGI_HANDLER_INC_PERL "impl/CGIHandlerPerl.h"
 #define CGI_HANDLER_CLASS_PERL CGIHandlerPerl
 
-#define CGI_HANDLER_INC_PHP "CGIHandlerPHP.h"
-#define CGI_HANDLER_CLASS_PHP CGIHandlerPHP
+// #define CGI_HANDLER_INC_PHP "CGIHandlerPHP.h"
+// #define CGI_HANDLER_CLASS_PHP CGIHandlerPHP
 
 // #define CGI_HANDLER_INC_PHP "CGIHandlerLeg.h"
 // #define CGI_HANDLER_CLASS_PHP CGIHandlerLeg
 
- #define CGI_HANDLER_INC_SH "CGIHandlerSh.h"
- #define CGI_HANDLER_CLASS_SH CGIHandlerSh
+#define CGI_HANDLER_INC_SH "impl/CGIHandlerSh.h"
+#define CGI_HANDLER_CLASS_SH CGIHandlerSh
 
 #define MAX_BODY_SIZE 4098

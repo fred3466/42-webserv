@@ -34,6 +34,7 @@ public:
 	virtual ProcessorTypeEnum getType();
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
+	virtual std::string getProperty(std::string name, std::string defaultVal);
 
 	Response* generateErrorResponse(int errorCode, const std::string &errorMessage);
 	std::string loadErrorPageTemplate();

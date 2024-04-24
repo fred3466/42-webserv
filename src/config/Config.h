@@ -27,4 +27,5 @@ public:
 	void setAlias(std::string alias);
 	Config *clone();
 	bool tryGetValue(const std::string &key, int &value);
+	int getRouteSpecificMaxBodySize(const std::string &route, int defaultSize);
 };

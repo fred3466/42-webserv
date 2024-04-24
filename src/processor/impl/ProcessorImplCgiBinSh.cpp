@@ -73,3 +73,9 @@ bool ProcessorImplCgiBinSh::isBypassingExclusif()
 {
 	return false;
 }
+
+std::string ProcessorImplCgiBinSh::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
+}

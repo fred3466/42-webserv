@@ -8,11 +8,11 @@ FiltreError::~FiltreError()
 {
 }
 
-Response *FiltreError::process(Request *request, Response *response,
-							   ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* FiltreError::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	(void)request;
-	(void)processorAndLocationToProcessor;
+	(void) request;
+	(void) processorAndLocationToProcessor;
 
 	int errorCode = response->getErrorCodeTmp();
 
@@ -42,7 +42,7 @@ ProcessorTypeEnum FiltreError::getType()
 	return type;
 }
 
-Response *FiltreError::generateErrorResponse(int errorCode, const std::string &errorMessage)
+Response* FiltreError::generateErrorResponse(int errorCode, const std::string &errorMessage)
 {
 	std::string errorPageContent = loadErrorPageTemplate();
 	replacePlaceholders(errorPageContent, errorCode, errorMessage);
@@ -99,6 +99,12 @@ bool FiltreError::isExclusif()
 bool FiltreError::isBypassingExclusif()
 {
 	return true;
+}
+
+std::string FiltreError::getProperty(std::string name, std::string defaultVal)
+{
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
 }
 
 // Response *FiltreError::process(Request *request, Response *response,

@@ -1,32 +1,34 @@
 #include "HttpReturnCodeHelper.h"
 
-HttpReturnCodeHelper::HttpReturnCodeHelper()
+HttpReturnCodeHelper::HttpReturnCodeHelper() : httpReturnCode(200)
 {
 }
 
-std::string HttpReturnCodeHelper::getStatusLine(int httpReturnCode)
+HttpReturnCodeHelper::~HttpReturnCodeHelper()
 {
-	ResponseTools responseTools;
-	std::string reasonPhrase = responseTools.buildStatusLineForCode(httpReturnCode);
-
-	std::ostringstream ssHttpReturnCode;
-	ssHttpReturnCode << httpReturnCode;
-	std::string statusLine = "HTTP/1.1 " + ssHttpReturnCode.str() + " " + reasonPhrase + "\r\n";
-	return statusLine;
 }
 
-std::string HttpReturnCodeHelper::loadErrorPageTemplate()
+HttpReturnCodeHelper::HttpReturnCodeHelper(int httpReturnCode)
 {
-	std::ifstream file("htdocs/error_404.html");
-	std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	return content;
+	this->httpReturnCode = httpReturnCode;
 }
 
-void HttpReturnCodeHelper::replacePlaceholders(std::string &content, int errorCode, const std::string &errorMessage)
+//std::string HttpReturnCodeHelper::getStatusLine()
+//{
+//	ResponseTools responseTools;
+//	std::string reasonPhrase = responseTools.buildStatusLineForCode(httpReturnCode);
+//
+//	std::ostringstream ssHttpReturnCode;
+//	ssHttpReturnCode << httpReturnCode;
+//	std::string statusLine = "HTTP/1.1 " + ssHttpReturnCode.str() + " " + reasonPhrase + "\r\n";
+//	return statusLine;
+//}
+
+void HttpReturnCodeHelper::replacePlaceholders(std::string &content, const std::string &errorMessage)
 {
 	// Replace [HTTP_ERROR_CODE] and [HTTP_ERROR_DESC] in the content string
 	std::stringstream codeStream;
-	codeStream << errorCode;
+	codeStream << this->httpReturnCode;
 	std::string codeStr = codeStream.str();
 
 	size_t pos;

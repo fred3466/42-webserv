@@ -26,7 +26,9 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 			this->setMethod(method);
 			lineSs.getline(key, 2048, ' ');
 			lineSs >> key;
-			this->setUri(std::string(key));
+			std::string keyStr = std::string(key);
+			Uri uri = Uri(keyStr);
+			this->setUri(uri);
 			firstLine = false;
 		} else
 		{
