@@ -18,9 +18,7 @@ void ProcessorImplCgiBinPerl::setConfig(Config *conf)
 Response* ProcessorImplCgiBinPerl::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	//	TODO fred post
-	//Header should be managed by the script directly not the cgi
-	//response->getHeader()->addField("Content-Type", "text/html;");
+	response->getHeader()->addField("Content-Type", "text/html;");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
 	CGIHandler *cgiHandler = CGIHandlerFactory().build("PERL_CGI", config);

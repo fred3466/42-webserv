@@ -16,7 +16,7 @@ void ProcessorImplCgiBinSh::setConfig(Config *conf)
 Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-	//	TODO fred post
+	response->getHeader()->addField("Content-Type", "text/html;");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
 	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
