@@ -14,6 +14,7 @@
 #include REQUEST_HEADER_IMPL_INC_SH
 #include REQUEST_HEADER_IMPL_INC_STATIC
 #include REQUEST_HEADER_IMPL_INC_DELETE
+#include REQUEST_HANDLER__IMPL_INC_REDIRECT
 
 class ProcessorFactory
 {
@@ -24,6 +25,6 @@ private:
 public:
 	~ProcessorFactory();
 	ProcessorFactory(ProcessorLocator *pl);
-	Processor *build(std::string procName);
-	std::vector<ProcessorAndLocationToProcessor *> *build(Request *request);
+	Processor* build(std::string procName);
+	std::vector<ProcessorAndLocationToProcessor*>* build(Request *request);
 };

@@ -21,7 +21,7 @@ ProcessorTypeEnum FiltreResponseCommon::getType()
 
 std::string FiltreResponseCommon::toString()
 {
-	return "FiltreResponseCommon " + type;
+	return "FiltreResponseCommon";
 }
 
 Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)

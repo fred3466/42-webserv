@@ -51,7 +51,7 @@ void HttpServer::instantiateProcessLocator()
 		val = su.trim(val);
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
-		std::vector<Processor *> processorsVector = std::vector<Processor *>();
+		std::vector<Processor*> processorsVector = std::vector<Processor*>();
 		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
 		{
 			std::string directive = *iteVal;
@@ -80,20 +80,20 @@ void HttpServer::instantiateProcessLocator()
 				std::string nameProperty = su.getNthTokenIfExists(toksDirective, 0, "");
 				std::string valProperty = su.getNthTokenIfExists(toksDirective, 1, "");
 
-				for (std::vector<Processor *>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
+				for (std::vector<Processor*>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
 				{
 					Processor *processor = *iteProcessor;
 					processor->addProperty(nameProperty, valProperty);
-					harl.debug("HttpServer::instantiateProcessLocator %s.addProperty(%s , %s)", processor->toString().c_str(), nameProperty.c_str(), valProperty.c_str());
+					harl.debug("HttpServer::instantiateProcessLocator \t%s.addProperty(%s , %s)", processor->toString().c_str(), nameProperty.c_str(), valProperty.c_str());
 				}
 			}
 		}
 	} // for
 	delete locations;
 
-	std::vector<LocationToProcessor *> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
-	for (std::vector<LocationToProcessor *>::iterator ite = locationToProcessorVector.begin();
-		 ite != locationToProcessorVector.end(); ite++)
+	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
+	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
+			ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
@@ -115,7 +115,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void)e;
+	(void) e;
 }
 // TODO virifier Anastasia pour DELETE
 bool HttpServer::_checkAccess(Request *request)
@@ -123,7 +123,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET DELETE"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -198,10 +198,11 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	//	TODO à virer
 	Response *resp = createErrorResponse(200);
+//	Response *resp = ResponseFactory().build(ResponseHeaderFactory().build());
 
 	if (!_checkAccess(request))
 	{
-		//		delete resp;
+//		delete resp;
 		resp = createErrorResponse(403);
 		int *fdSocket = e.getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
@@ -211,7 +212,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-		//		delete resp;
+//		delete resp;
 		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -219,12 +220,12 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	}
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
 
 	if (processorList->size() == 0)
 	{
 		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
-		//		delete resp;
+//		delete resp;
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
 		delete processorList;
@@ -242,11 +243,15 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		resp = createErrorResponse(500);
 	}
 
-	int errCode = resp->getHttpError()->getCode();
-	if (errCode != 200)
+	HttpError *httpError = resp->getHttpError();
+	if (httpError)
 	{
-		//	http error traitée dans runProcessorChain
-		harl.debug("HttpServer::onDataReceiving : Http Error response sent in runProcessorChain for code [%i]", errCode);
+		int errCode = httpError->getCode();
+		if (errCode != 200 && !resp->isRedirect())
+		{
+			//	http error traitée dans runProcessorChain
+			harl.debug("HttpServer::onDataReceiving : Http Error response sent in runProcessorChain for code [%i]", errCode);
+		}
 	}
 
 	int nbSent = pushItIntoTheWire(fdSocket, request, resp);
@@ -258,14 +263,14 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(request, resp);
 }
 
-Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request, Response *resp)
+Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp)
 {
 	bool contentDone = false;
 	bool oneIsExclusif = false;
 
-	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
-		 ite != processorList->end();
-		 ite++)
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
+			ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -276,17 +281,17 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 
 		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
-			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d skipping [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
-					   processor->toString().c_str());
+			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d ***[SKIPPING]*** [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
+					processor->toString().c_str());
 			continue;
 		}
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
-				   request->getUri().getUri().c_str(),
-				   processor->toString().c_str(),
-				   contentDone,
-				   oneIsExclusif,
-				   bBypassingExclusif);
+				request->getUri().getUri().c_str(),
+				processor->toString().c_str(),
+				contentDone,
+				oneIsExclusif,
+				bBypassingExclusif);
 
 		Uri uri = request->getUri();
 		if (uri.isDirectory())
@@ -296,15 +301,8 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			harl.debug("HttpServer::runProcessorChain defaultIndexName=[%s]", defaultIndexName.c_str());
 			if (defaultIndexName != "NONE")
 			{
-				Uri uriDefaultIndexNameFileNameAndFileExt(defaultIndexName);
-				std::string fName = uriDefaultIndexNameFileNameAndFileExt.getFileName();
-				std::string fExt = uriDefaultIndexNameFileNameAndFileExt.getFileExtension();
-
-				Uri uriTemp(uri);
-				uriTemp.setFileName(fName);
-				uriTemp.setFileExt(fExt);
-				uriTemp.updateUriStr();
-				uri = uriTemp;
+				uri.setFileNameAndExt(defaultIndexName);
+				uri.updateUriStr();
 				request->getHeader()->setUri(uri);
 				harl.debug("HttpServer::runProcessorChain UPDATED uri=[%s]", uri.getUri().c_str());
 			}
@@ -322,7 +320,7 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
 
 		int errCode = resp->getErrorCodeTmp();
-		if (errCode != 200)
+		if (errCode != 200 && !resp->isRedirect())
 		{
 			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
 
@@ -333,7 +331,7 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 
 		if (processor->isExclusif())
 		{
-			harl.debug("HttpServer::runProcessorChain : %s est EXCLUSIF pour la constitution du corps de la réponse", processor->toString().c_str());
+			harl.debug("HttpServer::runProcessorChain : %s est ***EXCLUSIF*** pour la constitution du corps de la réponse", processor->toString().c_str());
 			oneIsExclusif = true;
 		}
 
@@ -342,10 +340,11 @@ Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			contentDone = true;
 		}
 	}
+
 	return resp;
 }
 
-Response *HttpServer::createErrorResponse(int errorCode)
+Response* HttpServer::createErrorResponse(int errorCode)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -355,19 +354,22 @@ Response *HttpServer::createErrorResponse(int errorCode)
 	resp->setStatusLine(error->getStatusLine());
 	resp->getHeader()->addField("Content-Type", "text/html;");
 
-	HttpReturnCodeHelper errHelper = HttpReturnCodeHelper(errorCode);
-	char *pageContentArray;
-	FileUtil().readFile("htdocs/error.html", &pageContentArray);
-	std::string pageContent = std::string(pageContentArray);
-	errHelper.replacePlaceholders(pageContent, error->getDescription());
+	if (errorCode != 200)
+	{
+		HttpReturnCodeHelper errHelper = HttpReturnCodeHelper(errorCode);
+		char *pageContentArray;
+		FileUtil().readFile("htdocs/error.html", &pageContentArray);
+		std::string pageContent = std::string(pageContentArray);
+		errHelper.replacePlaceholders(pageContent, error->getDescription());
 
-	char *bodybin = new char[pageContent.length() + 1];
-	std::copy(pageContent.begin(), pageContent.end(), bodybin);
-	bodybin[pageContent.length()] = '\0';
-	resp->setBodyBin(bodybin);
+		char *bodybin = new char[pageContent.length() + 1];
+		std::copy(pageContent.begin(), pageContent.end(), bodybin);
+		bodybin[pageContent.length()] = '\0';
+		resp->setBodyBin(bodybin);
 
-	int len = pageContent.length();
-	resp->setBodyLength(len);
+		int len = pageContent.length();
+		resp->setBodyLength(len);
+	}
 
 	return resp;
 }
@@ -424,8 +426,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-			contentLengthHeader, contentLengthResponse);
+				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+				contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
 	//	08/04 fred
@@ -433,8 +435,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 		//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 		header->addField("Transfer-Encoding", "chunked");
 	else // TODO fred : vraiment ?
-		if (transferEncoding == "" && contentLengthHeader == -1)
-			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+	if (!resp->isRedirect() && transferEncoding == "" && contentLengthHeader == -1)
+		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
@@ -452,7 +454,7 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 	return length;
 }
 
-char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -462,11 +464,12 @@ char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	//
 	//		resp->getHeader()->addField("Content-Length", sizeStr);
 
-	if (!resp || !resp->getHeader() || resp->getHeader()->getStatusLine().empty())
+	if (!resp || !resp->getHeader() /*|| resp->getHeader()->getStatusLine().empty()*/)
 	{
 		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
 	}
 
+//	if (!resp->isRedirect())
 	addUltimateHeaders(resp);
 	std::list<std::string> *fields = resp->getHeader()->getFields();
 	std::string fieldsString = stringUtil.fromListToString(fields) + "\r\n";
@@ -512,12 +515,12 @@ char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
 
 	cstr = cstrSave;
-	//	if (length)
-	//	{
-	//		std::ofstream os("out.html", std::ios::binary | std::ios::out);
-	//		os.write(cstr, length);
-	//		os.close();
-	//	}
+	if (length)
+	{
+		std::ofstream os("out.html", std::ios::binary | std::ios::out);
+		os.write(cstr, length);
+		os.close();
+	}
 	return cstr;
 }
 
@@ -557,7 +560,7 @@ void shutFd(int fd)
 // 	return resp;
 // }
 
-Response *HttpServer::handleHttpError(int errorCode)
+Response* HttpServer::handleHttpError(int errorCode)
 {
 	HttpError *error = HttpErrorFactory::build(errorCode);
 	Response *response = createErrorResponse(errorCode);

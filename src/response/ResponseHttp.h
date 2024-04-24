@@ -13,7 +13,7 @@ private:
 	int bodyLength;
 	int totalLength;
 	bool flagCgi;
-	bool flagError;
+	bool flagRedirect;
 	HttpError *error;
 	int errorCodeTmp;
 
@@ -36,13 +36,13 @@ public:
 	virtual int getTotalLength();
 	virtual void setTotalLength(int len);
 	virtual bool isCgi();
-	virtual bool isError();
+	virtual bool isRedirect();
 	//	virtual HttpError* getError();
 
 	virtual void setCgi(bool cgi);
 	//	virtual void setError(HttpError *error);
 	//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
-	virtual void setIsError(bool isError);
+	virtual void setIsRedirect(bool isRedirect);
 	virtual void setHttpError(HttpError *error);
 	virtual int getErrorCodeTmp();
 	virtual void setErrorCodeTmp(int errorCode);

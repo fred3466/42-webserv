@@ -31,6 +31,9 @@
 #define REQUEST_HANDLER_IMPL_CLASS_PERL ProcessorImplCgiBinPerl
 #define REQUEST_HEADER_IMPL_INC_DELETE "impl/ProcessorImplDelete.h"
 #define REQUEST_HANDLER_IMPL_CLASS_DELETE ProcessorImplDelete
+#define REQUEST_HANDLER__IMPL_INC_REDIRECT "impl/FiltreResponseRedirect.h"
+#define REQUEST_HANDLER_IMPL_CLASS_REDIRECT FiltreResponseRedirect
+
 #define CGI_HANDLER_INC_PERL "impl/CGIHandlerPerl.h"
 #define CGI_HANDLER_CLASS_PERL CGIHandlerPerl
 
