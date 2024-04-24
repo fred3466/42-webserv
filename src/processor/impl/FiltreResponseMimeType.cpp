@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : type(type), processorHelper()
+FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : config(), type(type), processorHelper()
 {
 	mimeTypeHelper = new MimeTypeHelper();
 }

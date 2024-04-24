@@ -1,7 +1,7 @@
 #include "ResponseHttp.h"
 
 // TODO En faire une Coplien
-ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagError(false), error(), errorCodeTmp(200)
+ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagRedirect(false), error(), errorCodeTmp(200)
 {
 	header = head;
 }
@@ -63,9 +63,9 @@ bool ResponseHttp::isCgi()
 }
 
 // TODO @Anastasia : virer le bool et tester HttpError.code
-bool ResponseHttp::isError()
+bool ResponseHttp::isRedirect()
 {
-	return flagError;
+	return flagRedirect;
 }
 
 // HttpError* ResponseHttp::getError()
@@ -83,16 +83,15 @@ void ResponseHttp::setCgi(bool cgi)
 //	this->error = error;
 //}
 
-//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
-void ResponseHttp::setIsError(bool isError)
+void ResponseHttp::setIsRedirect(bool isRedirect)
 {
-	this->flagError = isError;
+	this->flagRedirect = isRedirect;
 }
 
 void ResponseHttp::setHttpError(HttpError *error)
 {
 	this->error = error;
-	this->flagError = error->getCode() != 200;
+	this->flagRedirect = error->getCode() != 200;
 
 	std::ostringstream statusLine;
 	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
