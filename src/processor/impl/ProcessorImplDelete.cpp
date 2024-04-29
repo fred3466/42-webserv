@@ -6,86 +6,90 @@
 
 ProcessorImplDelete::ProcessorImplDelete(ProcessorTypeEnum type) : harl()
 {
-    this->type = type;
+	this->type = type;
 }
 
 ProcessorImplDelete::~ProcessorImplDelete()
 {
 }
 
-Response *ProcessorImplDelete::process(Request *request, Response *response,
-                                       ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
+Response* ProcessorImplDelete::process(Request *request, Response *response,
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
-    (void)processorAndLocationToProcessor;
-    harl.debug("Received DELETE request for URI: " + request->getUri().getUri());
-    std::string fileName = request->getUrlParam("file");
-    // std::string base_path = config->getParamStr("base_path", "base_path_missing");
-    // std::string fullPath = FileUtil().realPathFile(base_path + "/" + fileName);
-    std::string base_path = config->getParamStr("base_path", "/");
-    std::string fullPath = FileUtil().realPathFile(base_path + fileName);
+	(void) processorAndLocationToProcessor;
+	harl.debug("Received DELETE request for URI: " + request->getUri().getUri());
+	std::string fileName = request->getUrlParam("file");
+	// std::string base_path = config->getParamStr("base_path", "base_path_missing");
+	// std::string fullPath = FileUtil().realPathFile(base_path + "/" + fileName);
+	std::string base_path = config->getParamStr("base_path", "/");
+	std::string fullPath = FileUtil().realPathFile(base_path + fileName);
 
-    harl.debug("Full path resolved to: " + fullPath);
+	harl.debug("Full path resolved to: " + fullPath);
 
-    std::ifstream file(fullPath.c_str());
+	std::ifstream file(fullPath.c_str());
 
-    if (!file.good())
-    {
-        harl.info("File not found at path: " + fullPath);
-        response->setErrorCodeTmp(404);
-        return response;
-    }
-    // file.close();
+	if (!file.good())
+	{
+		harl.info("File not found at path: " + fullPath);
+		response->setErrorCodeTmp(404);
+		return response;
+	}
+	// file.close();
 
-    if (std::remove(fullPath.c_str()) != 0)
-    {
-        harl.error("Failed to delete file at path: " + fullPath);
-        response->setErrorCodeTmp(500);
-        return response;
-    }
-    else
-    {
-        harl.info("Successfully deleted file at path: " + fullPath);
-        response->setErrorCodeTmp(204);
-        return response;
-    }
+	if (std::remove(fullPath.c_str()) != 0)
+	{
+		harl.error("Failed to delete file at path: " + fullPath);
+		response->setErrorCodeTmp(500);
+		return response;
+	}
+	else
+	{
+		harl.info("Successfully deleted file at path: " + fullPath);
+		response->setErrorCodeTmp(204);
+		return response;
+	}
 }
 
 void ProcessorImplDelete::setConfig(Config *conf)
 {
-    config = conf;
+	config = conf;
 }
 
 std::string ProcessorImplDelete::toString()
 {
-    return "ProcessorImplDelete";
+	return "ProcessorImplDelete";
 }
 
 void ProcessorImplDelete::addProperty(std::string name, std::string value)
 {
-    config->addParam(name, value);
+	config->addParam(name, value);
 }
 
 std::string ProcessorImplDelete::getProperty(std::string name, std::string defaultVal)
 {
-    std::string val = config->getParamStr(name, defaultVal);
-    return val;
+	std::string val = config->getParamStr(name, defaultVal);
+	return val;
 }
 
 ProcessorTypeEnum ProcessorImplDelete::getType()
 {
-    return type;
+	return type;
 }
 
 bool ProcessorImplDelete::isExclusif()
 {
-    return false;
+	return false;
 }
 
 bool ProcessorImplDelete::isBypassingExclusif()
 {
-    return false;
+	return false;
 }
 
+Config* ProcessorImplDelete::getConfig()
+{
+	return config;
+}
 // Response *ProcessorImplDelete::handleHttpError(int errorCode, Response *response, HttpErrorFactory &errorFactory)
 // {
 //     HttpError *error = errorFactory.build(errorCode);
