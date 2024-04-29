@@ -199,6 +199,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getByteBuffer();
 	RequestHeader *reqHeader = NULL;
+	RequestBody *reqBody = NULL;
 	Uri uri;
 
 	std::string fname = "DBG/" + su.strFromInt(ind++) + "_out.txt";
@@ -214,12 +215,16 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	{
 		reqHeader = RequestHeaderFactory().build(&rawRequest);
 		uri = reqHeader->getUri();
+		reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
 		harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
+		rawRequestLen = reqBody->getContent()->size() - 1;
 		bodyContent_Length = su.intFromStr(reqHeader->getFieldValue("Content-Length"));
 		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
+		harl.debug("bIncompleteRequest=%d, rawRequestLen=%i, rawRequestBufferLen=%i, bodyContent_Length=%i", bIncompleteRequest, rawRequestLen, rawRequestBufferLen, bodyContent_Length);
 //	on commence une requete fragmentée
 		if (!bFragmented && bIncompleteRequest)
 		{
+			harl.debug("fragmented start");
 			bFragmented = true;
 			rawRequestBuffer.append(rawRequest);
 			rawRequestBufferLen = rawRequestBuffer.length();
@@ -229,17 +234,21 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (bFragmented)
 	{
+		harl.debug("\nHttpServer::onDataReceiving : rawRequestLen=%i, rawRequestBufferLen=%i", rawRequestLen, rawRequestBufferLen);
 		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
 		rawRequestBuffer.append(rawRequest);
 		rawRequestBufferLen = rawRequestBuffer.length();
 
 		if (!bIncompleteRequest)
 		{
+			harl.debug("\nHttpServer::onDataReceiving :\n----------Data Received successfully---------\nrawRequestBufferLen=%i, bodyContent_Length=%i", rawRequestBufferLen, bodyContent_Length);
 			rawRequest = rawRequestBuffer;
 			rawRequestBuffer = "";
 			bodyContent_Length = 0;
 			bFragmented = false;
 			reqHeader = RequestHeaderFactory().build(&rawRequest);
+			reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
+			harl.debug("\nHttpServer::onDataReceiving : rawRequest : \n%s", rawRequest.c_str());
 		} else
 		{
 			return;
@@ -250,7 +259,6 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 //
 //
 
-	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
 	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e.getFdClient());
 	CookieFactory().build(reqHeader);
