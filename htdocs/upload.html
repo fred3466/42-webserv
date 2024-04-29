@@ -1,6 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #76ADEC;
+            text-align: center;
+            padding-top: 50px;
+            color: white;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 50%;
+            margin: 2rem auto;
+        }
+        input[type=text], input[type=file], input[type=submit], input[type=reset] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+        }
+        input[type=submit], input[type=reset] {
+            background-color: #156CEF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        input[type=submit]:hover, input[type=reset]:hover {
+            background-color: #5e2dbb;
+        }
+        input[type=submit], input[type=reset], input[type=file]::file-selector-button {
+            background-color: #156CEF;
+            color: white;
+            cursor: pointer;
+        }
+        input[type=submit]:hover, input[type=reset]:hover, input[type=file]::file-selector-button:hover {
+            background-color: #5e2dbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Upload</h1>
+        <form action="" method="post" enctype="multipart/form-data">
+            <input name="myfile" type="file"><br>
+            <input type="submit" value="Upload File">
+        </form>
+        <form action="index.html">
+            <input type="submit" value="Return to Home" />
+        </form>
+    </div>
+    </body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
@@ -10,4 +76,4 @@
 <input type="submit">
 </form>
 </body>
-</html>
+</html> -->
