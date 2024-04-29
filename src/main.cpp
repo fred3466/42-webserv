@@ -5,8 +5,14 @@
 #include "Uri/Uri.h"
 
 // void bye(){
-
+HttpServer server;
 // }
+
+void signalHandler(int signum)
+{
+	std::cout << "GoodBye.\n";
+	exit(signum);
+}
 
 int main(int ac, char **av)
 {
@@ -14,7 +20,6 @@ int main(int ac, char **av)
 
 	Harl harl = Harl();
 	FileUtil fu = FileUtil();
-	HttpServer server;
 	// TODO gestion des erreurs
 
 	if (ac == 2)
@@ -22,7 +27,8 @@ int main(int ac, char **av)
 		std::string path = std::string(av[1]);
 		//				std::string path = "conf/webserv.conf";
 		ConfigReader cr = ConfigReader();
-		std::vector<Config*> configVector = std::vector<Config*>();
+		signal(SIGINT, signalHandler);
+		std::vector<Config *> configVector = std::vector<Config *>();
 		if (!fu.fileExists(path))
 		{
 			harl.error("Config file missing for path : [%s]", path.c_str());

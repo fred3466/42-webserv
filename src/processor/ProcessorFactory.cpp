@@ -1,4 +1,5 @@
 #include "ProcessorFactory.h"
+#include "../Harl.h"
 
 std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
 {
@@ -36,6 +37,8 @@ Processor* ProcessorFactory::build(std::string procName)
 //		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
 //		return proc;
 //	}
+	Harl().debug("ProcessorFactory::build", "procName: " + procName);
+
 	if (procName == "PERL_PROCESSOR")
 		return new REQUEST_HANDLER_IMPL_CLASS_PERL(typeContentModifier);
 	else if (procName == "SH_PROCESSOR")

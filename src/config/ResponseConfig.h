@@ -4,7 +4,8 @@
 #include <sstream>
 #include <iostream>
 
-//TODO Anastasia : à mon avis cette classe fait doublon avec Config
+// TODO Anastasia : à mon avis cette classe fait doublon avec Config
+//  il faut suprimer
 class ResponseConfig
 {
 private:

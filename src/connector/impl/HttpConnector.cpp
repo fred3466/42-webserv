@@ -146,14 +146,14 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 	int close_conn = 0;
 	//
 	int timeout;
-//	struct pollfd **fdTab;
-//	int fdTabSize = 1;
+	//	struct pollfd **fdTab;
+	//	int fdTabSize = 1;
 	int fdTabMaxSize = config->getParamInt("connector_pollfd_size", 200);
 	struct pollfd *fdTabTemp = new pollfd[fdTabMaxSize]();
 	fdTab = &fdTabTemp;
 
-//	fdTab = new fdTab*[200];
-//	char **envp = new char*[envMap.size()]
+	//	fdTab = new fdTab*[200];
+	//	char **envp = new char*[envMap.size()]
 	int current_size = 0, i;
 
 	harl.info("HttpConnector::_listen : Ecoute sur %s:%i", ns.ipServer.c_str(), ns.portServer);
@@ -184,8 +184,8 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 	/* activity after 3 minutes this program will end.           */
 	/* timeout value is based on milliseconds.                   */
 	/*************************************************************/
-//	timeout = (3 * 60 * 1000);
-	timeout = config->getParamInt("poll_timeout_ms", 5 * 60 * 1000);
+	//	timeout = (3 * 60 * 1000);
+	timeout = config->getParamInt("poll_timeout_ms", 3 * 60 * 1000);
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
@@ -202,15 +202,15 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 		{
 			harl.error("HttpConnector::_listen : poll error : [%s]", strerror(errno));
 			dumpFdTab(fdTab, fdTabSize);
-//			TODO http error?
+			//			TODO http error?
 			break;
 		}
 		else if (rc == 0)
 		{
 			dumpFdTab(fdTab, fdTabSize);
 			harl.error("HttpConnector::_listen : poll() timed out : [%s]", strerror(errno));
-//			break;
-//			TODO http error?
+			//			break;
+			//			TODO http error?
 			continue;
 		}
 
@@ -236,7 +236,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 			/*********************************************************/
 			if (curentPollFd->revents != POLLIN)
 			{
-//			TODO http error?
+				//			TODO http error?
 
 				harl.error("HttpConnector::_listen :  %d Error! revents = %d", curentPollFd->fd,
 						curentPollFd->revents);
@@ -277,20 +277,20 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 			} /* End of existing connection is readable             */
 		} /* End of loop through pollable descriptors              */
 
-//		/***********************************************************/
-//		/* If the compress_array flag was turned on, we need       */
-//		/* to squeeze together the array and decrement the number  */
-//		/* of file descriptors. We do not need to move back the    */
-//		/* events and revents fields because the events will always*/
-//		/* be POLLIN in this case, and revents is output.          */
-//		/***********************************************************/
-//		if (bReorganizeFdTab == 1)
-//		{
-//			bReorganizeFdTab = 0;
-////			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
-//			reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
-//
-//		}
+		//		/***********************************************************/
+		//		/* If the compress_array flag was turned on, we need       */
+		//		/* to squeeze together the array and decrement the number  */
+		//		/* of file descriptors. We do not need to move back the    */
+		//		/* events and revents fields because the events will always*/
+		//		/* be POLLIN in this case, and revents is output.          */
+		//		/***********************************************************/
+		//		if (bReorganizeFdTab == 1)
+		//		{
+		//			bReorganizeFdTab = 0;
+		////			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
+		//			reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
+		//
+		//		}
 
 	} while (end_server == 0); /* End of serving running.    */
 
@@ -303,25 +303,25 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 			close((*fdTab)[i].fd);
 	}
 
-//		if (nbActiveFd < 0) {
-//			harl.error("select : [%s], bye!", strerror(errno));
-//			exit(1);
-//			continue;
-//		} else if (nbActiveFd == 0) {
-//			harl.warning("select : Aucun socket prêt...");
-////			exit(1);
-////			continue;
-//		} else {
-////	---------------------------------------------------------------------
-//			int _soClient = _newClient(_soListen, NS);
-//			fdMax = std::max(fdMax, _soClient);
-////			if (!FD_ISSET(_soListen, &NS.readingBitsetOfDescriptors)) {
-//			_newClient(_soListen, NS);
-////			}
-//			_process_ready_for_read(8080, _soListen, NS);
-////			_process_ready_for_write();
-//		}
-//	}
+	//		if (nbActiveFd < 0) {
+	//			harl.error("select : [%s], bye!", strerror(errno));
+	//			exit(1);
+	//			continue;
+	//		} else if (nbActiveFd == 0) {
+	//			harl.warning("select : Aucun socket prêt...");
+	////			exit(1);
+	////			continue;
+	//		} else {
+	////	---------------------------------------------------------------------
+	//			int _soClient = _newClient(_soListen, NS);
+	//			fdMax = std::max(fdMax, _soClient);
+	////			if (!FD_ISSET(_soListen, &NS.readingBitsetOfDescriptors)) {
+	//			_newClient(_soListen, NS);
+	////			}
+	//			_process_ready_for_read(8080, _soListen, NS);
+	////			_process_ready_for_write();
+	//		}
+	//	}
 }
 
 void HttpConnector::reorganiseFdTab(pollfd **fdTab, int *fdTabSize)
@@ -349,7 +349,6 @@ void HttpConnector::dumpFdTab(pollfd **fdTab, int fdTabSize)
 	{
 		harl.trace("fdTab[%i] = %i", i, (*fdTab)[i]);
 	}
-
 }
 
 void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
@@ -370,12 +369,12 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* server.                                           */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_acceptIncomingCon: accept");
-//		sockaddr_in client_addr;
-//		socklen_t client_addr_len = sizeof(client_addr);
-//		new_sd = accept(_soListen, (struct sockaddr*) &client_addr, &client_addr_len);
+		//		sockaddr_in client_addr;
+		//		socklen_t client_addr_len = sizeof(client_addr);
+		//		new_sd = accept(_soListen, (struct sockaddr*) &client_addr, &client_addr_len);
 		new_sd = accept(_soListen, 0, 0);
-//		char str[INET_ADDRSTRLEN];
-//		inet_ntop( AF_INET, &ipAddr, str, INET_ADDRSTRLEN);
+		//		char str[INET_ADDRSTRLEN];
+		//		inet_ntop( AF_INET, &ipAddr, str, INET_ADDRSTRLEN);
 		if (new_sd < 0)
 		{
 			if (errno != EWOULDBLOCK)
@@ -388,7 +387,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		harl.trace2("---HttpConnector::_acceptIncomingCon: fcntl");
 		if (fcntl(new_sd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
 		{
-//			TODO http error?
+			//			TODO http error?
 			harl.error("HttpConnector::_acceptIncomingCon : fcntl() failed");
 			close(new_sd);
 			break;
@@ -434,10 +433,10 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		/* connection.                                       */
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_onDataReceiving: recv");
-//		char **bufferPtr = &buffer;
+		//		char **bufferPtr = &buffer;
 		for (int i = 0; i < rcv_buffer_size_bytes; i++)
 			buffer[i] = 0;
-//		std::memset(buffer, 0, rcv_buffer_size_bytes);
+		//		std::memset(buffer, 0, rcv_buffer_size_bytes);
 		ssize_t rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
 		buffer[rcv_buffer_size_bytes] = 0;
 
@@ -480,7 +479,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			//			close_conn = 1;
 			//			break;
 		}
-//		delete[] buffer;
+		//		delete[] buffer;
 	} while (1);
 	delete[] buffer;
 
@@ -511,7 +510,6 @@ void HttpConnector::closeConnection(int *fd)
 	/* events and revents fields because the events will always*/
 	/* be POLLIN in this case, and revents is output.          */
 	/***********************************************************/
-//			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
+	//			reorganiseFdTab(static_cast<pollfd**>(&fdTab), &fdTabSize);
 	reorganiseFdTab(static_cast<pollfd**>(fdTab), &fdTabSize);
-
 }
