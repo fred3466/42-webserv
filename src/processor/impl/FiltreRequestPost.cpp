@@ -39,12 +39,30 @@ Response* FiltreRequestPost::process(Request *request, Response *response, Proce
 {
 	(void) processorAndLocationToProcessor;
 	RequestBody *body = request->getBody();
-	(void) body;
 	//	response->set
 	std::string CONTENT_TYPE = request->getHeaderFieldValue("Content-Type");
-	if (CONTENT_TYPE == "application/x-www-form-urlencoded" || CONTENT_TYPE == "multipart/form-data")
+	std::string multiStr = "multipart/form-data";
+	int pos = 0;
+	int len = multiStr.length();
+	int multiStrMatch = (0 == CONTENT_TYPE.compare(pos, len, multiStr));
+
+	if (CONTENT_TYPE == "application/x-www-form-urlencoded" || multiStrMatch)
 	{
 		//		POST POST POST POST POST POST POST POST POST POST POST
+		std::string basePath = config->getParamStr("base_path", "base_path");
+		basePath = fileUtil.realPathFile(basePath);
+		std::vector<std::string> vecTemp = stringUtil.tokenize(CONTENT_TYPE, ';');
+		std::string boundary = vecTemp.at(1);
+		boundary = stringUtil.replace_all(boundary, " boundary=", "");
+		MultipartParser parser = MultipartParser(boundary);
+//		const std::string &body=
+		parser.parseMultipartData(*(body)->getContent(), basePath);
+
+//		std::string path = basePath + "/" + "test.jpeg";
+//		RequestBody *body = request->getBody();
+//		char *data = (char*) body->getContent()->c_str();
+//		int len = body->getContent()->length();
+//		fileUtil.writeFile(path, data, len);
 
 		std::string CONTENT_LENGTH = request->getHeaderFieldValue("Content-Length");
 	}
@@ -54,7 +72,7 @@ Response* FiltreRequestPost::process(Request *request, Response *response, Proce
 
 void FiltreRequestPost::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 bool FiltreRequestPost::isExclusif()
@@ -71,4 +89,9 @@ std::string FiltreRequestPost::getProperty(std::string name, std::string default
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* FiltreRequestPost::getConfig()
+{
+	return config;
 }

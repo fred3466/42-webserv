@@ -64,14 +64,14 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	int length = response->getBodyLength();
 	std::string lString = stringUtil.strFromInt(length);
 	header->addNoReplaceField("Content-Length", lString);
-//	header->addField("Accept-Ranges", "bytes");
+	header->addField("Accept-Ranges", "bytes");
 
 	return response;
 }
 
 void FiltreResponseCommon::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 bool FiltreResponseCommon::isExclusif()
@@ -88,4 +88,9 @@ std::string FiltreResponseCommon::getProperty(std::string name, std::string defa
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* FiltreResponseCommon::getConfig()
+{
+	return config;
 }

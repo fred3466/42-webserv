@@ -100,7 +100,7 @@ void ProcessorImplCgiBinSh::setBasePath(std::string basePath)
 
 void ProcessorImplCgiBinSh::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 std::string ProcessorImplCgiBinSh::toString()
@@ -127,4 +127,9 @@ std::string ProcessorImplCgiBinSh::getProperty(std::string name, std::string def
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* ProcessorImplCgiBinSh::getConfig()
+{
+	return config;
 }

@@ -67,11 +67,11 @@ void FiltreResponseMimeType::setConfig(Config *conf)
 std::string FiltreResponseMimeType::toString()
 {
 	std::ostringstream oss;
-	oss << "FiltreResponseMimeType ";
-	oss << +type;
-	oss << " Processor with ";
-	oss << mimeTypeHelper->numberOfMappings();
-	oss << " MIME type mappings.";
+	oss << "FiltreResponseMimeType";
+//	oss << +type;
+//	oss << " Processor with ";
+//	oss << mimeTypeHelper->numberOfMappings();
+//	oss << " MIME type mappings.";
 	return oss.str(); // Convert the ostringstream to string and return it
 }
 
@@ -82,27 +82,8 @@ std::string FiltreResponseMimeType::toString()
 
 void FiltreResponseMimeType::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
-//	properties[name] = value;
-//
-//	// If a specific property is updated, perform an action
-//	if (name == "configReloadTrigger" && value == "true")
-//	{
-//		// Perform the reload or reset action
-//		reloadConfigurations();
-//		// Optionally, reset the trigger
-//		properties[name] = "false";
-//	}
+	config->addOrReplaceParam(name, value);
 }
-
-//void FiltreResponseMimeType::reloadConfigurations()
-//{
-//	std::string mimeTypesFilePath = getProperty("exemple/mime.types");
-//	if (!mimeTypesFilePath.empty())
-//	{
-//		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
-//	}
-//}
 
 ProcessorTypeEnum FiltreResponseMimeType::getType()
 {
@@ -124,27 +105,8 @@ std::string FiltreResponseMimeType::getProperty(std::string name, std::string de
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
 }
-// Response *FiltreResponseMimeType::process(Request *request, Response *response,
-//                                           ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
-// {
-//     RequestHttp *httpReq = static_cast<RequestHttp *>(request);
-//     ResponseHttp *httpResp = static_cast<ResponseHttp *>(response);
 
-//     if (!httpReq || !httpResp)
-//         return response;
-
-//     std::string path = httpReq->getPath();
-
-//     // Extracting MIME type using the file path
-//     std::string mimeType = getResponseMimeType(path);
-
-//     ResponseHeader *respHeader = httpResp->getHeader();
-//     if (respHeader)
-//     {
-//         // Construct the Content-Type header string
-//         std::string contentTypeHeader = "Content-Type: " + mimeType;
-//         respHeader->addField(contentTypeHeader);
-//     }
-
-//     return response;
-// }
+Config* FiltreResponseMimeType::getConfig()
+{
+	return config;
+}

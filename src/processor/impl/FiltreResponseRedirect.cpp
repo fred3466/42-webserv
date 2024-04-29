@@ -48,7 +48,7 @@ Response* FiltreResponseRedirect::process(Request *request, Response *response, 
 
 void FiltreResponseRedirect::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 bool FiltreResponseRedirect::isExclusif()
@@ -65,4 +65,9 @@ std::string FiltreResponseRedirect::getProperty(std::string name, std::string de
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* FiltreResponseRedirect::getConfig()
+{
+	return config;
 }

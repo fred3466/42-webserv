@@ -53,7 +53,7 @@ void ProcessorImplCgiBinPerl::setBasePath(std::string basePath)
 
 void ProcessorImplCgiBinPerl::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 std::string ProcessorImplCgiBinPerl::toString()
@@ -80,4 +80,9 @@ std::string ProcessorImplCgiBinPerl::getProperty(std::string name, std::string d
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* ProcessorImplCgiBinPerl::getConfig()
+{
+	return config;
 }

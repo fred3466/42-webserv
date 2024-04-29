@@ -34,7 +34,7 @@ std::string FiltreError::toString()
 
 void FiltreError::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 ProcessorTypeEnum FiltreError::getType()
@@ -107,42 +107,7 @@ std::string FiltreError::getProperty(std::string name, std::string defaultVal)
 	return val;
 }
 
-// Response *FiltreError::process(Request *request, Response *response,
-// 							   ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
-// {
-// 	(void)request;
-// 	(void)processorAndLocationToProcessor;
-
-// 	int errorCode = response->getErrorCodeTmp();
-
-// 	HttpError *error = HttpErrorFactory().build(errorCode);
-// 	response->setHttpError(error);
-
-// 	if (errorCode != 200)
-// 	{
-// 		HttpError *error = response->getHttpError();
-// 		HttpReturnCodeHelper returnCodeHelper;
-
-// 		std::string statusLine = returnCodeHelper.getStatusLine(errorCode);
-
-// 		std::string errorPageContent = returnCodeHelper.loadErrorPageTemplate();
-// 		replacePlaceholders(errorPageContent, errorCode, error->getDescription());
-
-// 		response->setStatusLine(statusLine);
-
-// 		char *bodyBinary = new char[errorPageContent.length() + 1];
-// 		std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBinary);
-// 		bodyBinary[errorPageContent.length()] = '\0';
-
-// 		response->setBodyBin(bodyBinary);
-// 		response->setBodyLength(errorPageContent.length());
-
-// 		delete error;
-// 	}
-// 	else
-// 	{
-// 		// Case where there is no error
-// 	}
-
-// 	return response;
-// }
+Config* FiltreError::getConfig()
+{
+	return config;
+}

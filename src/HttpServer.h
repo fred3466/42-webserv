@@ -17,6 +17,8 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>
+#include <time.h>
+#include <ostream>
 
 #include "API/Connector.h"
 #include "API/Processor.h"
@@ -39,7 +41,7 @@
 #include "Server.h"
 
 // class ResponseHeader;
-class HttpServer : public ConnectorListener, public Server
+class HttpServer: public ConnectorListener, public Server
 {
 private:
 	//	std::list<Connector> consListenersList;
@@ -50,9 +52,9 @@ private:
 	ProcessorLocator *processorLocator;
 	StringUtil su;
 	HttpErrorFactory errorFactory;
-	Response *runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request,
-								Response *resp);
-	char *packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
+	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp);
+
+	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
 	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
 	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
@@ -68,8 +70,8 @@ public:
 	virtual void onIncomming(ConnectorEvent e);
 	virtual void onDataReceiving(ConnectorEvent e);
 
-	Response *createErrorResponse(int errorCode);
-	Response *handleHttpError(int errorCode);
+	Response* createErrorResponse(int errorCode);
+	Response* handleHttpError(int errorCode);
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);

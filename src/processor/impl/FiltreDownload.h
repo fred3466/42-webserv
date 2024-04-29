@@ -12,7 +12,7 @@
 #include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
-class FiltreResponseCommon: public Processor
+class FiltreDownload: public Processor
 {
 private:
 	Harl harl;
@@ -23,8 +23,8 @@ private:
 	ProcessorHelper processorHelper;
 
 public:
-	FiltreResponseCommon(ProcessorTypeEnum type);
-	~FiltreResponseCommon();
+	FiltreDownload(ProcessorTypeEnum type);
+	~FiltreDownload();
 	virtual void setConfig(Config *conf);
 	virtual ProcessorTypeEnum getType();
 	virtual std::string toString();

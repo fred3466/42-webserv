@@ -48,6 +48,7 @@ protected:
 	virtual bool isBypassingExclusif();
 	virtual void addProperty(std::string name, std::string value);
 	virtual std::string getProperty(std::string name, std::string defaultVal);
+	virtual Config* getConfig();
 
 	std::string readRequest(int clientFd);
 	//	void closeClient(int clientFd);

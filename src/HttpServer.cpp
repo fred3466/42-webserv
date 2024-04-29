@@ -41,14 +41,18 @@ void HttpServer::instantiateProcessLocator()
 	//	TODO new
 	processorLocator = new ProcessorLocator();
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::map<std::string, std::string> *locations = config->getParamStrStartingWith("location@");
-	for (std::map<std::string, std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
+	std::vector<std::string> *locations = config->getParamStrStartingWith("location@");
+	for (std::vector<std::string>::iterator ite = locations->begin(); ite != locations->end(); ite++)
 	{
-		std::string key = ite->first;
+		std::vector<std::string> keyValToks = su.tokenize(*ite, '|');
+		std::string key = su.getNthTokenIfExists(keyValToks, 0, "");
 		key = su.trim(key);
-		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
-		std::string val = ite->second;
+		std::string val = su.getNthTokenIfExists(keyValToks, 1, "");
 		val = su.trim(val);
+
+		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
+		harl.debug("");
+		harl.debug("HttpServer::instantiateProcessLocator:\t Processing %s", urlpath.c_str());
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
 		std::vector<Processor*> processorsVector = std::vector<Processor*>();
@@ -73,6 +77,7 @@ void HttpServer::instantiateProcessLocator()
 				Config *configProc = config->clone();
 				processor->setConfig(configProc);
 
+//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
 				processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 			}
 			else
@@ -83,7 +88,8 @@ void HttpServer::instantiateProcessLocator()
 				for (std::vector<Processor*>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
 				{
 					Processor *processor = *iteProcessor;
-					processor->addProperty(nameProperty, valProperty);
+					processor->addProperty(dirName, valProperty);
+
 					harl.debug("HttpServer::instantiateProcessLocator \t%s.addProperty(%s , %s)", processor->toString().c_str(), nameProperty.c_str(), valProperty.c_str());
 				}
 			}
@@ -91,6 +97,7 @@ void HttpServer::instantiateProcessLocator()
 	} // for
 	delete locations;
 
+	harl.debug("");
 	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
 	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
 			ite != locationToProcessorVector.end(); ite++)
@@ -158,6 +165,7 @@ bool HttpServer::_checkAccess(Request *request)
 // 	return true;
 // }
 
+// TODO Caca
 bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 {
 	std::string contentLengthStr = request->getHeader()->getFieldValue("Content-Length");
@@ -165,7 +173,8 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	std::string uri = request->getUri().getUri();
 
 	// Get the maximum body size specific to the route or use the default.
-	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
+//	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
+	int maxBodySize = config->getParamInt("max_body_size", 4096);
 
 	if (contentLength > maxBodySize)
 	{
@@ -182,18 +191,90 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	return true;
 }
 
+static int ind = 0;
+static bool bFragmented = false;
+static std::string rawRequestBuffer = "";
+static size_t bodyContent_Length = 0;
 void HttpServer::onDataReceiving(ConnectorEvent e)
 {
 	std::string rawRequest = e.getByteBuffer();
-	RequestHeader *reqHeader = RequestHeaderFactory().build(&rawRequest);
+	RequestHeader *reqHeader = NULL;
+	Uri uri;
+
+	std::string fname = "DBG/" + su.strFromInt(ind++) + "_out.txt";
+	std::ofstream os(fname.c_str(), std::ios::binary | std::ios::out);
+	os.write(rawRequest.c_str(), rawRequest.length());
+	os.close();
+
+//	reqHeader = RequestHeaderFactory().build(&rawRequest);
+	size_t rawRequestLen = rawRequest.length();
+	size_t rawRequestBufferLen = rawRequestBuffer.length();
+
+	if ((!bFragmented) /*&& (bodyContent_Length != 0)*/)
+	{
+		reqHeader = RequestHeaderFactory().build(&rawRequest);
+		uri = reqHeader->getUri();
+		harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
+		bodyContent_Length = su.intFromStr(reqHeader->getFieldValue("Content-Length"));
+		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
+//	on commence une requete fragmentée
+		if (!bFragmented && bIncompleteRequest)
+		{
+			bFragmented = true;
+			rawRequestBuffer.append(rawRequest);
+			rawRequestBufferLen = rawRequestBuffer.length();
+			return;
+		}
+	}
+
+	if (bFragmented)
+	{
+		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
+		rawRequestBuffer.append(rawRequest);
+		rawRequestBufferLen = rawRequestBuffer.length();
+
+		if (!bIncompleteRequest)
+		{
+			rawRequest = rawRequestBuffer;
+			rawRequestBuffer = "";
+			bodyContent_Length = 0;
+			bFragmented = false;
+			reqHeader = RequestHeaderFactory().build(&rawRequest);
+		} else
+		{
+			return;
+		}
+	}
+
+//
+//
+//
+
 	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
 	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e.getFdClient());
 	CookieFactory().build(reqHeader);
 	int *fdSocket = e.getFdClient();
-	Uri uri = request->getUri();
 
-	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", uri.getUri().c_str());
+//	const char *rawRequestCstr = rawRequest.c_str();
+//	for (size_t i = 0; i < rawRequest.length(); i++)
+//	{
+//		if (rawRequestCstr[i] == EOF)
+//		{
+//			harl.debug("HttpServer::onDataReceiving: EOF présent à la position %i, sur taille=%i", i, rawRequest.length());
+//			bFragmented = true;
+//
+//		}
+//	}
+//
+//	if (bFragmented)
+//	{
+//		rawRequestBuffer.append(rawRequest);
+//		return;
+//	}
+//
+//	bFragmented = false;
+
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
 	//	TODO à virer
@@ -268,6 +349,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	bool contentDone = false;
 	bool oneIsExclusif = false;
 
+	int indexProc = 0;
 	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
 			ite != processorList->end();
 			ite++)
@@ -293,8 +375,10 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 				oneIsExclusif,
 				bBypassingExclusif);
 
+//		std::string method = request->getMethod();
+
 		Uri uri = request->getUri();
-		if (uri.isDirectory())
+		if (/*method != "POST" && */uri.isDirectory())
 		{
 			harl.debug("HttpServer::runProcessorChain requested URI is a dir for [%s]", uri.getUri().c_str());
 			std::string defaultIndexName = processor->getProperty("default_index_name", "NONE");
@@ -318,6 +402,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		}
 
 		resp = processor->process(request, resp, processorAndLocationToProcessor);
+		resp->getHeader()->addField("X-webserv-proc" + su.strFromInt(indexProc++) + ": ", processor->toString());
 
 		int errCode = resp->getErrorCodeTmp();
 		if (errCode != 200 && !resp->isRedirect())

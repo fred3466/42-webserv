@@ -60,6 +60,8 @@ void ProcessorLocator::addLocationToProcessor(std::string urlPath, std::string e
 //	TODO new ici
 	LocationToProcessor *lp = new LocationToProcessor(urlPath, ext, processor, host);
 
+//	LocationToProcessor *existingLp = locationToProcessorVector.at(lp
+
 	locationToProcessorVector.push_back(lp);
 
 	std::sort(locationToProcessorVector.begin(), locationToProcessorVector.end(), &locationToProcessorComparator);

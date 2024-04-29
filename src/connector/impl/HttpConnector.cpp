@@ -185,7 +185,7 @@ void HttpConnector::_listen(int _soListen, netStruct ns)
 	/* timeout value is based on milliseconds.                   */
 	/*************************************************************/
 //	timeout = (3 * 60 * 1000);
-	timeout = config->getParamInt("poll_timeout_ms", 3 * 60 * 1000);
+	timeout = config->getParamInt("poll_timeout_ms", 5 * 60 * 1000);
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
@@ -406,6 +406,7 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* connection                                        */
 		/*****************************************************/
 		ConnectorEvent e("Accepting");
+		e.setByteBuffer(NULL);
 		e.setFdClient(&new_sd);
 		publishAccepting(e);
 	} while (new_sd != -1);
@@ -441,7 +442,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		buffer[rcv_buffer_size_bytes] = 0;
 
 		harl.trace2("---HttpConnector::_onDataReceiving: retour recv rc=%i", rc);
-		if (rc < 0)
+		if ((rc < 0))
 		{
 			if (errno != EWOULDBLOCK)
 			{
@@ -468,20 +469,13 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			/*****************************************************/
 			int len = rc;
 			harl.debug(" %d HttpConnector::_onDataReceiving : %d bytes received", curentPollFd->fd, len);
-			//					std::cout << buffer << std::endl;
-			//					/*****************************************************/
-			//					/* Echo the data back to the client                  */
-			//					/*****************************************************/
-			//			rc = send(curentPollFd.fd, buffer, len, 0);
-			//			if (rc < 0) {
-			//				harl.error("  send() failed");
-			//				close_conn = 1;
-			//				break;
-			//			}
-			std::string cont = std::string(buffer);
-			harl.trace(cont);
-			ConnectorEvent e(cont);
+//			std::string cont = std::string(buffer);
+//			harl.trace(cont);
+			ConnectorEvent e("DataReceiving");
 			e.setFdClient(&curentPollFd->fd);
+			char *dataReceived = new char[rcv_buffer_size_bytes + 1];
+			memcpy(dataReceived, buffer, rcv_buffer_size_bytes + 1);
+			e.setByteBuffer(dataReceived);
 			publishDataReceiving(e);
 			//			close_conn = 1;
 			//			break;
@@ -498,7 +492,7 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 	/*******************************************************/
 	if (close_conn)
 	{
-		harl.trace2("---HttpConnector::_onDataReceiving: closeConnection");
+		harl.debug("---HttpConnector::_onDataReceiving: closeConnection");
 		closeConnection(&curentPollFd->fd);
 		compress_array = 1;
 	}

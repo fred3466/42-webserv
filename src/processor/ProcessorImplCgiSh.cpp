@@ -91,7 +91,7 @@ void ProcessorImplCgiSh::setBasePath(std::string basePath)
 
 void ProcessorImplCgiSh::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 std::string ProcessorImplCgiSh::toString()

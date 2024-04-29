@@ -33,4 +33,5 @@ public:
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
 	virtual std::string getProperty(std::string name, std::string defaultVal);
+	virtual Config* getConfig();
 };

@@ -4,8 +4,7 @@ ConnectorEvent::~ConnectorEvent()
 {
 }
 
-ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) :
-		req(o.req), resp(o.resp), fdClient(o.fdClient), byteBuffer(o.byteBuffer)
+ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) : fdClient(o.fdClient), byteBuffer(o.byteBuffer)
 {
 	*this = o;
 }
@@ -20,21 +19,19 @@ ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) :
 //	return *this;
 //}
 
-ConnectorEvent::ConnectorEvent(Request *req, Response *resp) : fdClient(NULL), byteBuffer(NULL)
+ConnectorEvent::ConnectorEvent(std::string eventName) : fdClient(NULL), byteBuffer(NULL)
 {
-	this->req = req;
-	this->resp = resp;
-}
-
-ConnectorEvent::ConnectorEvent(std::string temp) :
-		req(NULL), resp(NULL), fdClient(NULL)
-{
-	this->byteBuffer = temp;
+	this->eventName = eventName;
 }
 
 std::string ConnectorEvent::getByteBuffer()
 {
 	return byteBuffer;
+}
+
+void ConnectorEvent::setByteBuffer(char *bytess)
+{
+	byteBuffer = bytess;
 }
 
 int* ConnectorEvent::getFdClient()

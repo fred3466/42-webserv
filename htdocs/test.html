@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<script type="text/javascript">
+monnom="<strong>fred<strong>";
+</script>
+
+</head>
+<body>
+
+<div id="iddiv"></div>
+
+<script type="text/javascript">
+
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "https://hmpg.net/");
+xhr.send();
+//xhr.responseType = "json";
+xhr.onload = () => {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    const data = xhr.response;
+	divobj=document.getElementById("iddiv");
+	divobj.innerHTML=data;
+    console.log(data);
+  } else {
+    console.log(`Error: ${xhr.status}`);
+  }
+};
+
+</script>
+</body>
+</html>

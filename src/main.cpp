@@ -10,6 +10,8 @@
 
 int main(int ac, char **av)
 {
+	system("rm -f DBG/*");
+
 	Harl harl = Harl();
 	FileUtil fu = FileUtil();
 	HttpServer server;
@@ -30,7 +32,7 @@ int main(int ac, char **av)
 		bool bValidated = cr.buildConfigVector(&configVector, path);
 		if (bValidated)
 		{
-//			TOTO lancer tous les serveurs, et pas seulement le premier
+//			TODO lancer tous les serveurs, et pas seulement le premier
 			server.init(configVector[0]);
 		}
 		else

@@ -13,6 +13,7 @@
 #include "../../error/HttpErrorFactory.h"
 #include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
+#include "../../parser/MultipartParser.h"
 
 class FiltreRequestPost: public Processor
 {
@@ -35,4 +36,5 @@ public:
 	virtual bool isExclusif();
 	virtual bool isBypassingExclusif();
 	virtual std::string getProperty(std::string name, std::string defaultVal);
+	virtual Config* getConfig();
 };

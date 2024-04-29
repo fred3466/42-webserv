@@ -33,6 +33,8 @@
 #define REQUEST_HANDLER_IMPL_CLASS_DELETE ProcessorImplDelete
 #define REQUEST_HANDLER__IMPL_INC_REDIRECT "impl/FiltreResponseRedirect.h"
 #define REQUEST_HANDLER_IMPL_CLASS_REDIRECT FiltreResponseRedirect
+#define REQUEST_HANDLER__IMPL_INC_DOWNLOAD "impl/FiltreDownload.h"
+#define REQUEST_HANDLER_IMPL_CLASS_DOWNLOAD FiltreDownload
 
 #define CGI_HANDLER_INC_PERL "impl/CGIHandlerPerl.h"
 #define CGI_HANDLER_CLASS_PERL CGIHandlerPerl
@@ -46,4 +48,4 @@
 #define CGI_HANDLER_INC_SH "impl/CGIHandlerSh.h"
 #define CGI_HANDLER_CLASS_SH CGIHandlerSh
 
-#define MAX_BODY_SIZE 4098
+//#define MAX_BODY_SIZE 4098

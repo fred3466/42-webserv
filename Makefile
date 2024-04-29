@@ -53,6 +53,7 @@ SRC_FILES	= \
 	processor/impl/FiltreError \
 	processor/impl/ProcessorImplDelete \
 	processor/impl/FiltreResponseRedirect \
+	processor/impl/FiltreDownload \
 	processor/CGI/CGIHelper \
 	processor/CGI/CGIHandlerFactory \
 	processor/CGI/impl/CGIHandlerPHP \
@@ -84,8 +85,8 @@ SRC_FILES	= \
 	error/HttpErrorFactory \
 	error/HttpReturnCodeHelper \
 	Uri/Uri \
-	Uri/UriValidator 
- #    parser/MultipartParser \
+	Uri/UriValidator \
+    parser/MultipartParser 
 
 SRC 		= 	$(addprefix $(SRC_DIR), $(addsuffix .cpp, $(SRC_FILES)))
 OBJ 		= 	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))

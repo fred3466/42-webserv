@@ -54,6 +54,8 @@ Processor* ProcessorFactory::build(std::string procName)
 		return new REQUEST_HANDLER_IMPL_CLASS_DELETE(typeHeaderModifier);
 	else if (procName == "REDIRECT_PROCESSOR")
 		return new REQUEST_HANDLER_IMPL_CLASS_REDIRECT(typeContentModifier);
+	else if (procName == "DOWNLOAD_PROCESSOR")
+		return new REQUEST_HANDLER_IMPL_CLASS_DOWNLOAD(typeHeaderModifier);
 	//	TODO doit être configurable
 //	return new ProcessorImplDirectFs(typeContentModifier);
 	return NULL;

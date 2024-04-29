@@ -17,11 +17,56 @@ Config::~Config()
 {
 }
 
+bool Config::_deleteEntryForKey(std::string key)
+{
+	std::string ret = "";
+	StringUtil su = StringUtil();
+	std::string keyUpper = su.strUpperCase(key);
+
+	for (std::vector<std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	{
+		std::string rawEntry = *ite;
+		std::vector<std::string> toks = su.tokenize(rawEntry, '|');
+		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		name = su.strUpperCase(su.trim(name));
+		std::string val = su.getNthTokenIfExists(toks, 1, "");
+		val = su.trim(val);
+		if (name == keyUpper)
+		{
+			kv.erase(ite);
+			return true;
+		}
+	}
+	return false;
+}
+
+std::string Config::_getValueForKey(std::string key)
+{
+	std::string ret = "";
+	StringUtil su = StringUtil();
+	std::string keyUpper = su.strUpperCase(key);
+
+	for (std::vector<std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	{
+		std::string rawEntry = *ite;
+		std::vector<std::string> toks = su.tokenize(rawEntry, '|');
+		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		name = su.strUpperCase(su.trim(name));
+		std::string val = su.getNthTokenIfExists(toks, 1, "");
+		val = su.trim(val);
+		if (name == keyUpper)
+			return val;
+	}
+	return ret;
+}
+
 int Config::getParamInt(std::string param, int intDefault)
 {
 	try
 	{
-		std::string res = kv.at(param);
+//		std::string res = kv.at(param);
+		std::string res = _getValueForKey(param);
+
 		if (!res.empty())
 		{
 			int resInt = StringUtil().intFromStr(res);
@@ -45,16 +90,26 @@ int Config::getParamInt(const std::string &key)
 	return value;
 }
 
+void Config::addOrReplaceParam(std::string param, std::string val)
+{
+	StringUtil su = StringUtil();
+
+	_deleteEntryForKey(param);
+
+	kv.push_back(param + "|" + val);
+}
+
 void Config::addParam(std::string param, std::string value)
 {
-	kv[param] = value;
+	kv.push_back(param + "|" + value);
 }
 
 std::string Config::getParamStr(std::string param, std::string stringDefault)
 {
 	try
 	{
-		std::string res = kv.at(param);
+//		std::string res = kv.at(param);
+		std::string res = _getValueForKey(param);
 		if (!res.empty())
 		{
 			return res;
@@ -67,24 +122,28 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 	return stringDefault;
 }
 
-std::map<std::string, std::string> *Config::getParamStrStartingWith(std::string paramPrefix)
+std::vector<std::string>* Config::getParamStrStartingWith(std::string paramPrefix)
 {
+	StringUtil su = StringUtil();
 	//	TODO un new par ici !
-	std::map<std::string, std::string> *ret = new std::map<std::string, std::string>();
-	for (std::map<std::string, std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	std::vector<std::string> *ret = new std::vector<std::string>();
+
+	for (std::vector<std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
 	{
-		std::string key = ite->first;
-		if (key.find(paramPrefix) == 0)
+		std::string rawEntry = *ite;
+
+		std::vector<std::string> toks = su.tokenize(rawEntry, '|');
+		std::string name = su.getNthTokenIfExists(toks, 0, "");
+		if (name.find(paramPrefix) == 0)
 		{
-			std::string val = ite->second;
-			(*ret)[key] = val;
+			ret->push_back(rawEntry);
 		}
 	}
+
 	return ret;
 }
 
-std::string
-Config::getAlias()
+std::string Config::getAlias()
 {
 	return alias;
 }
@@ -95,88 +154,84 @@ void Config::setAlias(std::string alias)
 }
 
 Config::Config(Config &bis)
-	: alias(bis.alias)
+: alias(bis.alias)
 {
-	for (std::map<std::string, std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
+	for (std::vector<std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
 	{
-		std::string key = ite->first;
-		std::string val = ite->second;
-		kv[key] = val;
+		std::string bisEntry = std::string(*ite);
+		kv.push_back(bisEntry);
 	}
 	if (this != &bis)
 		*this = bis;
 }
 
-Config &Config::operator=(Config &bis)
+Config& Config::operator=(Config &bis)
 {
 	this->alias = bis.alias;
 
-	for (std::map<std::string, std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
+	for (std::vector<std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
 	{
-		std::string key = ite->first;
-		std::string val = ite->second;
-		kv[key] = val;
+		std::string bisEntry = std::string(*ite);
+		kv.push_back(bisEntry);
 	}
-	//	this->kv = bis.kv;
 	return *this;
 }
 
-Config *Config::clone()
+Config* Config::clone()
 {
 	Config *ret = new Config();
 	ret->alias = alias;
 
-	for (std::map<std::string, std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
+	for (std::vector<std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
 	{
-		std::string key = ite->first;
-		std::string val = ite->second;
-		ret->kv[key] = val;
+		std::string bisEntry = std::string(*ite);
+		ret->kv.push_back(bisEntry);
 	}
-	//	this->kv = bis.kv;
 	return ret;
 }
 
 bool Config::tryGetValue(const std::string &key, int &value)
 {
-	std::map<std::string, std::string>::iterator it = kv.find(key);
-	if (it != kv.end())
+	std::string val = _getValueForKey(key);
+	if (val == "")
 	{
-		std::istringstream iss(it->second);
-		if (!(iss >> value))
-		{
-			return false;
-		}
-		return true;
+		return false;
 	}
-	return false;
+	std::istringstream iss(val);
+	if (!(iss >> value))
+	{
+		return false;
+	}
+	return true;
+
+//	std::map<std::string, std::string>::iterator it = kv.find(key);
+//	if (it != kv.end())
+//	{
+//		std::istringstream iss(it->second);
+//		if (!(iss >> value))
+//		{
+//			return false;
+//		}
+//		return true;
+//	}
+//	return false;
 }
 
-int Config::getRouteSpecificMaxBodySize(const std::string &route, int defaultSize)
-{
-	// Directly check for the specific route
-	if (route == "/post_body")
-	{
-		return 100; // Set specific limit for this route as required
-	}
+//int Config::getRouteSpecificMaxBodySize(const std::string &route, int defaultSize)
+//{
+//	// Directly check for the specific route
+//	if (route == "/post_body")
+//	{
+//		return 100; // Set specific limit for this route as required
+//	}
+//
+//	// Otherwise, use the general settings from the configuration
+//	std::string key = "maxBodySize:" + route; // Prefix to distinguish this type of config value
+//	std::map<std::string, std::string>::iterator it = kv.find(key);
+//	if (it != kv.end())
+//	{
+//		return std::atoi(it->second.c_str()); // Convert the string to int safely for C++98
+//	}
+//	return defaultSize; // Return the default size if no specific configuration is found
+//}
 
-	// Otherwise, use the general settings from the configuration
-	std::string key = "maxBodySize:" + route; // Prefix to distinguish this type of config value
-	std::map<std::string, std::string>::iterator it = kv.find(key);
-	if (it != kv.end())
-	{
-		return std::atoi(it->second.c_str()); // Convert the string to int safely for C++98
-	}
-	return defaultSize; // Return the default size if no specific configuration is found
-}
-
-// Config::Config(Config &bis) : kv(bis.kv), alias(bis.alias) {}
-
-// Config &Config::operator=(Config &bis)
-// {
-// 	if (this != &bis)
-// 	{
-// 		alias = bis.alias;
-// 		kv = bis.kv;
-// 	}
-// 	return *this;
-// }

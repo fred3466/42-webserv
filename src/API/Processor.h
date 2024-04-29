@@ -23,9 +23,10 @@ protected:
 public:
 	Processor(ProcessorTypeEnum type);
 	virtual ~Processor();
-	virtual Response *process(Request *request, Response *response,
-							  ProcessorAndLocationToProcessor *processorAndLocationToProcessor) = 0;
+	virtual Response* process(Request *request, Response *response,
+			ProcessorAndLocationToProcessor *processorAndLocationToProcessor) = 0;
 	virtual void setConfig(Config *conf) = 0;
+	virtual Config* getConfig() = 0;
 	virtual std::string toString() = 0;
 	virtual void addProperty(std::string name, std::string value) = 0;
 	virtual ProcessorTypeEnum getType() = 0;

@@ -133,7 +133,7 @@ Response* ProcessorImplDirectFs::process(Request *request, Response *response,
 
 void ProcessorImplDirectFs::addProperty(std::string name, std::string value)
 {
-	config->addParam(name, value);
+	config->addOrReplaceParam(name, value);
 }
 
 std::string ProcessorImplDirectFs::toString()
@@ -160,4 +160,9 @@ std::string ProcessorImplDirectFs::getProperty(std::string name, std::string def
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
+}
+
+Config* ProcessorImplDirectFs::getConfig()
+{
+	return config;
 }

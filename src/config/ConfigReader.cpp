@@ -8,10 +8,10 @@ ConfigReader::~ConfigReader()
 {
 }
 
-Config *findConfigByAlias(std::vector<Config *> *v, std::string alias)
+Config* findConfigByAlias(std::vector<Config*> *v, std::string alias)
 {
 	Config *ret = NULL;
-	std::vector<Config *>::iterator ite;
+	std::vector<Config*>::iterator ite;
 	for (ite = v->begin(); ite != v->end(); ite++)
 	{
 		std::string aliasTmp = (*ite)->getAlias();
@@ -21,8 +21,8 @@ Config *findConfigByAlias(std::vector<Config *> *v, std::string alias)
 	return ret;
 }
 
-bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
-									 std::string path)
+bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
+		std::string path)
 {
 	ConfigFactory factory = ConfigFactory();
 	Harl harl = Harl();
@@ -44,9 +44,9 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 			Config *c = NULL;
 			std::vector<std::string> toksFullKey;
 			if (is.peek() == '0' || line.empty()
-				//					|| line.length() == 0
-				//					|| !line.c_str()
-			)
+					//					|| line.length() == 0
+					//					|| !line.c_str()
+					)
 			{
 				continue;
 			}
@@ -55,7 +55,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				continue;
 
 			line = su.normalizeSpaces(line);
-			harl.info(line);
+			harl.trace(line);
 
 			su.trim(line);
 			if (is.peek() == '0' || line.empty() || line + "" == "" || line.length() == 0 || !line.c_str())
@@ -72,7 +72,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 					if (su.isCommented(lineTmp))
 						continue;
 					lineTmp = su.normalizeSpaces(lineTmp);
-					harl.info(lineTmp);
+					harl.trace(lineTmp);
 					line = su.trim(line);
 					line += lineTmp;
 					if (std::string::npos != lineTmp.find('}'))
@@ -110,8 +110,8 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				{
 					bValidated = false;
 					harl.error(
-						"Multiple occurrence of the same alias/name for [%s] in line %i",
-						alias.c_str(), lineNumber);
+							"Multiple occurrence of the same alias/name for [%s] in line %i",
+							alias.c_str(), lineNumber);
 				}
 				else
 				{
@@ -144,9 +144,9 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				}
 				else
 				{
-					std::string real_base_path(path);
+//					std::string real_base_path(path);
 					c->addParam("base_path", base_path);
-					c->addParam("real_base_path", real_base_path);
+//					c->addParam("real_base_path", real_base_path);
 					free(path);
 				}
 			}
@@ -154,7 +154,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 			else if (key == "server_name")
 			{
 				c->addParam("server_name",
-							su.getNthTokenIfExists(toksVal, 0, ""));
+						su.getNthTokenIfExists(toksVal, 0, ""));
 			}
 
 			//			listen
@@ -166,7 +166,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				c->addParam("port", port);
 			}
 
-			//			listen
+			//			location
 			else if (key == "location")
 			{
 				std::string urlPath = su.getNthTokenIfExists(toksFullKey, 2, "");
@@ -184,7 +184,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config *> *ret,
 				c->addParam(key, val);
 			}
 
-			harl.trace("%s -> %s", key.c_str(), val.c_str());
+			harl.trace("ConfigReader::buildConfigVector: %s -> %s", key.c_str(), val.c_str());
 		}
 		is.close();
 	}
