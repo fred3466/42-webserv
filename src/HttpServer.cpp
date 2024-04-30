@@ -55,7 +55,7 @@ void HttpServer::instantiateProcessLocator()
 		harl.debug("HttpServer::instantiateProcessLocator:\t Processing %s", urlpath.c_str());
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
-		std::vector<Processor*> processorsVector = std::vector<Processor*>();
+		std::vector<Processor *> processorsVector = std::vector<Processor *>();
 		for (std::vector<std::string>::iterator iteVal = toksVal.begin(); iteVal != toksVal.end(); iteVal++)
 		{
 			std::string directive = *iteVal;
@@ -77,7 +77,7 @@ void HttpServer::instantiateProcessLocator()
 				Config *configProc = config->clone();
 				processor->setConfig(configProc);
 
-//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
+				//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
 				processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 			}
 			else
@@ -85,7 +85,7 @@ void HttpServer::instantiateProcessLocator()
 				std::string nameProperty = su.getNthTokenIfExists(toksDirective, 0, "");
 				std::string valProperty = su.getNthTokenIfExists(toksDirective, 1, "");
 
-				for (std::vector<Processor*>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
+				for (std::vector<Processor *>::iterator iteProcessor = processorsVector.begin(); iteProcessor != processorsVector.end(); iteProcessor++)
 				{
 					Processor *processor = *iteProcessor;
 					processor->addProperty(dirName, valProperty);
@@ -98,9 +98,9 @@ void HttpServer::instantiateProcessLocator()
 	delete locations;
 
 	harl.debug("");
-	std::vector<LocationToProcessor*> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
-	for (std::vector<LocationToProcessor*>::iterator ite = locationToProcessorVector.begin();
-			ite != locationToProcessorVector.end(); ite++)
+	std::vector<LocationToProcessor *> locationToProcessorVector = processorLocator->getLocationToProcessorVector();
+	for (std::vector<LocationToProcessor *>::iterator ite = locationToProcessorVector.begin();
+		 ite != locationToProcessorVector.end(); ite++)
 	{
 
 		LocationToProcessor *lp = *ite;
@@ -122,7 +122,7 @@ void HttpServer::instantiateProcessLocator()
 // }
 void HttpServer::onIncomming(ConnectorEvent e)
 {
-	(void) e;
+	(void)e;
 }
 // TODO virifier Anastasia pour DELETE
 bool HttpServer::_checkAccess(Request *request)
@@ -130,7 +130,7 @@ bool HttpServer::_checkAccess(Request *request)
 	std::string metReq = request->getHeader()->getMethod();
 	std::string limitConfig = su.strUpperCase(config->getParamStr("limit_except", "POST GET DELETE"));
 	std::vector<std::string> limit_exceptTab = su.tokenize(limitConfig, ' ');
-	for (int i = 0; i < (int) limit_exceptTab.size(); i++)
+	for (int i = 0; i < (int)limit_exceptTab.size(); i++)
 	{
 		std::string methConfig = limit_exceptTab[i];
 		if (methConfig == metReq)
@@ -173,7 +173,7 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	std::string uri = request->getUri().getUri();
 
 	// Get the maximum body size specific to the route or use the default.
-//	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
+	//	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
 	int maxBodySize = config->getParamInt("max_body_size", 4096);
 
 	if (contentLength > maxBodySize)
@@ -206,7 +206,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	os.write(rawRequest.c_str(), rawRequest.length());
 	os.close();
 
-//	reqHeader = RequestHeaderFactory().build(&rawRequest);
+	//	reqHeader = RequestHeaderFactory().build(&rawRequest);
 	size_t rawRequestLen = rawRequest.length();
 	size_t rawRequestBufferLen = rawRequestBuffer.length();
 
@@ -217,7 +217,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 		harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
 		bodyContent_Length = su.intFromStr(reqHeader->getFieldValue("Content-Length"));
 		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
-//	on commence une requete fragmentée
+		//	on commence une requete fragmentée
 		if (!bFragmented && bIncompleteRequest)
 		{
 			bFragmented = true;
@@ -240,15 +240,16 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 			bodyContent_Length = 0;
 			bFragmented = false;
 			reqHeader = RequestHeaderFactory().build(&rawRequest);
-		} else
+		}
+		else
 		{
 			return;
 		}
 	}
 
-//
-//
-//
+	//
+	//
+	//
 
 	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
 	Request *request = RequestFactory().build(reqHeader, reqBody);
@@ -256,34 +257,34 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	CookieFactory().build(reqHeader);
 	int *fdSocket = e.getFdClient();
 
-//	const char *rawRequestCstr = rawRequest.c_str();
-//	for (size_t i = 0; i < rawRequest.length(); i++)
-//	{
-//		if (rawRequestCstr[i] == EOF)
-//		{
-//			harl.debug("HttpServer::onDataReceiving: EOF présent à la position %i, sur taille=%i", i, rawRequest.length());
-//			bFragmented = true;
-//
-//		}
-//	}
-//
-//	if (bFragmented)
-//	{
-//		rawRequestBuffer.append(rawRequest);
-//		return;
-//	}
-//
-//	bFragmented = false;
+	//	const char *rawRequestCstr = rawRequest.c_str();
+	//	for (size_t i = 0; i < rawRequest.length(); i++)
+	//	{
+	//		if (rawRequestCstr[i] == EOF)
+	//		{
+	//			harl.debug("HttpServer::onDataReceiving: EOF présent à la position %i, sur taille=%i", i, rawRequest.length());
+	//			bFragmented = true;
+	//
+	//		}
+	//	}
+	//
+	//	if (bFragmented)
+	//	{
+	//		rawRequestBuffer.append(rawRequest);
+	//		return;
+	//	}
+	//
+	//	bFragmented = false;
 
 	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
 
 	//	TODO à virer
 	Response *resp = createErrorResponse(200);
-//	Response *resp = ResponseFactory().build(ResponseHeaderFactory().build());
+	//	Response *resp = ResponseFactory().build(ResponseHeaderFactory().build());
 
 	if (!_checkAccess(request))
 	{
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(403);
 		int *fdSocket = e.getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
@@ -293,7 +294,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -301,12 +302,12 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	}
 
 	ProcessorFactory processorFactory = ProcessorFactory(processorLocator);
-	std::vector<ProcessorAndLocationToProcessor*> *processorList = processorFactory.build(request);
+	std::vector<ProcessorAndLocationToProcessor *> *processorList = processorFactory.build(request);
 
 	if (processorList->size() == 0)
 	{
 		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
 		delete processorList;
@@ -344,15 +345,15 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	cleanUp(request, resp);
 }
 
-Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp)
+Response *HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor *> *processorList, Request *request, Response *resp)
 {
 	bool contentDone = false;
 	bool oneIsExclusif = false;
 
 	int indexProc = 0;
-	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
-			ite != processorList->end();
-			ite++)
+	for (std::vector<ProcessorAndLocationToProcessor *>::iterator ite = processorList->begin();
+		 ite != processorList->end();
+		 ite++)
 
 	{
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
@@ -364,21 +365,21 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		if ((oneIsExclusif && !bBypassingExclusif) || (contentDone && processor->getType() == CONTENT_MODIFIER))
 		{
 			harl.debug("HttpServer::runProcessorChain : contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d ***[SKIPPING]*** [%s]", contentDone, oneIsExclusif, bBypassingExclusif,
-					processor->toString().c_str());
+					   processor->toString().c_str());
 			continue;
 		}
 
 		harl.debug("HttpServer::runProcessorChain : %s \t processing [%s] contentDone=%d, oneIsExclusif=%d, bBypassingExclusif=%d",
-				request->getUri().getUri().c_str(),
-				processor->toString().c_str(),
-				contentDone,
-				oneIsExclusif,
-				bBypassingExclusif);
+				   request->getUri().getUri().c_str(),
+				   processor->toString().c_str(),
+				   contentDone,
+				   oneIsExclusif,
+				   bBypassingExclusif);
 
-//		std::string method = request->getMethod();
+		//		std::string method = request->getMethod();
 
 		Uri uri = request->getUri();
-		if (/*method != "POST" && */uri.isDirectory())
+		if (/*method != "POST" && */ uri.isDirectory())
 		{
 			harl.debug("HttpServer::runProcessorChain requested URI is a dir for [%s]", uri.getUri().c_str());
 			std::string defaultIndexName = processor->getProperty("default_index_name", "NONE");
@@ -429,7 +430,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 	return resp;
 }
 
-Response* HttpServer::createErrorResponse(int errorCode)
+Response *HttpServer::createErrorResponse(int errorCode)
 {
 	ResponseHeader *header = ResponseHeaderFactory().build();
 	Response *resp = ResponseFactory().build(header);
@@ -511,8 +512,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 	if (contentLengthHeader != -1 && contentLengthHeader != contentLengthResponse)
 	{
 		harl.error(
-				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
-				contentLengthHeader, contentLengthResponse);
+			"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
+			contentLengthHeader, contentLengthResponse);
 	}
 	//	TODO fred post 29/03
 	//	08/04 fred
@@ -520,8 +521,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 		//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 		header->addField("Transfer-Encoding", "chunked");
 	else // TODO fred : vraiment ?
-	if (!resp->isRedirect() && transferEncoding == "" && contentLengthHeader == -1)
-		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
+		if (!resp->isRedirect() && transferEncoding == "" && contentLengthHeader == -1)
+			header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 }
 
 int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *resp)
@@ -539,7 +540,7 @@ int HttpServer::pushItIntoTheWire(int *fdSocket, Request *request, Response *res
 	return length;
 }
 
-char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
+char *HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *resp)
 {
 	StringUtil stringUtil;
 
@@ -554,7 +555,7 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 		harl.error("HttpServer::packageResponseAndGiveMeSomeBytes : Problème avec response : \n[%s]", request->getUri().getUri().c_str());
 	}
 
-//	if (!resp->isRedirect())
+	//	if (!resp->isRedirect())
 	addUltimateHeaders(resp);
 	std::list<std::string> *fields = resp->getHeader()->getFields();
 	std::string fieldsString = stringUtil.fromListToString(fields) + "\r\n";
@@ -645,7 +646,7 @@ void shutFd(int fd)
 // 	return resp;
 // }
 
-Response* HttpServer::handleHttpError(int errorCode)
+Response *HttpServer::handleHttpError(int errorCode)
 {
 	HttpError *error = HttpErrorFactory::build(errorCode);
 	Response *response = createErrorResponse(errorCode);
