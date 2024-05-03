@@ -64,7 +64,7 @@ int Config::getParamInt(std::string param, int intDefault)
 {
 	try
 	{
-//		std::string res = kv.at(param);
+		//		std::string res = kv.at(param);
 		std::string res = _getValueForKey(param);
 
 		if (!res.empty())
@@ -108,7 +108,7 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 {
 	try
 	{
-//		std::string res = kv.at(param);
+		//		std::string res = kv.at(param);
 		std::string res = _getValueForKey(param);
 		if (!res.empty())
 		{
@@ -122,7 +122,7 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 	return stringDefault;
 }
 
-std::vector<std::string>* Config::getParamStrStartingWith(std::string paramPrefix)
+std::vector<std::string> *Config::getParamStrStartingWith(std::string paramPrefix)
 {
 	StringUtil su = StringUtil();
 	//	TODO un new par ici !
@@ -154,7 +154,7 @@ void Config::setAlias(std::string alias)
 }
 
 Config::Config(Config &bis)
-: alias(bis.alias)
+	: alias(bis.alias)
 {
 	for (std::vector<std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
 	{
@@ -165,7 +165,7 @@ Config::Config(Config &bis)
 		*this = bis;
 }
 
-Config& Config::operator=(Config &bis)
+Config &Config::operator=(Config &bis)
 {
 	this->alias = bis.alias;
 
@@ -177,7 +177,7 @@ Config& Config::operator=(Config &bis)
 	return *this;
 }
 
-Config* Config::clone()
+Config *Config::clone()
 {
 	Config *ret = new Config();
 	ret->alias = alias;
@@ -204,20 +204,20 @@ bool Config::tryGetValue(const std::string &key, int &value)
 	}
 	return true;
 
-//	std::map<std::string, std::string>::iterator it = kv.find(key);
-//	if (it != kv.end())
-//	{
-//		std::istringstream iss(it->second);
-//		if (!(iss >> value))
-//		{
-//			return false;
-//		}
-//		return true;
-//	}
-//	return false;
+	//	std::map<std::string, std::string>::iterator it = kv.find(key);
+	//	if (it != kv.end())
+	//	{
+	//		std::istringstream iss(it->second);
+	//		if (!(iss >> value))
+	//		{
+	//			return false;
+	//		}
+	//		return true;
+	//	}
+	//	return false;
 }
 
-//int Config::getRouteSpecificMaxBodySize(const std::string &route, int defaultSize)
+// int Config::getRouteSpecificMaxBodySize(const std::string &route, int defaultSize)
 //{
 //	// Directly check for the specific route
 //	if (route == "/post_body")
@@ -233,5 +233,4 @@ bool Config::tryGetValue(const std::string &key, int &value)
 //		return std::atoi(it->second.c_str()); // Convert the string to int safely for C++98
 //	}
 //	return defaultSize; // Return the default size if no specific configuration is found
-//}
-
+// }

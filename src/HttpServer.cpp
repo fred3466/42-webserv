@@ -84,7 +84,7 @@ void HttpServer::instantiateProcessLocator()
 				Config *configProc = config->clone();
 				processor->setConfig(configProc);
 
-//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
+				//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
 				processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 			}
 			else
@@ -180,8 +180,8 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 	std::string uri = request->getUri().getUri();
 
 	// Get the maximum body size specific to the route or use the default.
-//	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
-	int maxBodySize = config->getParamInt("max_body_size", 1048576000);
+	//	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
+	int maxBodySize = config->getParamInt("max_body_size", 4096);
 
 	if (contentLength > maxBodySize)
 	{
@@ -199,12 +199,6 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 }
 
 static int ind = 0;
-//static RequestHelper *requestHelper = NULL;
-//static bool bFragmented = false;
-
-//bool initFragmentedRequest(){
-//
-//}
 
 void HttpServer::onDataReceiving(ConnectorEvent *e)
 {
@@ -212,10 +206,6 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	int rawRequestLen = e->getLen();
 	Uri uri;
 	int rawRequestBuffer_Length = -1;
-
-//	std::ofstream os(fname.c_str(), std::ios::binary | std::ios::out);
-//	os.write(rawRequest, rawRequestLen);
-//	os.close();
 
 	if (HARL_LEVEL >= 3)
 	{
@@ -256,9 +246,6 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	uri = reqHeader->getUri();
 	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
 	harl.debug("\nHttpServer::onDataReceiving :HEADER HTTP:\n%s", reqHeader->toString().c_str());
-//
-//
-//
 
 	RequestBody *reqBody = RequestBodyFactory().build(rawRequestBuffer, rawRequestBuffer_Length, reqHeader);
 
@@ -271,11 +258,10 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 
 //	TODO à virer
 	Response *resp = createErrorResponse(200);
-//	Response *resp = ResponseFactory().build(ResponseHeaderFactory().build());
 
 	if (!_checkAccess(request))
 	{
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(403);
 		int *fdSocket = e->getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
@@ -285,7 +271,7 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -298,7 +284,7 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	if (processorList->size() == 0)
 	{
 		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
-//		delete resp;
+		//		delete resp;
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
 		delete processorList;
