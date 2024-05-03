@@ -18,13 +18,13 @@ std::string StringUtil::strUpperCase(std::string s)
 	return ret;
 }
 
-std::string StringUtil::fromListToString(std::list<std::string> *l)
+std::string StringUtil::fromListToString(std::list<std::string> *l, std::string endLine)
 {
 	std::string ret;
 	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end();
 			ite++)
 	{
-		ret += *ite;
+		ret += *ite + endLine;
 	}
 	return ret;
 }
@@ -291,4 +291,33 @@ std::string StringUtil::getAliasFromVal(const std::string &val)
 		return tokens[1];
 	}
 	return "";
+}
+
+size_t StringUtil::findStringInCString(char *cString, int cStringLen, std::string toFind, int offset)
+{
+	const char *toFindCString = toFind.c_str();
+	char *cStringOfsset = cString + offset;
+	int i = 0;
+	for (i = 0; i < cStringLen; i++)
+	{
+		bool found = false;
+		if (cStringOfsset[i] == toFindCString[0])
+		{
+			found = true;
+			for (size_t j = 1; j < toFind.length(); j++)
+			{
+				if (cStringOfsset[i + j] != toFindCString[j])
+				{
+					found = false;
+					break;
+				}
+				found = true;
+			}
+
+		}
+
+		if (found)
+			return offset + i;
+	}
+	return -1;
 }

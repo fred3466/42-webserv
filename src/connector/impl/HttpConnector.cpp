@@ -35,7 +35,7 @@ void HttpConnector::init(ConnectorListener &l)
 {
 	registerIt(&l);
 }
-void HttpConnector::publishAccepting(ConnectorEvent e)
+void HttpConnector::publishAccepting(ConnectorEvent *e)
 {
 	//	std::list<ConnectorListener>::iterator ite;
 	//	for (ite = connectorListenerList.begin();
@@ -45,7 +45,7 @@ void HttpConnector::publishAccepting(ConnectorEvent e)
 	//	}
 	connectorListener->onIncomming(e);
 }
-void HttpConnector::publishDataReceiving(ConnectorEvent e)
+void HttpConnector::publishDataReceiving(ConnectorEvent *e)
 {
 	//	std::list<ConnectorListener>::iterator iteListeners;
 	//	for (iteListeners = connectorListenerList.begin();
@@ -404,10 +404,10 @@ void HttpConnector::_acceptIncomingCon(int new_sd, int &_soListen,
 		/* Loop back up and accept another incoming          */
 		/* connection                                        */
 		/*****************************************************/
-		ConnectorEvent e("Accepting");
+		ConnectorEvent e = ConnectorEvent("Accepting");
 		e.setByteBuffer(NULL);
 		e.setFdClient(&new_sd);
-		publishAccepting(e);
+		publishAccepting(&e);
 	} while (new_sd != -1);
 }
 
@@ -434,9 +434,9 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 		/*****************************************************/
 		harl.trace2("---HttpConnector::_onDataReceiving: recv");
 		//		char **bufferPtr = &buffer;
-		for (int i = 0; i < rcv_buffer_size_bytes; i++)
-			buffer[i] = 0;
-		//		std::memset(buffer, 0, rcv_buffer_size_bytes);
+		//for (int i = 0; i < rcv_buffer_size_bytes; i++)
+		//	buffer[i] = 0;
+		std::memset(buffer, 0, rcv_buffer_size_bytes);
 		ssize_t rc = recv(curentPollFd->fd, buffer, rcv_buffer_size_bytes, 0);
 		buffer[rcv_buffer_size_bytes] = 0;
 
@@ -450,8 +450,11 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 						strerror(errno));
 				close_conn = 1;
 			}
+//			if (rc != -1)
+//			{
 			close_conn = 1;
 			break;
+//			}
 		}
 		else if (rc == 0)
 		{
@@ -468,16 +471,18 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			/*****************************************************/
 			int len = rc;
 			harl.debug(" %d HttpConnector::_onDataReceiving : %d bytes received", curentPollFd->fd, len);
-//			std::string cont = std::string(buffer);
-//			harl.trace(cont);
-			ConnectorEvent e("DataReceiving");
+			std::string cont = std::string(buffer);
+			harl.trace(cont);
+
+			ConnectorEvent e = ConnectorEvent("DataReceiving");
 			e.setFdClient(&curentPollFd->fd);
-			char *dataReceived = new char[rcv_buffer_size_bytes + 1];
-			memcpy(dataReceived, buffer, rcv_buffer_size_bytes + 1);
+			e.setLen(len);
+			char *dataReceived = new char[len];
+			memcpy(dataReceived, buffer, len);
 			e.setByteBuffer(dataReceived);
-			publishDataReceiving(e);
+			publishDataReceiving(&e);
 			//			close_conn = 1;
-			//			break;
+//			break;
 		}
 		//		delete[] buffer;
 	} while (1);

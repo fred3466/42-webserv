@@ -9,7 +9,7 @@ RequestHeaderFactory::~RequestHeaderFactory()
 {
 }
 
-RequestHeader* RequestHeaderFactory::build(std::string *rawRequest)
+RequestHeader* RequestHeaderFactory::build(char *rawRequest)
 {
 	return new REQUEST_HEADER_IMPL_CLASS(rawRequest);
 }

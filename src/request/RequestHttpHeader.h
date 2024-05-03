@@ -21,7 +21,7 @@ private:
 	std::string version;
 
 public:
-	RequestHttpHeader(std::string *rawRequest);
+	RequestHttpHeader(char *rawRequest);
 	virtual ~RequestHttpHeader();
 
 	virtual void addField(std::string f);

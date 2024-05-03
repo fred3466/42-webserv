@@ -29,6 +29,7 @@
 #include "connector/ConnectorFactory.h"
 #include "Harl.h"
 #include "processor/ProcessorFactory.h"
+#include "request/RequestHelper.h"
 #include "request/factory/RequestFactory.h"
 #include "request/factory/RequestBodyFactory.h"
 #include "request/factory/RequestHeaderFactory.h"
@@ -52,6 +53,7 @@ private:
 	ProcessorLocator *processorLocator;
 	StringUtil su;
 	HttpErrorFactory errorFactory;
+	RequestHelper *requestHelper;
 	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp);
 
 	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
@@ -67,8 +69,8 @@ public:
 	~HttpServer();
 
 	virtual void init(Config *conf);
-	virtual void onIncomming(ConnectorEvent e);
-	virtual void onDataReceiving(ConnectorEvent e);
+	virtual void onIncomming(ConnectorEvent *e);
+	virtual void onDataReceiving(ConnectorEvent *e);
 
 	Response* createErrorResponse(int errorCode);
 	Response* handleHttpError(int errorCode);

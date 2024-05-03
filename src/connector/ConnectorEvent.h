@@ -12,6 +12,7 @@ private:
 	int *fdClient;
 	std::string eventName;
 	char *byteBuffer;
+	int len;
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);
@@ -20,8 +21,10 @@ public:
 	ConnectorEvent(std::string eventName);
 	~ConnectorEvent();
 	void setByteBuffer(char *bytess);
-	std::string getByteBuffer();
+	char* getByteBuffer();
 	void setFdClient(int *fd);
 	int* getFdClient();
+	int getLen();
+	void setLen(int len);
 };
 

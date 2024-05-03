@@ -56,7 +56,7 @@ Response* FiltreRequestPost::process(Request *request, Response *response, Proce
 		boundary = stringUtil.replace_all(boundary, " boundary=", "");
 		MultipartParser parser = MultipartParser(boundary);
 //		const std::string &body=
-		parser.parseMultipartData(*(body)->getContent(), basePath);
+		parser.parseMultipartData(body->getContent(), body->getLen(), basePath);
 
 //		std::string path = basePath + "/" + "test.jpeg";
 //		RequestBody *body = request->getBody();

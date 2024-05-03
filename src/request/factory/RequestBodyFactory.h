@@ -9,6 +9,6 @@ class RequestBodyFactory
 public:
 	RequestBodyFactory();
 	~RequestBodyFactory();
-	RequestBody* build(std::string *rawRequest, RequestHeader *reqHeader);
+	RequestBody* build(char *rawRequest, int rawRequestLen, RequestHeader *reqHeader);
 };
 

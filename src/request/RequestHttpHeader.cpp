@@ -4,21 +4,28 @@ RequestHttpHeader::~RequestHttpHeader()
 {
 }
 
-RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
+RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
 {
 	std::stringstream lines;
-	lines.str(rawRequest->c_str());
-	char key[2048], val[2048], line[2048];
+	lines.str(rawRequest);
+	char key[2048], val[2048], line[4096];
+	memset(key, 0, 2048);
+	memset(val, 0, 2048);
+	memset(line, 0, 4096);
 	bool firstLine = true;
-	bool bBodyMode = false;
+//	bool bHeaderMode = false;
 	StringUtil su = StringUtil();
 
 	while (lines)
 	{
-		lines.getline(line, 2048, '\n');
+		lines.getline(line, 4096, '\n');
+		std::string lineStr = std::string(line);
+		if (!lines.eof() && !lines.fail())
+			lineStr += "\n";
+
 		std::stringstream lineSs;
-		lineSs.str(line);
-		std::string lineStr = lineSs.str();
+		lineSs.str(lineStr);
+//		std::string lineStr = lineSs.str();
 
 		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
@@ -30,23 +37,30 @@ RequestHttpHeader::RequestHttpHeader(std::string *rawRequest) : fields()
 			Uri uri = Uri(keyStr);
 			this->setUri(uri);
 			firstLine = false;
-		} else
-		{
-			lineSs.getline(val, 2048, '\n');
-			std::string valStr = std::string(val);
-			if (bBodyMode || valStr == "\r" || valStr == "")
-			{
-				bBodyMode = true;
-				return;
-			} else
-			{
-				valStr = su.trim(valStr);
-				this->addField(valStr);
-			}
+//			bHeaderMode = true;
+			continue;
 		}
+
+		lineSs.getline(val, 2048, '\n');
+		std::string valStr = std::string(val);
+		if (!lineSs.eof() && !lineSs.fail())
+			valStr += "\n";
+
+		if (valStr == "\r\n" || valStr == "")
+		{
+			//		deuxième ligne
+			return;
+		}
+
+//		if (bHeaderMode)
+//		{
+		valStr = su.trim(valStr);
+		this->addField(valStr);
+//		}
+
 	}
-	//cookie set plusieurs fois ?
-	//CookieFactory().build(this);
+//cookie set plusieurs fois ?
+//CookieFactory().build(this);
 }
 
 std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
@@ -77,7 +91,7 @@ std::string RequestHttpHeader::toString()
 	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri().getUri() + "]\t[" + getVersion() + "]\n";
 
 	StringUtil su = StringUtil();
-	ret += su.dedoublonne(su.fromListToString(&fields), "\n");
+	ret += su.fromListToString(&fields, "\n");
 	return ret;
 }
 void RequestHttpHeader::addField(std::string f)

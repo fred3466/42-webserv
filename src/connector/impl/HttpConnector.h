@@ -64,7 +64,7 @@ protected:
 
 	virtual void registerIt(ConnectorListener *l);
 	virtual void unregisterIt(ConnectorListener *l);
-	virtual void publishAccepting(ConnectorEvent e);
-	virtual void publishDataReceiving(ConnectorEvent e);
+	virtual void publishAccepting(ConnectorEvent *e);
+	virtual void publishDataReceiving(ConnectorEvent *e);
 	virtual void closeConnection(int *fd);
 };

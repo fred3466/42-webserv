@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-HttpServer::HttpServer() : harl(), connector(), config(), processorLocator(), su()
+HttpServer::HttpServer() : harl(), connector(), config(), processorLocator(), su(), requestHelper(NULL)
 {
 }
 
@@ -23,7 +23,14 @@ void HttpServer::init(Config *c)
 
 	HttpErrorFactory().initialize();
 
-	connector = ConnectorFactory().build(c->getParamStr("listen", "127.0.0.1"), c->getParamInt("port", 8080), c);
+	std::string server_name = c->getParamStr("server_name", "UNAMED SERVER ?");
+	std::string ip = c->getParamStr("listen", "127.0.0.1");
+	std::string base_path = c->getParamStr("base_path", "");
+	int port = c->getParamInt("port", 8080);
+
+	harl.warning("+++ Starting server [%s] on [%s:%i] base_path : %s", server_name.c_str(), ip.c_str(), port, base_path.c_str());
+
+	connector = ConnectorFactory().build(ip, port, c);
 	connector->registerIt(this);
 
 	connector->doListen();
@@ -51,8 +58,8 @@ void HttpServer::instantiateProcessLocator()
 		val = su.trim(val);
 
 		std::string urlpath = su.getNthTokenIfExists(su.tokenize(key, '@'), 1, "");
-		harl.debug("");
-		harl.debug("HttpServer::instantiateProcessLocator:\t Processing %s", urlpath.c_str());
+		harl.info("");
+		harl.info("HttpServer::instantiateProcessLocator:\t Processing %s", urlpath.c_str());
 
 		std::vector<std::string> toksVal = su.tokenize(val, ';');
 		std::vector<Processor*> processorsVector = std::vector<Processor*>();
@@ -120,7 +127,7 @@ void HttpServer::instantiateProcessLocator()
 // processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 //
 // }
-void HttpServer::onIncomming(ConnectorEvent e)
+void HttpServer::onIncomming(ConnectorEvent *e)
 {
 	(void) e;
 }
@@ -174,7 +181,7 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 
 	// Get the maximum body size specific to the route or use the default.
 //	int maxBodySize = this->config->getRouteSpecificMaxBodySize(uri, this->config->getParamInt("max_body_size", 4096));
-	int maxBodySize = config->getParamInt("max_body_size", 4096);
+	int maxBodySize = config->getParamInt("max_body_size", 1048576000);
 
 	if (contentLength > maxBodySize)
 	{
@@ -192,92 +199,77 @@ bool HttpServer::checkRequestBodySize(Request *request, Response *&response)
 }
 
 static int ind = 0;
-static bool bFragmented = false;
-static std::string rawRequestBuffer = "";
-static size_t bodyContent_Length = 0;
-void HttpServer::onDataReceiving(ConnectorEvent e)
+//static RequestHelper *requestHelper = NULL;
+//static bool bFragmented = false;
+
+//bool initFragmentedRequest(){
+//
+//}
+
+void HttpServer::onDataReceiving(ConnectorEvent *e)
 {
-	std::string rawRequest = e.getByteBuffer();
-	RequestHeader *reqHeader = NULL;
+	char *rawRequest = e->getByteBuffer();
+	int rawRequestLen = e->getLen();
 	Uri uri;
+	int rawRequestBuffer_Length = -1;
 
-	std::string fname = "DBG/" + su.strFromInt(ind++) + "_out.txt";
-	std::ofstream os(fname.c_str(), std::ios::binary | std::ios::out);
-	os.write(rawRequest.c_str(), rawRequest.length());
-	os.close();
+//	std::ofstream os(fname.c_str(), std::ios::binary | std::ios::out);
+//	os.write(rawRequest, rawRequestLen);
+//	os.close();
 
-//	reqHeader = RequestHeaderFactory().build(&rawRequest);
-	size_t rawRequestLen = rawRequest.length();
-	size_t rawRequestBufferLen = rawRequestBuffer.length();
-
-	if ((!bFragmented) /*&& (bodyContent_Length != 0)*/)
+	if (HARL_LEVEL >= 3)
 	{
-		reqHeader = RequestHeaderFactory().build(&rawRequest);
-		uri = reqHeader->getUri();
-		harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
-		bodyContent_Length = su.intFromStr(reqHeader->getFieldValue("Content-Length"));
-		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
-//	on commence une requete fragmentée
-		if (!bFragmented && bIncompleteRequest)
-		{
-			bFragmented = true;
-			rawRequestBuffer.append(rawRequest);
-			rawRequestBufferLen = rawRequestBuffer.length();
-			return;
-		}
+		FileUtil fu = FileUtil();
+		std::string fname = "DBG/" + su.strFromInt(ind++) + "_request_frag.txt";
+		fu.writeFile(fname.c_str(), rawRequest, rawRequestLen);
 	}
 
-	if (bFragmented)
+	if (requestHelper == NULL)
 	{
-		bool bIncompleteRequest = (rawRequestLen + rawRequestBufferLen) < bodyContent_Length;
-		rawRequestBuffer.append(rawRequest);
-		rawRequestBufferLen = rawRequestBuffer.length();
-
-		if (!bIncompleteRequest)
-		{
-			rawRequest = rawRequestBuffer;
-			rawRequestBuffer = "";
-			bodyContent_Length = 0;
-			bFragmented = false;
-			reqHeader = RequestHeaderFactory().build(&rawRequest);
-		} else
-		{
-			return;
-		}
+		requestHelper = new RequestHelper(rawRequest, rawRequestLen);
 	}
 
+	char *rawRequestBuffer = requestHelper->process(rawRequest, rawRequestLen);
+	if (rawRequestBuffer == NULL)
+	{
+		return;
+	} else
+	{
+		rawRequestBuffer_Length = requestHelper->getRawRequestBufferLength();
+
+		if (HARL_LEVEL >= 3)
+		{
+			FileUtil fu = FileUtil();
+			std::string fnameRequest = "DBG/onDataReceiving_defrag_request.txt";
+			fu.writeFile(fnameRequest.c_str(), rawRequestBuffer, rawRequestBuffer_Length);
+		}
+
+		delete requestHelper;
+		requestHelper = NULL;
+
+	}
+
+	delete rawRequest;
+	rawRequest = NULL;
+
+	RequestHeader *reqHeader = RequestHeaderFactory().build(rawRequestBuffer);
+	uri = reqHeader->getUri();
+	harl.debug("\nHttpServer::onDataReceiving :\n*******************\n%s\n*******************", (reqHeader->getMethod() + " " + uri.getUri()).c_str());
+	harl.debug("\nHttpServer::onDataReceiving :HEADER HTTP:\n%s", reqHeader->toString().c_str());
 //
 //
 //
 
-	RequestBody *reqBody = RequestBodyFactory().build(&rawRequest, reqHeader);
+	RequestBody *reqBody = RequestBodyFactory().build(rawRequestBuffer, rawRequestBuffer_Length, reqHeader);
+
 	Request *request = RequestFactory().build(reqHeader, reqBody);
-	request->setFdClient(e.getFdClient());
+	request->setFdClient(e->getFdClient());
 	CookieFactory().build(reqHeader);
-	int *fdSocket = e.getFdClient();
+	int *fdSocket = e->getFdClient();
 
-//	const char *rawRequestCstr = rawRequest.c_str();
-//	for (size_t i = 0; i < rawRequest.length(); i++)
-//	{
-//		if (rawRequestCstr[i] == EOF)
-//		{
-//			harl.debug("HttpServer::onDataReceiving: EOF présent à la position %i, sur taille=%i", i, rawRequest.length());
-//			bFragmented = true;
-//
-//		}
-//	}
-//
-//	if (bFragmented)
-//	{
-//		rawRequestBuffer.append(rawRequest);
-//		return;
-//	}
-//
-//	bFragmented = false;
+	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent());
 
-	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent()->c_str());
-
-	//	TODO à virer
+//	TODO à virer
 	Response *resp = createErrorResponse(200);
 //	Response *resp = ResponseFactory().build(ResponseHeaderFactory().build());
 
@@ -285,7 +277,7 @@ void HttpServer::onDataReceiving(ConnectorEvent e)
 	{
 //		delete resp;
 		resp = createErrorResponse(403);
-		int *fdSocket = e.getFdClient();
+		int *fdSocket = e->getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
 		return;
@@ -375,8 +367,6 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 				oneIsExclusif,
 				bBypassingExclusif);
 
-//		std::string method = request->getMethod();
-
 		Uri uri = request->getUri();
 		if (/*method != "POST" && */uri.isDirectory())
 		{
@@ -462,44 +452,44 @@ Response* HttpServer::createErrorResponse(int errorCode)
 void HttpServer::addUltimateHeaders(Response *resp)
 {
 	ResponseHeader *header = resp->getHeader();
-	//   The Content-Length entity-header field indicates the size of the
-	//   entity-body, in decimal number of OCTETs, sent to the recipient or,
-	//   in the case of the HEAD method, the size of the entity-body that
-	//   would have been sent had the request been a GET.
-	//
-	//       Content-Length    = "Content-Length" ":" 1*DIGIT
-	//
-	//   An example is
-	//
-	//       Content-Length: 3495
-	//
-	//   Applications SHOULD use this field to indicate the transfer-length of
-	//   the message-body, unless this is prohibited by the rules in section
-	//   4.4.
+//   The Content-Length entity-header field indicates the size of the
+//   entity-body, in decimal number of OCTETs, sent to the recipient or,
+//   in the case of the HEAD method, the size of the entity-body that
+//   would have been sent had the request been a GET.
+//
+//       Content-Length    = "Content-Length" ":" 1*DIGIT
+//
+//   An example is
+//
+//       Content-Length: 3495
+//
+//   Applications SHOULD use this field to indicate the transfer-length of
+//   the message-body, unless this is prohibited by the rules in section
+//   4.4.
 
-	//	4.4 Message Length
-	//
-	//	   The transfer-length of a message is the length of the message-body as
-	//	   it appears in the message; that is, after any transfer-codings have
-	//	   been applied. When a message-body is included with a message, the
-	//	   transfer-length of that body is determined by one of the following
-	//	   (in order of precedence):
-	//
-	//	   1.Any response message which "MUST NOT" include a message-body (such
-	//	     as the 1xx, 204, and 304 responses and any response to a HEAD
-	//	     request) is always terminated by the first empty line after the
-	//	     header fields, regardless of the entity-header fields present in
-	//	     the message.
-	//
-	//	   2.If a Transfer-Encoding header field (section 14.41) is present and
-	//	     has any value other than "identity", then the transfer-length is
-	//	     defined by use of the "chunked" transfer-coding (section 3.6),
-	//	     unless the message is terminated by closing the connection.
-	//
-	//	   3.If a Content-Length header field (section 14.13) is present, its
-	//	     decimal value in OCTETs represents both the entity-length and the
-	//	     transfer-length. The Content-Length header field MUST NOT be sent
-	//	     if these two lengths are different (i.e., if a Transfer-Encoding
+//	4.4 Message Length
+//
+//	   The transfer-length of a message is the length of the message-body as
+//	   it appears in the message; that is, after any transfer-codings have
+//	   been applied. When a message-body is included with a message, the
+//	   transfer-length of that body is determined by one of the following
+//	   (in order of precedence):
+//
+//	   1.Any response message which "MUST NOT" include a message-body (such
+//	     as the 1xx, 204, and 304 responses and any response to a HEAD
+//	     request) is always terminated by the first empty line after the
+//	     header fields, regardless of the entity-header fields present in
+//	     the message.
+//
+//	   2.If a Transfer-Encoding header field (section 14.41) is present and
+//	     has any value other than "identity", then the transfer-length is
+//	     defined by use of the "chunked" transfer-coding (section 3.6),
+//	     unless the message is terminated by closing the connection.
+//
+//	   3.If a Content-Length header field (section 14.13) is present, its
+//	     decimal value in OCTETs represents both the entity-length and the
+//	     transfer-length. The Content-Length header field MUST NOT be sent
+//	     if these two lengths are different (i.e., if a Transfer-Encoding
 	std::string transferEncoding = header->getFieldAsStr("Transfer-Encoding", "");
 	int contentLengthHeader = header->getFieldAsInt("Content-Length", -1);
 	int contentLengthResponse = resp->getBodyLength();
@@ -514,8 +504,8 @@ void HttpServer::addUltimateHeaders(Response *resp)
 				"HttpServer::addUltimateHeaders: Incohérence entre le Content-Length dans l'entête de la Response, et celui renvoyé par Response->getBodyLength():\ncontentLengthHeader=[%i]\ncontentLengthResponse=[%i]",
 				contentLengthHeader, contentLengthResponse);
 	}
-	//	TODO fred post 29/03
-	//	08/04 fred
+//	TODO fred post 29/03
+//	08/04 fred
 	if (resp->isCgi())
 		//		header->addField("Content-Length", su.strFromInt(contentLengthResponse));
 		header->addField("Transfer-Encoding", "chunked");
@@ -543,11 +533,11 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 {
 	StringUtil stringUtil;
 
-	//		std::ostringstream oss;
-	//		oss << resp->getBodyLength();
-	//		std::string sizeStr = oss.str();
-	//
-	//		resp->getHeader()->addField("Content-Length", sizeStr);
+//		std::ostringstream oss;
+//		oss << resp->getBodyLength();
+//		std::string sizeStr = oss.str();
+//
+//		resp->getHeader()->addField("Content-Length", sizeStr);
 
 	if (!resp || !resp->getHeader() /*|| resp->getHeader()->getStatusLine().empty()*/)
 	{
@@ -557,7 +547,7 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 //	if (!resp->isRedirect())
 	addUltimateHeaders(resp);
 	std::list<std::string> *fields = resp->getHeader()->getFields();
-	std::string fieldsString = stringUtil.fromListToString(fields) + "\r\n";
+	std::string fieldsString = stringUtil.fromListToString(fields, "") + "\r\n";
 	delete fields;
 
 	std::string statusLine = resp->getHeader()->getStatusLine();
@@ -566,7 +556,7 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	if (bodyBin)
 		body = std::string(bodyBin, resp->getBodyLength());
 
-	// Send Response
+// Send Response
 	std::string statusHeaderBody = resp->getHeader()->getStatusLine() + fieldsString + body;
 
 	int statusLen = statusLine.length();
@@ -576,18 +566,18 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	int length = statusLen + headerLen + bodyLen;
 	resp->setTotalLength(length);
 
-	//	TODO fred: à mettre ailleurs
-	//	if (length <= 0)
-	//	{
-	//		delete request;
-	//		//		delete processor;
-	//		delete resp->getHeader();
-	//		delete resp->getBodyBin();
-	//		delete resp;
-	//		//		TODO gérer ce cas
-	//		harl.warning("Response de taille nulle ?");
-	//		return NULL;
-	//	}
+//	TODO fred: à mettre ailleurs
+//	if (length <= 0)
+//	{
+//		delete request;
+//		//		delete processor;
+//		delete resp->getHeader();
+//		delete resp->getBodyBin();
+//		delete resp;
+//		//		TODO gérer ce cas
+//		harl.warning("Response de taille nulle ?");
+//		return NULL;
+//	}
 
 	char *cstr = new char[length + 0]();
 	char *cstrSave = cstr;

@@ -8,6 +8,6 @@ class RequestHeaderFactory
 public:
 	RequestHeaderFactory();
 	~RequestHeaderFactory();
-	RequestHeader* build(std::string *rawRequest);
+	RequestHeader* build(char *rawRequest);
 };
 

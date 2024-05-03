@@ -15,7 +15,7 @@ public:
 	~StringUtil();
 
 	std::string strUpperCase(std::string s);
-	std::string fromListToString(std::list<std::string> *l);
+	std::string fromListToString(std::list<std::string> *l, std::string endLine);
 	std::string fromCArrayToString(const char *a[]);
 	bool isSpace(char c);
 	bool isalnum(std::string s);
@@ -37,4 +37,5 @@ public:
 	std::string toHexa(int i);
 	std::string getAliasFromVal(const std::string &val);
 	std::string replace_all(std::string &s, std::string const &toReplace, std::string const &replaceWith);
+	size_t findStringInCString(char *cString, int cStringLen, std::string toFind, int offset);
 };

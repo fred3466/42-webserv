@@ -85,8 +85,9 @@ CGIHelper::executeCGIScript(CGIHandler *cgiHandler, std::string interpreterPath,
 void CGIHelper::_parentProcess(std::string *output, fdpipe *pipes, Request *request, int pid)
 {
 	RequestBody *reqBody = request->getBody();
-	std::string *reqBodyContentPtr = reqBody->getContent();
-	std::string reqBodyContent = *reqBodyContentPtr;
+	std::string reqBodyContent = std::string(reqBody->getContent());
+//	std::string *reqBodyContentPtr = &reqBodyContent;
+//	std::string reqBodyContent = *reqBodyContentStr;
 
 //	close(pipes->fd_for_REQUEST[1]); // !!!!
 //	close(pipes->fd_for_RESPONSE[0]);

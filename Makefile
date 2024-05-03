@@ -40,6 +40,7 @@ SRC_FILES	= \
 	request/RequestHttp \
 	request/RequestHttpHeader \
 	request/RequestHttpBody \
+	request/RequestHelper \
 	request/factory/RequestFactory \
 	request/factory/RequestHeaderFactory \
 	request/factory/RequestBodyFactory\

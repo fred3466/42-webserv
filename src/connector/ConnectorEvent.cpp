@@ -24,7 +24,7 @@ ConnectorEvent::ConnectorEvent(std::string eventName) : fdClient(NULL), byteBuff
 	this->eventName = eventName;
 }
 
-std::string ConnectorEvent::getByteBuffer()
+char* ConnectorEvent::getByteBuffer()
 {
 	return byteBuffer;
 }
@@ -32,6 +32,16 @@ std::string ConnectorEvent::getByteBuffer()
 void ConnectorEvent::setByteBuffer(char *bytess)
 {
 	byteBuffer = bytess;
+}
+
+int ConnectorEvent::getLen()
+{
+	return len;
+}
+
+void ConnectorEvent::setLen(int len)
+{
+	this->len = len;
 }
 
 int* ConnectorEvent::getFdClient()

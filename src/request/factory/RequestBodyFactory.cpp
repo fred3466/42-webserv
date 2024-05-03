@@ -7,7 +7,7 @@ RequestBodyFactory::RequestBodyFactory()
 RequestBodyFactory::~RequestBodyFactory()
 {
 }
-RequestBody* RequestBodyFactory::build(std::string *rawRequest, RequestHeader *reqHeader)
+RequestBody* RequestBodyFactory::build(char *rawRequest, int rawRequestLen, RequestHeader *reqHeader)
 {
 	std::string CONTENT_TYPE = reqHeader->getFieldValue("Content-Type");
 	std::string multiStr = "multipart/form-data";
@@ -20,7 +20,7 @@ RequestBody* RequestBodyFactory::build(std::string *rawRequest, RequestHeader *r
 		//		POST POST POST POST POST POST POST POST POST POST POST
 
 		std::string CONTENT_LENGTH = reqHeader->getFieldValue("Content-Length");
-		return new REQUEST_BODY_IMPL_CLASS(rawRequest);
+		return new REQUEST_BODY_IMPL_CLASS(rawRequest, rawRequestLen);
 	}
-	return new REQUEST_BODY_IMPL_CLASS(NULL);
+	return new REQUEST_BODY_IMPL_CLASS(NULL, 0);
 }
