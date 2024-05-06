@@ -34,6 +34,8 @@ std::string FileUtil::getLastModification(std::string fpath, std::string strForm
 int FileUtil::readFile(std::string path, char *emptyBodyBin[])
 {
 	std::ifstream is(path.c_str(), std::ios::binary | std::ios::in);
+	if (is.fail())
+		return -1;
 
 	// get length of file:
 	is.seekg(0, is.end);

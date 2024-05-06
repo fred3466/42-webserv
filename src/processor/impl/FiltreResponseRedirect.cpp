@@ -7,6 +7,7 @@ FiltreResponseRedirect::FiltreResponseRedirect(ProcessorTypeEnum type) : harl(),
 
 FiltreResponseRedirect::~FiltreResponseRedirect()
 {
+	delete config;
 }
 
 void FiltreResponseRedirect::setConfig(Config *conf)

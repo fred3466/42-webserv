@@ -63,6 +63,7 @@ private:
 	void addUltimateHeaders(Response *resp);
 	bool _checkAccess(Request *request);
 	bool checkRequestBodySize(Request *request, Response *&response);
+	void freeProcessorList(std::vector<ProcessorAndLocationToProcessor*> *processorList);
 
 public:
 	HttpServer();

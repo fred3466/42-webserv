@@ -84,7 +84,7 @@ char* RequestHelper::process(char *rawRequest, int rawRequestLen)
 		memcpy(rawRequestBufferTmp, rawRequestBuffer, rawRequestBuffer_Length);
 		memcpy(rawRequestBufferTmp + rawRequestBuffer_Length, rawRequest, rawRequestLen);
 
-		if (HARL_LEVEL >= 3)
+		if (HARL_LEVEL >= 4)
 		{
 			std::string fname = "DBG/rawRequestBufferTmp.txt";
 			fu.writeFile(fname.c_str(), rawRequestBufferTmp, rawRequestBuffer_Length + rawRequestLen);
@@ -128,6 +128,7 @@ RequestHelper::RequestHelper() : rawRequestBuffer(NULL),
 }
 RequestHelper::~RequestHelper()
 {
+	delete[] rawRequestBuffer;
 }
 
 int RequestHelper::getRawRequestBufferLength() const

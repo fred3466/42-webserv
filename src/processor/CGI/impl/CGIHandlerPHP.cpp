@@ -16,6 +16,7 @@ CGIHandlerPHP::CGIHandlerPHP() : harl(), responseBody(""), responseHeaders(), co
 
 CGIHandlerPHP::~CGIHandlerPHP()
 {
+//	delete config;
 }
 
 std::string CGIHandlerPHP::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request, Response *response)

@@ -16,6 +16,7 @@ ProcessorImplDirectFs::ProcessorImplDirectFs(ProcessorTypeEnum type) : harl(), s
 }
 ProcessorImplDirectFs::~ProcessorImplDirectFs()
 {
+	delete config;
 }
 
 void ProcessorImplDirectFs::setConfig(Config *conf)

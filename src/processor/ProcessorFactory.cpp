@@ -27,7 +27,7 @@ ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
 	processorLocator = pl;
 }
 
-Processor* ProcessorFactory::build(std::string procName)
+Processor* ProcessorFactory::build(std::string procName, Config *config)
 {
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
 	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
@@ -38,30 +38,37 @@ Processor* ProcessorFactory::build(std::string procName)
 //		return proc;
 //	}
 	Harl().debug("ProcessorFactory::build", "procName: " + procName);
+	Processor *ret = NULL;
 
 	if (procName == "PERL_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_PERL(typeContentModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_PERL(typeContentModifier);
 	else if (procName == "SH_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_SH(typeContentModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_SH(typeContentModifier);
 	else if (procName == "STATIC_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_STATIC(typeContentModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_STATIC(typeContentModifier);
 	else if (procName == "MIMETYPE_FILTER")
-		return new REQUEST_HANDLER_IMPL_CLASS_MIMETYPE(typeHeaderModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_MIMETYPE(typeHeaderModifier);
 	else if (procName == "COMMON_FILTER")
-		return new REQUEST_HANDLER_IMPL_CLASS_COMMON(typeHeaderModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_COMMON(typeHeaderModifier);
 	else if (procName == "POST_FILTER")
-		return new REQUEST_HANDLER_IMPL_CLASS_POST(typeHeaderModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_POST(typeHeaderModifier);
 	else if (procName == "ERROR_FILTER")
-		return new REQUEST_HANDLER_IMPL_CLASS_ERROR(typeHeaderModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_ERROR(typeHeaderModifier);
 	else if (procName == "DELETE_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_DELETE(typeHeaderModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_DELETE(typeHeaderModifier);
 	else if (procName == "REDIRECT_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_REDIRECT(typeContentModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_REDIRECT(typeContentModifier);
 	else if (procName == "DOWNLOAD_PROCESSOR")
-		return new REQUEST_HANDLER_IMPL_CLASS_DOWNLOAD(typeHeaderModifier);
-	//	TODO doit être configurable
-//	return new ProcessorImplDirectFs(typeContentModifier);
-	return NULL;
+		ret = new REQUEST_HANDLER_IMPL_CLASS_DOWNLOAD(typeHeaderModifier);
+	else
+	{
+		ret = new ProcessorImplCgiBinGeneric(typeContentModifier);
+
+//		std::string cgiExePath = config->getParamStr(procName, "")
+//		return cgiExePath;
+	}
+	ret->setConfig(config);
+	return ret;
 }
 
 ProcessorFactory::ProcessorFactory() : processorLocator()

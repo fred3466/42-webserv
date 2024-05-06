@@ -7,6 +7,7 @@ FiltreRequestPost::FiltreRequestPost(ProcessorTypeEnum type) : harl(), config(),
 
 FiltreRequestPost::~FiltreRequestPost()
 {
+	delete config;
 }
 
 void FiltreRequestPost::setConfig(Config *conf)

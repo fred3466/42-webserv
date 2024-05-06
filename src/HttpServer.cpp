@@ -12,6 +12,16 @@ HttpServer::HttpServer() : harl(), connector(), config(), processorLocator(), su
 
 HttpServer::~HttpServer()
 {
+	for (std::vector<LocationToProcessor*>::iterator ite = processorLocator->getLocationToProcessorVector().begin();
+			ite != processorLocator->getLocationToProcessorVector().end(); ite++)
+	{
+
+		LocationToProcessor *lp = *ite;
+		delete lp;
+	}
+
+	delete processorLocator;
+	delete config;
 }
 
 void HttpServer::init(Config *c)
@@ -21,7 +31,7 @@ void HttpServer::init(Config *c)
 	config = c;
 	instantiateProcessLocator();
 
-	HttpErrorFactory().initialize();
+	errorFactory = HttpErrorFactory();
 
 	std::string server_name = c->getParamStr("server_name", "UNAMED SERVER ?");
 	std::string ip = c->getParamStr("listen", "127.0.0.1");
@@ -35,7 +45,7 @@ void HttpServer::init(Config *c)
 
 	connector->doListen();
 
-	delete config;
+//	delete config;
 }
 
 void HttpServer::instantiateProcessLocator()
@@ -78,13 +88,15 @@ void HttpServer::instantiateProcessLocator()
 				std::string processorName = su.getNthTokenIfExists(toksDirective, 1, "");
 				std::string extension = su.getNthTokenIfExists(toksDirective, 2, "");
 
-				Processor *processor = processorFactory.build(processorName);
+				Config *configProc = config->clone();
+				Processor *processor = processorFactory.build(processorName, configProc);
+				std::string CUSTOM_CGI_EXE = configProc->getParamStr(processorName, "");
+				processor->addProperty("CUSTOM_CGI_EXE", CUSTOM_CGI_EXE);
 				processorsVector.push_back(processor);
 
-				Config *configProc = config->clone();
-				processor->setConfig(configProc);
+//				processor->setConfig(configProc);
 
-				//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
+//				harl.debug("HttpServer::instantiateProcessLocator:\t [%s \t %s \t %s \t %s]", urlpath.c_str(), extension.c_str(), processor->toString().c_str(), host.c_str());
 				processorLocator->addLocationToProcessor(urlpath, extension, processor, host);
 			}
 			else
@@ -207,7 +219,7 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	Uri uri;
 	int rawRequestBuffer_Length = -1;
 
-	if (HARL_LEVEL >= 3)
+	if (HARL_LEVEL >= 4)
 	{
 		FileUtil fu = FileUtil();
 		std::string fname = "DBG/" + su.strFromInt(ind++) + "_request_frag.txt";
@@ -222,25 +234,26 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	char *rawRequestBuffer = requestHelper->process(rawRequest, rawRequestLen);
 	if (rawRequestBuffer == NULL)
 	{
+		delete[] rawRequestBuffer;
 		return;
 	} else
 	{
 		rawRequestBuffer_Length = requestHelper->getRawRequestBufferLength();
 
-		if (HARL_LEVEL >= 3)
+		if (HARL_LEVEL >= 4)
 		{
 			FileUtil fu = FileUtil();
 			std::string fnameRequest = "DBG/onDataReceiving_defrag_request.txt";
 			fu.writeFile(fnameRequest.c_str(), rawRequestBuffer, rawRequestBuffer_Length);
 		}
 
-		delete requestHelper;
-		requestHelper = NULL;
+//		delete requestHelper;
+//		requestHelper = NULL;
 
 	}
 
-	delete rawRequest;
-	rawRequest = NULL;
+//	delete[] rawRequest;
+//	rawRequest = NULL;
 
 	RequestHeader *reqHeader = RequestHeaderFactory().build(rawRequestBuffer);
 	uri = reqHeader->getUri();
@@ -248,6 +261,8 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	harl.debug("\nHttpServer::onDataReceiving :HEADER HTTP:\n%s", reqHeader->toString().c_str());
 
 	RequestBody *reqBody = RequestBodyFactory().build(rawRequestBuffer, rawRequestBuffer_Length, reqHeader);
+
+//	delete[] rawRequestBuffer;
 
 	Request *request = RequestFactory().build(reqHeader, reqBody);
 	request->setFdClient(e->getFdClient());
@@ -287,14 +302,14 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 		//		delete resp;
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
-		delete processorList;
+		freeProcessorList(processorList);
 		cleanUp(request, resp);
 		return;
 	}
 
 	resp = runProcessorChain(processorList, request, resp);
 
-	delete processorList;
+	freeProcessorList(processorList);
 
 	if (!resp)
 	{
@@ -320,6 +335,19 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 		connector->closeConnection(fdSocket);
 	}
 	cleanUp(request, resp);
+}
+
+void HttpServer::freeProcessorList(std::vector<ProcessorAndLocationToProcessor*> *processorList)
+{
+	for (std::vector<ProcessorAndLocationToProcessor*>::iterator ite = processorList->begin();
+			ite != processorList->end();
+			ite++)
+	{
+		ProcessorAndLocationToProcessor *processorAndLocationToProcessor = *ite;
+		delete (processorAndLocationToProcessor);
+	}
+
+	delete processorList;
 }
 
 Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp)
@@ -419,8 +447,22 @@ Response* HttpServer::createErrorResponse(int errorCode)
 	{
 		HttpReturnCodeHelper errHelper = HttpReturnCodeHelper(errorCode);
 		char *pageContentArray;
-		FileUtil().readFile("htdocs/error.html", &pageContentArray);
+
+		std::string errorPageFileNameKey = su.strFromInt(errorCode) + "_errorCodeFile";
+		std::string errorPageFileName = config->getParamStr(errorPageFileNameKey, "");
+		if (errorPageFileName == "")
+		{
+			errorPageFileName = config->getParamStr("_errorCodeFile", "");
+		}
+
+		int readRetCode = FileUtil().readFile(errorPageFileName, &pageContentArray);
+		if (readRetCode == -1)
+		{
+//			TODO traiter l'erreur
+			return resp;
+		}
 		std::string pageContent = std::string(pageContentArray);
+		delete pageContentArray;
 		errHelper.replacePlaceholders(pageContent, error->getDescription());
 
 		char *bodybin = new char[pageContent.length() + 1];
@@ -587,6 +629,10 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 
 void HttpServer::cleanUp(Request *request, Response *resp)
 {
+	delete requestHelper;
+	requestHelper = NULL;
+
+	delete processorLocator;
 	delete request->getBody();
 	delete request->getHeader();
 	delete request;
@@ -595,7 +641,7 @@ void HttpServer::cleanUp(Request *request, Response *resp)
 		delete resp->getHttpError();
 		delete resp->getHeader();
 		//		TODO ne m'oubliez pas !
-		//		delete[] resp->getBodyBin();
+		delete[] resp->getBodyBin();
 		delete resp;
 	}
 }
@@ -623,7 +669,7 @@ void shutFd(int fd)
 
 Response* HttpServer::handleHttpError(int errorCode)
 {
-	HttpError *error = HttpErrorFactory::build(errorCode);
+	HttpError *error = errorFactory.build(errorCode);
 	Response *response = createErrorResponse(errorCode);
 	response->setHttpError(error);
 	response->setStatusLine(error->getStatusLine());

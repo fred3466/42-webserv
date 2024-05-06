@@ -64,7 +64,8 @@ CGIHelper::executeCGIScript(CGIHandler *cgiHandler, std::string interpreterPath,
 		char **envp = new char*[envMap.size() + 1]; //need to be delete() after it is used, or else it will cause memory leak
 		_childProcess(cgiHandler, &pipes, envMap, interpreterPath, scriptPath, request, envp);
 //TODO truc à faire ici ?
-//		delete envp[envMap.size()];
+		delete envp[1];
+		delete envp[envMap.size()];
 	}
 	else
 	{

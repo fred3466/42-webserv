@@ -8,6 +8,7 @@
 #include CGI_HANDLER_INC_PERL
 //#include "impl/CGIHandlerPHP.h"
 #include CGI_HANDLER_INC_SH
+#include "impl/CGIHandlerGeneric.h"
 
 class CGIHandlerFactory
 {

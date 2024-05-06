@@ -10,14 +10,7 @@ class Response
 public:
 	Response();
 	virtual ~Response();
-
-	//	virtual void setBody(std::string sline)=0;
-
-	//	Response(const Response &o);
-	//	Response& operator=(const Response &o);
-
 	virtual ResponseHeader* getHeader() = 0;
-	//	virtual std::string getBody()=0;
 	virtual char* getBodyBin() = 0;
 	virtual void setBodyBin(char *bytess) = 0;
 	virtual int getBodyLength() = 0;
@@ -26,13 +19,8 @@ public:
 	virtual void setTotalLength(int len) = 0;
 	virtual bool isCgi() = 0;
 	virtual bool isRedirect() = 0;
-	//	virtual HttpError* getError()=0;
-
 	virtual void setCgi(bool cgi) = 0;
-	//	virtual void setError(HttpError *error)=0;
-	//	TODO @Anastasia : temporaire, à virer après intégration de HttpError
 	virtual void setIsRedirect(bool isRedirect) = 0;
-	// virtual void setHttpError(const HttpError *error) = 0;
 	virtual void setHttpError(HttpError *error) = 0;
 	virtual HttpError* getHttpError() = 0;
 	virtual void setErrorCodeTmp(int errorCode) = 0;

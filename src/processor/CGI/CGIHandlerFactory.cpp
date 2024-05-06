@@ -9,6 +9,10 @@ CGIHandler* CGIHandlerFactory::build(std::string cgiName, Config *config)
 		cgi = new CGI_HANDLER_CLASS_PERL();
 	else if (cgiName == "SH_CGI")
 		cgi = new CGI_HANDLER_CLASS_SH();
+	else
+	{
+		cgi = new CGIHandlerGeneric();
+	}
 //	else if (cgiName == "PHP_LEG_CGI")
 //		return new REQUEST_HANDLER_IMPL_CLASS_STATIC();
 	cgi->setConfig(config);

@@ -16,16 +16,18 @@
 #include REQUEST_HEADER_IMPL_INC_DELETE
 #include REQUEST_HANDLER__IMPL_INC_REDIRECT
 #include REQUEST_HANDLER__IMPL_INC_DOWNLOAD
+#include "impl/ProcessorImplCgiBinGeneric.h"
 
 class ProcessorFactory
 {
 private:
 	ProcessorLocator *processorLocator;
+	//	Config *config;
 	ProcessorFactory();
 
 public:
 	~ProcessorFactory();
 	ProcessorFactory(ProcessorLocator *pl);
-	Processor* build(std::string procName);
+	Processor* build(std::string procName, Config *config);
 	std::vector<ProcessorAndLocationToProcessor*>* build(Request *request);
 };

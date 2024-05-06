@@ -6,16 +6,20 @@
 #include <string>
 #include <vector>
 #include "../API/Response.h"
+#include "../config/Config.h"
 
 class HttpErrorFactory
 {
 private:
-    static std::vector<HttpError> errorList;
-    static void loadErrorList();
+	std::vector<HttpError> errorList;
+	void loadErrorList();
+	//	Config *config;
 
 public:
-    static void initialize();
-    static HttpError *build(int errorCode);
+	HttpErrorFactory();
+	~HttpErrorFactory();
+	//	void initialize(Config *config);
+	HttpError* build(int errorCode);
 };
 
 // class HttpErrorFactory

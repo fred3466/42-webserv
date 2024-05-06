@@ -470,6 +470,8 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			/* Data was received                                 */
 			/*****************************************************/
 			int len = rc;
+			if (rc <= 0)
+				return false;
 			harl.debug(" %d HttpConnector::_onDataReceiving : %d bytes received", curentPollFd->fd, len);
 			std::string cont = std::string(buffer);
 			harl.trace(cont);
@@ -477,10 +479,11 @@ bool HttpConnector::_onDataReceiving(struct pollfd *curentPollFd,
 			ConnectorEvent e = ConnectorEvent("DataReceiving");
 			e.setFdClient(&curentPollFd->fd);
 			e.setLen(len);
-			char *dataReceived = new char[len];
+			char *dataReceived = new char[len + 1]();
 			memcpy(dataReceived, buffer, len);
 			e.setByteBuffer(dataReceived);
 			publishDataReceiving(&e);
+//			delete[] dataReceived;
 			//			close_conn = 1;
 //			break;
 		}

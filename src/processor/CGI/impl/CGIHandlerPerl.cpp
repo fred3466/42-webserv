@@ -7,6 +7,7 @@ CGIHandlerPerl::CGIHandlerPerl() : harl(), responseBody(""), responseHeaders(), 
 
 CGIHandlerPerl::~CGIHandlerPerl()
 {
+//	delete config;
 }
 
 std::string CGIHandlerPerl::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request, Response *response)

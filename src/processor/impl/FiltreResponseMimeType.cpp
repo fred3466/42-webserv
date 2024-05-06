@@ -9,6 +9,7 @@ FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : config(
 
 FiltreResponseMimeType::~FiltreResponseMimeType()
 {
+	delete config;
 	delete mimeTypeHelper;
 }
 

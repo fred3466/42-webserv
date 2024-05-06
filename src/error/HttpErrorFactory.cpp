@@ -1,12 +1,5 @@
 #include "HttpErrorFactory.h"
 
-std::vector<HttpError> HttpErrorFactory::errorList;
-
-void HttpErrorFactory::initialize()
-{
-	loadErrorList();
-}
-
 void HttpErrorFactory::loadErrorList()
 {
 	errorList.clear();
@@ -42,6 +35,18 @@ HttpError* HttpErrorFactory::build(int errorCode)
 		}
 	}
 	return new HttpError(errorCode, "Unknown Error");
+}
+
+HttpErrorFactory::HttpErrorFactory()
+{
+//	this->config = config;
+	loadErrorList();
+
+}
+
+HttpErrorFactory::~HttpErrorFactory()
+{
+
 }
 
 // Response *HttpErrorFactory::generateErrorResponse(int errorCode, const std::string &errorMessage)

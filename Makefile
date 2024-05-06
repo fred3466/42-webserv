@@ -48,6 +48,7 @@ SRC_FILES	= \
 	processor/impl/ProcessorImplDirectFs \
 	processor/impl/ProcessorImplCgiBinSh \
 	processor/impl/ProcessorImplCgiBinPerl \
+	processor/impl/ProcessorImplCgiBinGeneric \
 	processor/impl/FiltreResponseMimeType \
 	processor/impl/FiltreResponseCommon \
 	processor/impl/FiltreRequestPost \
@@ -60,6 +61,7 @@ SRC_FILES	= \
 	processor/CGI/impl/CGIHandlerPHP \
 	processor/CGI/impl/CGIHandlerPerl \
 	processor/CGI/impl/CGIHandlerSh \
+	processor/CGI/impl/CGIHandlerGeneric \
 	processor/ProcessorHelper \
  	location/LocationToProcessor \
  	location/ProcessorAndLocationToProcessor \

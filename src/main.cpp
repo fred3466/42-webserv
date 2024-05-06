@@ -4,19 +4,22 @@
 #include "util/FileUtil.h"
 #include "Uri/Uri.h"
 
-// void bye(){
-HttpServer server;
-// }
+std::vector<Config*> configVector;
 
 void signalHandler(int signum)
 {
 	std::cout << "GoodBye.\n";
+//	delete configVector;
+	for (std::vector<Config*>::iterator ite = configVector.begin(); ite != configVector.end(); ite++)
+	{
+		delete *ite;
+	}
 	exit(signum);
 }
 
 int main(int ac, char **av)
 {
-	system("rm -f DBG/*");
+//	system("rm -f DBG/*");
 
 	Harl harl = Harl();
 	FileUtil fu = FileUtil();
@@ -28,7 +31,7 @@ int main(int ac, char **av)
 		//				std::string path = "conf/webserv.conf";
 		ConfigReader cr = ConfigReader();
 		signal(SIGINT, signalHandler);
-		std::vector<Config *> configVector = std::vector<Config *>();
+		configVector = std::vector<Config*>();
 		if (!fu.fileExists(path))
 		{
 			harl.error("Config file missing for path : [%s]", path.c_str());
@@ -38,8 +41,12 @@ int main(int ac, char **av)
 		bool bValidated = cr.buildConfigVector(&configVector, path);
 		if (bValidated)
 		{
+			for (std::vector<Config*>::iterator ite = configVector.begin(); ite != configVector.end(); ite++)
+			{
 //			TODO lancer tous les serveurs, et pas seulement le premier
-			server.init(configVector[0]);
+				HttpServer server;
+				server.init(*ite);
+			}
 		}
 		else
 		{
@@ -53,6 +60,8 @@ int main(int ac, char **av)
 		<< "Nombre d'argument incorrect, syntaxe :\n webserv <chemin vers le fichier de configuration>"
 				<< std::endl;
 	}
+
+	return 0;
 }
 
 // int main(int argc, char **argv)

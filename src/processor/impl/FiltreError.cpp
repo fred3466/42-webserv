@@ -6,6 +6,7 @@ FiltreError::FiltreError(ProcessorTypeEnum type) : Processor(), type(type), conf
 
 FiltreError::~FiltreError()
 {
+	delete config;
 }
 
 Response* FiltreError::process(Request *request, Response *response,

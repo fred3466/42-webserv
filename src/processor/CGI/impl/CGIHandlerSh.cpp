@@ -16,6 +16,7 @@ CGIHandlerSh::CGIHandlerSh() : harl(), responseBody(""), responseHeaders(), conf
 
 CGIHandlerSh::~CGIHandlerSh()
 {
+//	delete config;
 }
 
 std::string CGIHandlerSh::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request, Response *response)

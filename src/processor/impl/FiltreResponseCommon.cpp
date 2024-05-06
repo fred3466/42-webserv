@@ -7,6 +7,7 @@ FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), con
 
 FiltreResponseCommon::~FiltreResponseCommon()
 {
+	delete config;
 }
 
 void FiltreResponseCommon::setConfig(Config *conf)
@@ -44,7 +45,7 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	{
 		if (directoryHandlingMethod == "none")
 		{
-			HttpError *error = HttpErrorFactory::build(404);
+			HttpError *error = processorHelper.getErrorFactory().build(404);
 			response->getHeader()->setStatusLine(error->getStatusLine());
 			delete error;
 			return response;

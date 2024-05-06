@@ -2,6 +2,7 @@
 
 ConnectorEvent::~ConnectorEvent()
 {
+	delete[] byteBuffer;
 }
 
 ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) : fdClient(o.fdClient), byteBuffer(o.byteBuffer)

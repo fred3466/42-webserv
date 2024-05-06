@@ -21,8 +21,7 @@ Config* findConfigByAlias(std::vector<Config*> *v, std::string alias)
 	return ret;
 }
 
-bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
-		std::string path)
+bool ConfigReader::buildConfigVector(std::vector<Config*> *ret, std::string path)
 {
 	ConfigFactory factory = ConfigFactory();
 	Harl harl = Harl();
@@ -178,6 +177,14 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret,
 					val.erase(ite, 1);
 
 				c->addParam("location@" + urlPath, val);
+			}
+			//			error_page
+			else if (key == "error_page")
+			{
+				std::string errorCode = su.getNthTokenIfExists(toksVal, 0, "");
+				std::string errorFile = su.getNthTokenIfExists(toksVal, 1, "");
+				c->addParam(errorCode + "_errorCodeFile", errorFile);
+
 			}
 			else
 			{

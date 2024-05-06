@@ -1,26 +1,28 @@
-#include "ProcessorImplCgiBinSh.h"
+#include "ProcessorImplCgiBinGeneric.h"
 
-ProcessorImplCgiBinSh::ProcessorImplCgiBinSh(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil(), processorHelper()
+ProcessorImplCgiBinGeneric::ProcessorImplCgiBinGeneric(ProcessorTypeEnum type) : harl(), stringUtil(), config(), fileUtil(), processorHelper()
 {
 	this->type = type;
 }
-ProcessorImplCgiBinSh::~ProcessorImplCgiBinSh()
+ProcessorImplCgiBinGeneric::~ProcessorImplCgiBinGeneric()
 {
+	harl.debug("ProcessorImplCgiBinGeneric::~ProcessorImplCgiBinGeneric: destruction de  Config dans ProcessorImplCgiBinGeneric");
 	delete config;
 }
 
-void ProcessorImplCgiBinSh::setConfig(Config *conf)
+void ProcessorImplCgiBinGeneric::setConfig(Config *conf)
 {
 	config = conf;
 }
 
-Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
+Response* ProcessorImplCgiBinGeneric::process(Request *request, Response *response,
 		ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
 {
 	response->getHeader()->addField("Content-Type", "text/html;");
 
 	std::string base_path = config->getParamStr("base_path", "base_path_missing");
-	CGIHandler *cgiHandler = CGIHandlerFactory().build("SH_CGI", config);
+	std::string CUSTOM_CGI_EXE = config->getParamStr("CUSTOM_CGI_EXE", "");
+	CGIHandler *cgiHandler = CGIHandlerFactory().build(CUSTOM_CGI_EXE, config);
 	std::string
 	uriLessPathInfoAndQueryString = request->getUri().getPath() + request->getUri().getFileName() + request->getUri().getFileExtension();
 
@@ -30,57 +32,57 @@ Response* ProcessorImplCgiBinSh::process(Request *request, Response *response,
 
 	std::string
 	cgiOutput = cgiHandler->executeCGIScript(interpreterPath, scriptPath, request, response);
-
 	delete cgiHandler;
 
 	//	TODO fred ???
 	bool bTransferEncoding = true; // "" != response->getHeader()->getFieldAsStr("Transfer-Encoding", "");
 	processorHelper.applyTransferEncodingOrContentLengthAndFinalize(response, &cgiOutput, bTransferEncoding);
+
 	return response;
 }
 
-std::string ProcessorImplCgiBinSh::getBasePath()
+std::string ProcessorImplCgiBinGeneric::getBasePath()
 {
-	return config->getParamStr("base_path", "cgi-bin/toto/");
+	return config->getParamStr("base_path", "cgi-bin");
 }
 
-void ProcessorImplCgiBinSh::setBasePath(std::string basePath)
+void ProcessorImplCgiBinGeneric::setBasePath(std::string basePath)
 {
 	config->addParam("base_path", basePath);
 }
 
-void ProcessorImplCgiBinSh::addProperty(std::string name, std::string value)
+void ProcessorImplCgiBinGeneric::addProperty(std::string name, std::string value)
 {
 	config->addOrReplaceParam(name, value);
 }
 
-std::string ProcessorImplCgiBinSh::toString()
+std::string ProcessorImplCgiBinGeneric::toString()
 {
-	return "ProcessorImplCgiBinSh";
+	return "ProcessorImplCgiBinGeneric";
 }
 
-ProcessorTypeEnum ProcessorImplCgiBinSh::getType()
+ProcessorTypeEnum ProcessorImplCgiBinGeneric::getType()
 {
 	return type;
 }
 
-bool ProcessorImplCgiBinSh::isExclusif()
+bool ProcessorImplCgiBinGeneric::isExclusif()
 {
 	return true;
 }
 
-bool ProcessorImplCgiBinSh::isBypassingExclusif()
+bool ProcessorImplCgiBinGeneric::isBypassingExclusif()
 {
 	return false;
 }
 
-std::string ProcessorImplCgiBinSh::getProperty(std::string name, std::string defaultVal)
+std::string ProcessorImplCgiBinGeneric::getProperty(std::string name, std::string defaultVal)
 {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
 }
 
-Config* ProcessorImplCgiBinSh::getConfig()
+Config* ProcessorImplCgiBinGeneric::getConfig()
 {
 	return config;
 }

@@ -39,7 +39,7 @@ RequestHttpBody::RequestHttpBody(char *rawRequest, int rawRequestLen)
 
 	}
 
-	if (HARL_LEVEL >= 3)
+	if (HARL_LEVEL >= 4)
 	{
 		std::string fname = "DBG/_REQUEST_content.txt";
 		std::ofstream os(fname.c_str(), std::ios::binary | std::ios::out);
@@ -70,7 +70,7 @@ char* RequestHttpBody::getContent()
 
 RequestHttpBody::~RequestHttpBody()
 {
-	delete content;
+	delete[] content;
 }
 
 RequestHttpBody::RequestHttpBody(const RequestHttpBody &o) : RequestBody(), content(o.content), len(o.len)

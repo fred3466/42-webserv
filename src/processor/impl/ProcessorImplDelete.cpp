@@ -11,6 +11,7 @@ ProcessorImplDelete::ProcessorImplDelete(ProcessorTypeEnum type) : harl()
 
 ProcessorImplDelete::~ProcessorImplDelete()
 {
+	delete config;
 }
 
 Response* ProcessorImplDelete::process(Request *request, Response *response,

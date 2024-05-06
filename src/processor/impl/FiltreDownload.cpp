@@ -7,6 +7,7 @@ FiltreDownload::FiltreDownload(ProcessorTypeEnum type) : harl(), config(), fileU
 
 FiltreDownload::~FiltreDownload()
 {
+	delete config;
 }
 
 void FiltreDownload::setConfig(Config *conf)

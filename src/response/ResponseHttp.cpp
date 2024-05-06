@@ -62,26 +62,15 @@ bool ResponseHttp::isCgi()
 	return flagCgi;
 }
 
-// TODO @Anastasia : virer le bool et tester HttpError.code
 bool ResponseHttp::isRedirect()
 {
 	return flagRedirect;
 }
 
-// HttpError* ResponseHttp::getError()
-//{
-//	return error;
-// }
-
 void ResponseHttp::setCgi(bool cgi)
 {
 	flagCgi = cgi;
 }
-
-// void ResponseHttp::setError(HttpError *error)
-//{
-//	this->error = error;
-//}
 
 void ResponseHttp::setIsRedirect(bool isRedirect)
 {

@@ -1,6 +1,6 @@
 #include "ProcessorHelper.h"
 
-ProcessorHelper::ProcessorHelper()
+ProcessorHelper::ProcessorHelper() : errorFactory()
 {
 }
 
@@ -30,6 +30,11 @@ void ProcessorHelper::setInterpreterAndScriptPath(std::string *interpreterPath, 
 	harl.debug(processor->toString() + ":\t" + request->getUri().getUri() + " -> " + *scriptPath);
 	*interpreterPath = config->getParamStr("perl_exe", "");
 
+}
+
+HttpErrorFactory ProcessorHelper::getErrorFactory()
+{
+	return errorFactory;
 }
 
 void ProcessorHelper::applyTransferEncodingOrContentLengthAndFinalize(Response *response, std::string *cgiOutput, bool bTransferEncoding)
