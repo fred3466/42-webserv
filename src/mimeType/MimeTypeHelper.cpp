@@ -35,17 +35,17 @@ MimeTypeHelper::~MimeTypeHelper()
 
 void MimeTypeHelper::addMapping(std::string extension, std::string mimeType)
 {
-	MimeType mtype = MimeType(extension, mimeType);
+	MimeType *mtype = new MimeType(extension, mimeType);
 	mimeTypeList.push_back(mtype);
 }
 
 std::string MimeTypeHelper::findMimeType(std::string extension)
 {
-	for (std::vector<MimeType>::iterator it = mimeTypeList.begin(); it != mimeTypeList.end(); ++it)
+	for (std::vector<MimeType*>::iterator it = mimeTypeList.begin(); it != mimeTypeList.end(); ++it)
 	{
-		if (it->getExtension() == extension)
+		if ((*it)->getExtension() == extension)
 		{
-			return it->getMimeType();
+			return (*it)->getMimeType();
 		}
 	}
 	return "application/octet-stream"; // Default MIME type if not found

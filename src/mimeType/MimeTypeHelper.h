@@ -6,7 +6,7 @@
 class MimeTypeHelper
 {
 private:
-	std::vector<MimeType> mimeTypeList;
+	std::vector<MimeType*> mimeTypeList;
 
 public:
 	MimeTypeHelper();
