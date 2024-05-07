@@ -46,7 +46,7 @@ HttpErrorFactory::HttpErrorFactory()
 
 HttpErrorFactory::~HttpErrorFactory()
 {
-
+	errorList.clear();
 }
 
 // Response *HttpErrorFactory::generateErrorResponse(int errorCode, const std::string &errorMessage)

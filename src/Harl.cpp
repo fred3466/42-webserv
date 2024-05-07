@@ -102,20 +102,21 @@ void Harl::except(std::string msg, ...)
 
 void Harl::_write(std::string level, std::string msg)
 {
-	char buf[100];
-	time_t rawtime;
-//	va_list args;
-	std::string out;
-//	int nbCharsWritten;
-
-	time(&rawtime);
+//	char buf[100];
+//	time_t rawtime;
+////	va_list args;
+//	std::string out;
+////	int nbCharsWritten;
+//
+//	time(&rawtime);
 
 //	va_start(args, msg);
 //	nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
 //	va_end(args);
 
-	tm *_time = localtime(&rawtime);
-	strftime(buf, sizeof(buf), ((std::string) "%T%S.000").c_str(), _time);
+//	tm *_time = localtime(&rawtime);
+//	strftime(buf, sizeof(buf), ((std::string) "%T%S.000").c_str(), _time);
 	std::cout << level << "\t" << msg << std::endl;
+//	delete _time;
 }
 
