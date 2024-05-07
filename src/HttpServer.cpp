@@ -276,7 +276,12 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 
 	if (!_checkAccess(request))
 	{
-		//		delete resp;
+		if (resp)
+		{
+			delete resp->getHttpError();
+			delete resp->getHeader();
+			delete[] resp->getBodyBin();
+		}
 		resp = createErrorResponse(403);
 		int *fdSocket = e->getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
@@ -286,7 +291,12 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-		//		delete resp;
+		if (resp)
+		{
+			delete resp->getHttpError();
+			delete resp->getHeader();
+			delete[] resp->getBodyBin();
+		}
 		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -299,7 +309,12 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	if (processorList->size() == 0)
 	{
 		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
-		//		delete resp;
+		if (resp)
+		{
+			delete resp->getHttpError();
+			delete resp->getHeader();
+			delete[] resp->getBodyBin();
+		}
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
 		freeProcessorList(processorList);
@@ -397,7 +412,12 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			else
 			{
 				harl.warning("HttpServer::onDataReceiving : defaultIndexName=NONE => 404", uri.getUri().c_str());
-				//		delete resp;
+				if (resp)
+				{
+					delete resp->getHttpError();
+					delete resp->getHeader();
+					delete[] resp->getBodyBin();
+				}
 				resp = createErrorResponse(404);
 				//				pushItIntoTheWire(fdSocket, request, resp);
 				//				cleanUp(request, resp);
@@ -413,7 +433,12 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		{
 			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
 
-			delete resp;
+			if (resp)
+			{
+				delete resp->getHttpError();
+				delete resp->getHeader();
+				delete[] resp->getBodyBin();
+			}
 			resp = createErrorResponse(errCode);
 			return resp;
 		}

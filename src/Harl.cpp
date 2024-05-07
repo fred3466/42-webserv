@@ -1,6 +1,7 @@
 #include "Harl.h"
 
 #include <ctime>
+#include <cstring>
 
 #include "config.h"
 
@@ -39,6 +40,7 @@ void Harl::trace(std::string msg, ...)
 void Harl::debug(std::string msg, ...)
 {
 	char formatedChars[2000];
+	memset(formatedChars, 0, 2000);
 	va_list args;
 	if (HARL_LEVEL >= 3)
 	{
@@ -102,20 +104,20 @@ void Harl::except(std::string msg, ...)
 
 void Harl::_write(std::string level, std::string msg)
 {
-	char buf[100];
-	time_t rawtime;
-//	va_list args;
-	std::string out;
-//	int nbCharsWritten;
+// 	char buf[100];
+// 	time_t rawtime;
+// //	va_list args;
+// 	std::string out;
+// //	int nbCharsWritten;
 
-	time(&rawtime);
+// 	time(&rawtime);
 
-//	va_start(args, msg);
-//	nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
-//	va_end(args);
+// //	va_start(args, msg);
+// //	nbCharsWritten = vsnprintf(formatedChars, 2000, msg.c_str(), args);
+// //	va_end(args);
 
-	tm *_time = localtime(&rawtime);
-	strftime(buf, sizeof(buf), ((std::string) "%T%S.000").c_str(), _time);
+// 	tm *_time = localtime(&rawtime);
+// strftime(buf, sizeof(buf), ((std::string) "%T%S.000").c_str(), _time);
 	std::cout << level << "\t" << msg << std::endl;
 }
 
