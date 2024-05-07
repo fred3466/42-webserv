@@ -6,6 +6,7 @@ HttpConnector::HttpConnector() : harl(), ns(), _soListen(-1), connectorListener(
 
 HttpConnector::~HttpConnector()
 {
+	delete[] fdTab;
 }
 
 // HttpConnector::HttpConnector(const HttpConnector &o)

@@ -1,28 +1,54 @@
 #include "MimeType.h"
 
-MimeType::MimeType() : extension(""), mimeType("") {}
-
-MimeType::MimeType(const std::string &ext, const std::string &mType)
-    : extension(ext), mimeType(mType) {}
-
-MimeType::~MimeType() {}
-
-std::string MimeType::getExtension() const
+MimeType::MimeType()
 {
-    return extension;
+	extension = "";
+	mimeType = "";
+
 }
 
-std::string MimeType::getMimeType() const
+MimeType::MimeType(std::string ext, std::string mType)
 {
-    return mimeType;
+	extension = ext;
+	mimeType = mType;
 }
 
-void MimeType::setExtension(const std::string &ext)
+MimeType::~MimeType()
 {
-    extension = ext;
 }
 
-void MimeType::setMimeType(const std::string &mType)
+std::string MimeType::getExtension()
 {
-    mimeType = mType;
+	return extension;
+}
+
+std::string MimeType::getMimeType()
+{
+	return mimeType;
+}
+
+void MimeType::setExtension(std::string ext)
+{
+	extension = ext;
+}
+
+void MimeType::setMimeType(std::string mType)
+{
+	mimeType = mType;
+}
+
+MimeType::MimeType(MimeType &o)
+{
+	extension = o.extension;
+	mimeType = o.mimeType;
+
+	if (this != &o)
+		*this = o;
+}
+
+MimeType& MimeType::operator=(MimeType &o)
+{
+	extension = o.extension;
+	mimeType = o.mimeType;
+	return *this;
 }

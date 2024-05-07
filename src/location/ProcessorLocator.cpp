@@ -13,6 +13,7 @@ ProcessorLocator::~ProcessorLocator()
 		Processor *p = lp->getProcessor();
 		if (p)
 		{
+			delete p->getConfig();
 			delete p;
 			p = NULL;
 			delete lp;

@@ -33,14 +33,15 @@ MimeTypeHelper::~MimeTypeHelper()
 {
 }
 
-void MimeTypeHelper::addMapping(const std::string &extension, const std::string &mimeType)
+void MimeTypeHelper::addMapping(std::string extension, std::string mimeType)
 {
-	mimeTypeList.push_back(MimeType(extension, mimeType));
+	MimeType mtype = MimeType(extension, mimeType);
+	mimeTypeList.push_back(mtype);
 }
 
-std::string MimeTypeHelper::findMimeType(const std::string &extension) const
+std::string MimeTypeHelper::findMimeType(std::string extension)
 {
-	for (std::vector<MimeType>::const_iterator it = mimeTypeList.begin(); it != mimeTypeList.end(); ++it)
+	for (std::vector<MimeType>::iterator it = mimeTypeList.begin(); it != mimeTypeList.end(); ++it)
 	{
 		if (it->getExtension() == extension)
 		{

@@ -4,16 +4,18 @@
 class MimeType
 {
 private:
-    std::string extension; // Key
-    std::string mimeType;  // Value
+	std::string extension; // Key
+	std::string mimeType;  // Value
 
 public:
-    MimeType();
-    MimeType(const std::string &ext, const std::string &mType);
-    ~MimeType();
+	MimeType();
+	MimeType(std::string ext, std::string mType);
+	~MimeType();
+	MimeType(MimeType &o);
+	MimeType& operator=(MimeType &o);
 
-    std::string getExtension() const;
-    std::string getMimeType() const;
-    void setExtension(const std::string &ext);
-    void setMimeType(const std::string &mType);
+	std::string getExtension();
+	std::string getMimeType();
+	void setExtension(std::string ext);
+	void setMimeType(std::string mType);
 };
