@@ -16,8 +16,8 @@ LocationToProcessor::LocationToProcessor(std::string urlPath, std::string ext, P
 LocationToProcessor::~LocationToProcessor()
 {
 
-	delete processor->getConfig();
-	delete processor;
+//	delete processor->getConfig();
+//	delete processor;
 }
 
 LocationToProcessor::LocationToProcessor(LocationToProcessor &bis) : urlPath(bis.urlPath), extension(bis.extension), processor(bis.processor), host(bis.host)

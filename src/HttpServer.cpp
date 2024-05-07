@@ -632,7 +632,7 @@ void HttpServer::cleanUp(Request *request, Response *resp)
 	delete requestHelper;
 	requestHelper = NULL;
 
-	delete processorLocator;
+//	delete processorLocator;
 	delete request->getBody();
 	delete request->getHeader();
 	delete request;
