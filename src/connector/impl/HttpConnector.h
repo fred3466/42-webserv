@@ -39,32 +39,31 @@ private:
 	int _soListen;
 	ConnectorListener *connectorListener;
 	Config *config;
-	struct pollfd **fdTab;
-	int fdTabSize;
+	struct pollfd *_pollfd;
 
-	//	HttpConnector(const HttpConnector &o);
-	//	HttpConnector& operator=(const HttpConnector &o);
-
-	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
-			int &end_server, int &nfds);
-	bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
-	void _listen(int _soListen, netStruct ns);
-	//	void reorganiseFdTab(struct pollfd *fdTab[], int *fdTabSize);
-	void reorganiseFdTab(pollfd **fdTab, int *fdTabSize);
-	void dumpFdTab(pollfd **fdTab, int fdTabSize);
+//	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
+//			int &end_server, int &nfds);
+//	bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
+//	void _listen(int _soListen, netStruct ns);
+//	void reorganiseFdTab(pollfd **fdTab, int *fdTabSize);
+//	void dumpFdTab(pollfd **fdTab, int fdTabSize);
+//	void signalHandler(int signum);
 
 public:
 	HttpConnector();
 	~HttpConnector();
 	HttpConnector(std::string stIp, int port, Config *c);
 
+	//	virtual void closeConnection(int *fd);
+
 protected:
 	void init(ConnectorListener &l);
-	void doListen();
+	//	void doPoll();
 
 	virtual void registerIt(ConnectorListener *l);
 	virtual void unregisterIt(ConnectorListener *l);
 	virtual void publishAccepting(ConnectorEvent *e);
 	virtual void publishDataReceiving(ConnectorEvent *e);
-	virtual void closeConnection(int *fd);
+	virtual pollfd* getPollFd();
+//	virtual int getFdTabSize();
 };

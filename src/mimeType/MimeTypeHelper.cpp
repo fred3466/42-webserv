@@ -6,6 +6,7 @@ MimeTypeHelper::MimeTypeHelper()
 {
 	std::ifstream file("conf/mime.types");
 	std::string line;
+	mimeTypeList = std::vector<MimeType*>(1000);
 
 	if (!file.is_open())
 		return;
@@ -31,6 +32,11 @@ MimeTypeHelper::MimeTypeHelper()
 
 MimeTypeHelper::~MimeTypeHelper()
 {
+	for (std::vector<MimeType*>::iterator it = mimeTypeList.begin(); it != mimeTypeList.end(); ++it)
+	{
+//		MimeType *mt = *it;
+		delete *it;
+	}
 }
 
 void MimeTypeHelper::addMapping(std::string extension, std::string mimeType)

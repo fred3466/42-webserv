@@ -2,6 +2,7 @@
 
 ProcessorLocator::ProcessorLocator() : harl(), locationToProcessorVector()
 {
+	locationToProcessorVector.reserve(1000);
 }
 
 ProcessorLocator::~ProcessorLocator()

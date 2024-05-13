@@ -105,7 +105,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret, std::string path
 				//				Validating
 				// alias must be unique
 				std::string alias = c->getAlias();
-				if (!validator.checkAlias(*ret, c, alias))
+				if ((alias != "") && (!validator.checkAlias(*ret, c, alias)))
 				{
 					bValidated = false;
 					harl.error(
@@ -117,7 +117,7 @@ bool ConfigReader::buildConfigVector(std::vector<Config*> *ret, std::string path
 					ret->push_back(c);
 					std::string name = su.getNthTokenIfExists(toksVal, 0, "");
 					c->addParam("name", name);
-					std::string alias = su.getNthTokenIfExists(toksVal, 1, name);
+					std::string alias = su.getNthTokenIfExists(toksVal, 1, "");
 					c->setAlias(alias);
 				}
 				continue;

@@ -24,6 +24,8 @@ SRC_FILES	= \
 	Harl\
     Server \
     HttpServer \
+    FdPollfdServerTuple \
+    ServerRunner \
  	API/Connector  \
 	API/Request \
  	API/Processor \

@@ -12,7 +12,7 @@
 class FiltreResponseMimeType: public Processor
 {
 private:
-	MimeTypeHelper *mimeTypeHelper;
+	MimeTypeHelper mimeTypeHelper;
 	//	std::map<std::string, std::string> properties;
 	Config *config;
 	ProcessorTypeEnum type;
@@ -22,7 +22,7 @@ public:
 	FiltreResponseMimeType(ProcessorTypeEnum type);
 	virtual ~FiltreResponseMimeType();
 	//	FiltreResponseMimeType(MimeTypeHelper &mimeTypeHelper);
-	std::string getResponseMimeType(const std::string &filePath) const;
+	std::string getResponseMimeType(const std::string &filePath);
 
 	virtual Response* process(Request *request, Response *response,
 			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);

@@ -7,7 +7,12 @@ RequestHttpHeader::~RequestHttpHeader()
 RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
 {
 	std::stringstream lines;
+	if (!rawRequest)
+		return;
+
 	lines.str(rawRequest);
+	if (!lines.good())
+		return;
 	char key[2048], val[2048], line[4096];
 	memset(key, 0, 2048);
 	memset(val, 0, 2048);

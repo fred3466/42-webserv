@@ -20,8 +20,16 @@ LocationToProcessor::~LocationToProcessor()
 //	delete processor;
 }
 
-LocationToProcessor::LocationToProcessor(LocationToProcessor &bis) : urlPath(bis.urlPath), extension(bis.extension), processor(bis.processor), host(bis.host)
+LocationToProcessor::LocationToProcessor(LocationToProcessor &bis)
 {
+	if (this != &bis)
+	{
+		extension = bis.extension;
+		processor = bis.processor;
+		urlPath = bis.urlPath;
+		host = bis.host;
+	}
+
 	*this = bis;
 }
 LocationToProcessor& LocationToProcessor::operator=(LocationToProcessor &bis)

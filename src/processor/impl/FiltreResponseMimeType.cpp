@@ -2,18 +2,16 @@
 
 #include <algorithm>
 
-FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : config(), type(type), processorHelper()
+FiltreResponseMimeType::FiltreResponseMimeType(ProcessorTypeEnum type) : mimeTypeHelper(), config(), type(type), processorHelper()
 {
-	mimeTypeHelper = new MimeTypeHelper();
 }
 
 FiltreResponseMimeType::~FiltreResponseMimeType()
 {
 	delete config;
-	delete mimeTypeHelper;
 }
 
-std::string FiltreResponseMimeType::getResponseMimeType(const std::string &filePath) const
+std::string FiltreResponseMimeType::getResponseMimeType(const std::string &filePath)
 {
 	// Extract the file extension from the filePath
 	std::string::size_type dotPos = filePath.rfind('.');
@@ -28,7 +26,8 @@ std::string FiltreResponseMimeType::getResponseMimeType(const std::string &fileP
 	std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
 	// Use the MimeTypeHelper to find the MIME type
-	return mimeTypeHelper->findMimeType(extension);
+	std::string ret = mimeTypeHelper.findMimeType(extension);
+	return ret;
 }
 
 // Modify the Response object to include the correct MIME type header
@@ -61,7 +60,7 @@ void FiltreResponseMimeType::setConfig(Config *conf)
 	std::string mimeTypesFilePath = conf->getParamStr("mimeTypesFilePath", "example/mime.types");
 	if (!mimeTypesFilePath.empty())
 	{
-		mimeTypeHelper->reloadMappingsFromFile(mimeTypesFilePath);
+		mimeTypeHelper.reloadMappingsFromFile(mimeTypesFilePath);
 	}
 }
 

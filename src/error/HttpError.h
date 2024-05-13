@@ -10,6 +10,9 @@ private:
 
 public:
 	HttpError(int code, const std::string &description);
+	HttpError& operator=(HttpError &o);
+	HttpError(HttpError &o);
+	HttpError();
 	~HttpError();
 
 	void setCode(int newCode);

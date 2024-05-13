@@ -24,7 +24,7 @@ TcpConnector::~TcpConnector()
 	}
 }
 
-void TcpConnector::doListen()
+void TcpConnector::doPoll()
 {
 	_listenFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_listenFd < 0)

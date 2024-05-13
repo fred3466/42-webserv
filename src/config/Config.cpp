@@ -92,8 +92,6 @@ int Config::getParamInt(const std::string &key)
 
 void Config::addOrReplaceParam(std::string param, std::string val)
 {
-	StringUtil su = StringUtil();
-
 	_deleteEntryForKey(param);
 
 	kv.push_back(param + "|" + val);
@@ -122,7 +120,7 @@ std::string Config::getParamStr(std::string param, std::string stringDefault)
 	return stringDefault;
 }
 
-std::vector<std::string> *Config::getParamStrStartingWith(std::string paramPrefix)
+std::vector<std::string>* Config::getParamStrStartingWith(std::string paramPrefix)
 {
 	StringUtil su = StringUtil();
 	//	TODO un new par ici !
@@ -154,7 +152,7 @@ void Config::setAlias(std::string alias)
 }
 
 Config::Config(Config &bis)
-	: alias(bis.alias)
+: alias(bis.alias)
 {
 	for (std::vector<std::string>::iterator ite = bis.kv.begin(); ite != bis.kv.end(); ite++)
 	{
@@ -165,7 +163,7 @@ Config::Config(Config &bis)
 		*this = bis;
 }
 
-Config &Config::operator=(Config &bis)
+Config& Config::operator=(Config &bis)
 {
 	this->alias = bis.alias;
 
@@ -177,14 +175,15 @@ Config &Config::operator=(Config &bis)
 	return *this;
 }
 
-Config *Config::clone()
+Config* Config::clone()
 {
 	Config *ret = new Config();
 	ret->alias = alias;
 
 	for (std::vector<std::string>::iterator ite = kv.begin(); ite != kv.end(); ite++)
 	{
-		std::string bisEntry = std::string(*ite);
+		std::string bisEntry = std::string();
+		bisEntry.assign(*ite);
 		ret->kv.push_back(bisEntry);
 	}
 	return ret;

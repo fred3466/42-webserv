@@ -43,9 +43,8 @@ void HttpServer::init(Config *c)
 	connector = ConnectorFactory().build(ip, port, c);
 	connector->registerIt(this);
 
-	connector->doListen();
+//	connector->doListen();
 
-//	delete config;
 }
 
 void HttpServer::instantiateProcessLocator()
@@ -269,19 +268,15 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	CookieFactory().build(reqHeader);
 	int *fdSocket = e->getFdClient();
 
-	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent());
+//	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", request->getBody()->getContent());
+	harl.debug("HttpServer::onDataReceiving Request BODY: \n%s", "fred");
 
 //	TODO à virer
 	Response *resp = createErrorResponse(200);
 
 	if (!_checkAccess(request))
 	{
-		if (resp)
-		{
-			delete resp->getHttpError();
-			delete resp->getHeader();
-			delete[] resp->getBodyBin();
-		}
+		delResp(resp);
 		resp = createErrorResponse(403);
 		int *fdSocket = e->getFdClient();
 		pushItIntoTheWire(fdSocket, request, resp);
@@ -291,12 +286,7 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 
 	if (!checkRequestBodySize(request, resp))
 	{
-		if (resp)
-		{
-			delete resp->getHttpError();
-			delete resp->getHeader();
-			delete[] resp->getBodyBin();
-		}
+		delResp(resp);
 		resp = createErrorResponse(413);
 		pushItIntoTheWire(fdSocket, request, resp);
 		cleanUp(request, resp);
@@ -309,12 +299,7 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	if (processorList->size() == 0)
 	{
 		harl.warning("HttpServer::onDataReceiving : No processor for host:port/route [%s]", uri.getUri().c_str());
-		if (resp)
-		{
-			delete resp->getHttpError();
-			delete resp->getHeader();
-			delete[] resp->getBodyBin();
-		}
+		delResp(resp);
 		resp = createErrorResponse(404);
 		pushItIntoTheWire(fdSocket, request, resp);
 		freeProcessorList(processorList);
@@ -347,7 +332,8 @@ void HttpServer::onDataReceiving(ConnectorEvent *e)
 	if (!request->isConnectionKeepAlive() || (resp->isCgi() && nbSent == resp->getTotalLength()))
 	{
 		harl.debug("HttpServer::onDataReceiving : closeConnection fdSocket %i [%s]", *fdSocket, uri.getUri().c_str());
-		connector->closeConnection(fdSocket);
+//		TODO fred mai
+//		connector->closeConnection(fdSocket);
 	}
 	cleanUp(request, resp);
 }
@@ -412,12 +398,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 			else
 			{
 				harl.warning("HttpServer::onDataReceiving : defaultIndexName=NONE => 404", uri.getUri().c_str());
-				if (resp)
-				{
-					delete resp->getHttpError();
-					delete resp->getHeader();
-					delete[] resp->getBodyBin();
-				}
+				delResp(resp);
 				resp = createErrorResponse(404);
 				//				pushItIntoTheWire(fdSocket, request, resp);
 				//				cleanUp(request, resp);
@@ -433,12 +414,7 @@ Response* HttpServer::runProcessorChain(std::vector<ProcessorAndLocationToProces
 		{
 			harl.debug("HttpServer::runProcessorChain : HTTP error code different of 200, processing error page");
 
-			if (resp)
-			{
-				delete resp->getHttpError();
-				delete resp->getHeader();
-				delete[] resp->getBodyBin();
-			}
+			delResp(resp);
 			resp = createErrorResponse(errCode);
 			return resp;
 		}
@@ -643,13 +619,24 @@ char* HttpServer::packageResponseAndGiveMeSomeBytes(Request *request, Response *
 	std::memcpy(*(cstrPtr), resp->getBodyBin(), bodyLen);
 
 	cstr = cstrSave;
-	if (length)
-	{
-		std::ofstream os("out.html", std::ios::binary | std::ios::out);
-		os.write(cstr, length);
-		os.close();
-	}
+//	if (length)
+//	{
+//		std::ofstream os("out.html", std::ios::binary | std::ios::out);
+//		os.write(cstr, length);
+//		os.close();
+//	}
 	return cstr;
+}
+
+void HttpServer::delResp(Response *resp)
+{
+	if (resp)
+	{
+		delete resp->getHttpError();
+		delete resp->getHeader();
+		delete[] resp->getBodyBin();
+		delete resp;
+	}
 }
 
 void HttpServer::cleanUp(Request *request, Response *resp)
@@ -661,14 +648,7 @@ void HttpServer::cleanUp(Request *request, Response *resp)
 	delete request->getBody();
 	delete request->getHeader();
 	delete request;
-	if (resp)
-	{
-		delete resp->getHttpError();
-		delete resp->getHeader();
-		//		TODO ne m'oubliez pas !
-		delete[] resp->getBodyBin();
-		delete resp;
-	}
+	delResp(resp);
 }
 
 void shutFd(int fd)
@@ -699,4 +679,8 @@ Response* HttpServer::handleHttpError(int errorCode)
 	response->setHttpError(error);
 	response->setStatusLine(error->getStatusLine());
 	return response;
+}
+Connector* HttpServer::getConnector()
+{
+	return connector;
 }

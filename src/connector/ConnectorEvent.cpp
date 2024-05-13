@@ -5,7 +5,7 @@ ConnectorEvent::~ConnectorEvent()
 	delete[] byteBuffer;
 }
 
-ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) : fdClient(o.fdClient), byteBuffer(o.byteBuffer)
+ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) : fdClient(o.fdClient), byteBuffer(o.byteBuffer), fdPollfdServerTuple(o.fdPollfdServerTuple)
 {
 	*this = o;
 }
@@ -20,7 +20,7 @@ ConnectorEvent::ConnectorEvent(const ConnectorEvent &o) : fdClient(o.fdClient), 
 //	return *this;
 //}
 
-ConnectorEvent::ConnectorEvent(std::string eventName) : fdClient(NULL), byteBuffer(NULL)
+ConnectorEvent::ConnectorEvent(std::string eventName) : fdClient(NULL), byteBuffer(NULL), len(0), fdPollfdServerTuple()
 {
 	this->eventName = eventName;
 }
@@ -38,6 +38,21 @@ void ConnectorEvent::setByteBuffer(char *bytess)
 int ConnectorEvent::getLen()
 {
 	return len;
+}
+
+std::string const& ConnectorEvent::getEventName() const
+{
+	return eventName;
+}
+
+FdPollfdServerTuple* ConnectorEvent::getFdPollfdServerTuple()
+{
+	return fdPollfdServerTuple;
+}
+
+void ConnectorEvent::setFdPollfdServerTuple(FdPollfdServerTuple *fdPollfdServerTuple)
+{
+	this->fdPollfdServerTuple = fdPollfdServerTuple;
 }
 
 void ConnectorEvent::setLen(int len)

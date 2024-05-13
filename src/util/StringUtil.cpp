@@ -201,14 +201,14 @@ std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSep
 	return ret;
 }
 
-std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v,
-		int index,
-		std::string defaultValue)
+const std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v, int index, std::string defaultValue)
 {
-	if ((int) v.size() > index)
-		return v[index];
-	else
-		return defaultValue;
+	std::string ret = defaultValue;
+	if (index < (int) v.size())
+	{
+		ret = (v.at(index));
+	}
+	return ret;
 }
 
 bool StringUtil::isStrictlyEqual(std::string s1, std::string s2)

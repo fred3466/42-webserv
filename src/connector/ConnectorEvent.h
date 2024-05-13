@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
 
-#include "../API/Request.h"
-#include "../API/Response.h"
+//#include "../FdPollfdServerTuple.h"
 
 class Connector;
+class FdPollfdServerTuple;
 
 class ConnectorEvent
 {
@@ -13,6 +13,7 @@ private:
 	std::string eventName;
 	char *byteBuffer;
 	int len;
+	FdPollfdServerTuple *fdPollfdServerTuple;
 
 public:
 	ConnectorEvent(const ConnectorEvent &other);
@@ -26,5 +27,8 @@ public:
 	int* getFdClient();
 	int getLen();
 	void setLen(int len);
+	std::string const& getEventName() const;
+	FdPollfdServerTuple* getFdPollfdServerTuple();
+	void setFdPollfdServerTuple(FdPollfdServerTuple *fdPollfdServerTuple);
 };
 

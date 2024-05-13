@@ -4,7 +4,8 @@ void HttpErrorFactory::loadErrorList()
 {
 	errorList.clear();
 
-	std::ifstream file("conf/errors.txt");
+	std::string fpath = "conf/errors.txt";
+	std::ifstream file(fpath.c_str(), std::ios::binary | std::ios::in);
 	std::string line;
 
 	if (file.is_open())
@@ -16,7 +17,7 @@ void HttpErrorFactory::loadErrorList()
 			std::string message;
 			if (iss >> code && std::getline(iss >> std::ws, message))
 			{
-				HttpError error(code, message);
+				HttpError *error = new HttpError(code, message);
 				errorList.push_back(error);
 			}
 		}
@@ -26,12 +27,12 @@ void HttpErrorFactory::loadErrorList()
 
 HttpError* HttpErrorFactory::build(int errorCode)
 {
-	for (std::vector<HttpError>::const_iterator it = errorList.begin(); it != errorList.end(); ++it)
+	for (std::vector<HttpError*>::iterator it = errorList.begin(); it != errorList.end(); ++it)
 	{
-		HttpError httpError = *it;
-		if (httpError.getCode() == errorCode)
+		HttpError *httpError = *it;
+		if (httpError->getCode() == errorCode)
 		{
-			return new HttpError(httpError.getCode(), httpError.getDescription());
+			return new HttpError(httpError->getCode(), httpError->getDescription());
 		}
 	}
 	return new HttpError(errorCode, "Unknown Error");
@@ -46,7 +47,13 @@ HttpErrorFactory::HttpErrorFactory()
 
 HttpErrorFactory::~HttpErrorFactory()
 {
-	errorList.clear();
+//	errorList.clear();
+//	for (std::vector<HttpError>::iterator it = errorList.begin(); it != errorList.end(); ++it)
+//	{
+//		HttpError httpError = *it;
+//		HttpError *httpErrorPTR = &httpError;
+//		delete httpErrorPTR;
+//	}
 }
 
 // Response *HttpErrorFactory::generateErrorResponse(int errorCode, const std::string &errorMessage)

@@ -9,6 +9,6 @@ public:
 	TcpConnector();
 	virtual ~TcpConnector();
 
-	virtual void doListen();
+	virtual void doPoll();
 	int getListenFd() const;
 };

@@ -26,6 +26,7 @@
 #include "API/RequestHeader.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
+#include "connector/ConnectorEvent.h"
 #include "connector/ConnectorFactory.h"
 #include "Harl.h"
 #include "processor/ProcessorFactory.h"
@@ -64,6 +65,7 @@ private:
 	bool _checkAccess(Request *request);
 	bool checkRequestBodySize(Request *request, Response *&response);
 	void freeProcessorList(std::vector<ProcessorAndLocationToProcessor*> *processorList);
+	void delResp(Response *resp);
 
 public:
 	HttpServer();
@@ -75,6 +77,7 @@ public:
 
 	Response* createErrorResponse(int errorCode);
 	Response* handleHttpError(int errorCode);
+	Connector* getConnector();
 
 	//	ProcessorLocator getProcessorLocator();
 	//	void addLocationToProcessor(std::string ext, Processor *processor);
