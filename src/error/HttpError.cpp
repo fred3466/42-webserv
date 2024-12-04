@@ -1,56 +1,45 @@
 #include "HttpError.h"
 
-HttpError::HttpError(int code, const std::string &description)
-: code(code), description(description)
-{
+HttpError::HttpError(int code, const std::string &description) : code(code), description(description) {
 }
 
-HttpError::HttpError() : code(-1), description("")
-{
+HttpError::HttpError() : code(-1), description("") {
 }
 
-HttpError::~HttpError()
-{
+HttpError::~HttpError() {
 }
 
-void HttpError::setCode(int newCode)
-{
+void HttpError::setCode(int newCode) {
 	code = newCode;
 }
 
-void HttpError::setDescription(const std::string &newDescription)
-{
+void HttpError::setDescription(const std::string &newDescription) {
 	description = newDescription;
 }
 
-int HttpError::getCode() const
-{
+int HttpError::getCode() const {
 	return code;
 }
 
-std::string HttpError::getDescription() const
-{
+std::string HttpError::getDescription() const {
 	return description;
 }
 
-std::string HttpError::getStatusLine() const
-{
+std::string HttpError::getStatusLine() const {
 	std::ostringstream ssHttpReturnCode;
 	ssHttpReturnCode << code;
 	std::string statusLine = "HTTP/1.1 " + ssHttpReturnCode.str() + " " + description + "\r\n";
 	return statusLine;
 }
 
-HttpError::HttpError(HttpError &o)
-{
+HttpError::HttpError(HttpError &o) {
 	this->code = o.code;
 	this->description = o.description;
 	if (this != &o)
 		*this = o;
 }
 
-HttpError& HttpError::operator=(HttpError &o)
-{
+HttpError& HttpError::operator=(HttpError &o) {
 	this->code = o.code;
 	this->description = o.description;
 

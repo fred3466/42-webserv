@@ -8,15 +8,13 @@
 #include "../config.h"
 #include "../API/RequestBody.h"
 
-class RequestHttpBody: public RequestBody
-{
+class RequestHttpBody: public RequestBody {
 private:
 	char *content;
 	int len;
-	//	RequestHttpBody();
 
 public:
-	RequestHttpBody(char *rawRequest, int rawRequestLen);
+	RequestHttpBody(char *rawRequest, int rawRequestLen, int headerSize);
 	virtual ~RequestHttpBody();
 	RequestHttpBody(const RequestHttpBody &other);
 	RequestHttpBody& operator=(const RequestHttpBody &other);

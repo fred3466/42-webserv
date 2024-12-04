@@ -1,90 +1,96 @@
 #include "LocationToProcessor.h"
 
-LocationToProcessor::LocationToProcessor() : urlPath(""), extension(""), processor(NULL), host("")
-{
+LocationToProcessor::LocationToProcessor() : urlPath(""), extension(""), processor(NULL), host(""), method("") {
 }
 
-LocationToProcessor::LocationToProcessor(std::string urlPath, std::string ext, Processor *proc, std::string host)
-{
+LocationToProcessor::LocationToProcessor(std::string urlPath, std::string ext, Processor *proc, std::string host, std::string hostAsIpPort, std::string method) {
 	extension = ext;
 	processor = proc;
 	this->urlPath = urlPath;
 	this->host = host;
-//	this->port = port;
+	this->hostAsIpPort = hostAsIpPort;
+	this->method = method;
 }
 
-LocationToProcessor::~LocationToProcessor()
-{
+LocationToProcessor::~LocationToProcessor() {
 
-//	delete processor->getConfig();
-//	delete processor;
+	Harl().debug("LocationToProcessor::~LocationToProcessor : kill processor : %s", processor->toString().c_str());
+
+	delete processor;
 }
 
-LocationToProcessor::LocationToProcessor(LocationToProcessor &bis)
-{
-	if (this != &bis)
-	{
+LocationToProcessor::LocationToProcessor(LocationToProcessor &bis) {
+	if (this != &bis) {
 		extension = bis.extension;
 		processor = bis.processor;
 		urlPath = bis.urlPath;
 		host = bis.host;
+		hostAsIpPort = bis.hostAsIpPort;
+		method = bis.method;
 	}
 
 	*this = bis;
 }
-LocationToProcessor& LocationToProcessor::operator=(LocationToProcessor &bis)
-{
-	if (this != &bis)
-	{
+LocationToProcessor& LocationToProcessor::operator=(LocationToProcessor &bis) {
+	if (this != &bis) {
 		extension = bis.extension;
 		processor = bis.processor;
 		urlPath = bis.urlPath;
 		host = bis.host;
+		hostAsIpPort = bis.hostAsIpPort;
+		method = bis.method;
 	}
 	return *this;
 }
 
-std::string LocationToProcessor::getExtension()
-{
+std::string LocationToProcessor::getExtension() {
 	return extension;
 }
 
-void LocationToProcessor::setExtension(std::string ext)
-{
+void LocationToProcessor::setExtension(std::string ext) {
 	extension = ext;
 }
 
-Processor* LocationToProcessor::getProcessor()
-{
+Processor* LocationToProcessor::getProcessor() {
 	return processor;
 }
 
-void LocationToProcessor::setProcessor(Processor *proc)
-{
+void LocationToProcessor::setProcessor(Processor *proc) {
 	processor = proc;
 }
 
-std::string LocationToProcessor::getUrlPath()
-{
+std::string LocationToProcessor::getUrlPath() {
 	return urlPath;
 }
 
-void LocationToProcessor::setUrlPath(std::string urlPath)
-{
+void LocationToProcessor::setUrlPath(std::string urlPath) {
 	this->urlPath = urlPath;
 }
 
-std::string LocationToProcessor::toString()
-{
-	return ("LocationToProcessor : [" + host + "] [" + urlPath + "] \t [" + extension + "] \t [" + getProcessor()->toString() + "]").c_str();
+std::string LocationToProcessor::toString() {
+	return ("LocationToProcessor : [" + host + "] [" + hostAsIpPort + "] [" + urlPath + "] \t [" + extension + "] \t [" + method + "] \t [" + getProcessor()->toString() + "]").c_str();
 }
 
-std::string LocationToProcessor::getHost()
-{
+std::string LocationToProcessor::getHost() {
 	return host;
 }
 
-void LocationToProcessor::setHost(std::string &host)
-{
+std::string LocationToProcessor::getMethod() {
+	return method;
+}
+
+std::string LocationToProcessor::getHostAsIpPort() {
+	return hostAsIpPort;
+}
+
+void LocationToProcessor::setHostAsIpPort(std::string hostAsIpPort) {
+	this->hostAsIpPort = hostAsIpPort;
+}
+
+void LocationToProcessor::setMethod(std::string method) {
+	this->method = method;
+}
+
+void LocationToProcessor::setHost(std::string host) {
 	this->host = host;
 }

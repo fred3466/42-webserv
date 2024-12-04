@@ -1,66 +1,38 @@
 #include "FiltreResponseCommon.h"
 
-FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper()
-{
+FiltreResponseCommon::FiltreResponseCommon(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper() {
 	this->type = type;
 }
 
-FiltreResponseCommon::~FiltreResponseCommon()
-{
+FiltreResponseCommon::~FiltreResponseCommon() {
 	delete config;
 }
 
-void FiltreResponseCommon::setConfig(Config *conf)
-{
+void FiltreResponseCommon::setConfig(Config *conf) {
 	config = conf;
 }
 
-ProcessorTypeEnum FiltreResponseCommon::getType()
-{
+ProcessorTypeEnum FiltreResponseCommon::getType() {
 	return type;
 }
 
-std::string FiltreResponseCommon::toString()
-{
+std::string FiltreResponseCommon::toString() {
 	return "FiltreResponseCommon";
 }
 
-Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
-{
+Response* FiltreResponseCommon::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor,
+		ProcessorAndLocationToProcessor *nextProcessorAndLocationToProcessor) {
 	(void) processorAndLocationToProcessor;
+	(void) nextProcessorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string path;
 	path = request->getUri().getUri();
 
-	header->addNoReplaceField("Server", "webserv/Anastasia Jean-Baptiste Frederic");
-//	header->addField("Access-Control-Allow-Origin", "*");
+	header->addNoReplaceField("Server", "webserv2024");
 	std::string date = stringUtil.formatDate(time(0), RFC_1123_DATE_FORMAT);
 	header->addNoReplaceField("Date", date);
 	bool isKeepAlive = request->isConnectionKeepAlive();
 	header->addNoReplaceField("Connection", isKeepAlive ? "keep-alive" : "close");
-
-//	TODO caduque ?
-	std::string directoryHandlingMethod = config->getParamStr("directory_default", "auto");
-	if (fileUtil.isDirectory(path))
-	{
-		if (directoryHandlingMethod == "none")
-		{
-			HttpError *error = processorHelper.getErrorFactory().build(404);
-			response->getHeader()->setStatusLine(error->getStatusLine());
-			delete error;
-			return response;
-		}
-		else if (directoryHandlingMethod == "auto")
-		{
-			std::string defaultFileName = config->getParamStr("default_index_name", "index.html");
-			path += "/" + defaultFileName;
-		}
-		else
-		{
-			path += "/" + directoryHandlingMethod;
-		}
-	}
-//	TODO FIN caduque ?
 
 	int length = response->getBodyLength();
 	std::string lString = stringUtil.strFromInt(length);
@@ -70,28 +42,35 @@ Response* FiltreResponseCommon::process(Request *request, Response *response, Pr
 	return response;
 }
 
-void FiltreResponseCommon::addProperty(std::string name, std::string value)
-{
+bool FiltreResponseCommon::isCgi() {
+	return false;
+}
+
+bool FiltreResponseCommon::isRedirect() {
+	return false;
+}
+
+void FiltreResponseCommon::addProperty(std::string name, std::string value) {
 	config->addOrReplaceParam(name, value);
 }
 
-bool FiltreResponseCommon::isExclusif()
-{
+bool FiltreResponseCommon::isExclusif() {
 	return false;
 }
 
-bool FiltreResponseCommon::isBypassingExclusif()
-{
+bool FiltreResponseCommon::isBypassingExclusif() {
 	return false;
 }
 
-std::string FiltreResponseCommon::getProperty(std::string name, std::string defaultVal)
-{
+bool FiltreResponseCommon::isUriDirectoryValidationRequired() {
+	return false;
+}
+
+std::string FiltreResponseCommon::getProperty(std::string name, std::string defaultVal) {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
 }
 
-Config* FiltreResponseCommon::getConfig()
-{
+Config* FiltreResponseCommon::getConfig() {
 	return config;
 }

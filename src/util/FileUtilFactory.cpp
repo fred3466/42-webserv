@@ -1,7 +1,5 @@
 #include "FileUtilFactory.h"
 
-FileUtil* FileUtilFactory::build()
-{
-//	if(request.getUri()== ...
+FileUtil* FileUtilFactory::build() {
 	return new FileUtil();
 }

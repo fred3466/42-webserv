@@ -1,0 +1,5 @@
+16:47:27 **** Build of configuration Default for project webserv ****
+make -k all 
+
+16:47:27 Build Finished. 0 errors, 0 warnings. (took 230ms)
+

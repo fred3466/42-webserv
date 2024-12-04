@@ -3,11 +3,10 @@
 #include "../../config.h"
 #include REQUEST_HEADER_IMPL_INC
 
-class RequestHeaderFactory
-{
+class RequestHeaderFactory {
 public:
 	RequestHeaderFactory();
 	~RequestHeaderFactory();
-	RequestHeader* build(char *rawRequest);
+	RequestHeader* build(char *rawRequest, int const rawRequestLen);
 };
 

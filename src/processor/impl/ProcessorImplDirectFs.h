@@ -11,9 +11,10 @@
 #include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
-class ProcessorImplDirectFs: public Processor
-{
+class ProcessorImplDirectFs: public Processor {
 private:
+	static std::string dir_list_preContent;
+	static std::string dir_list_postContent;
 	Harl harl;
 	StringUtil stringUtil;
 	Config *config;
@@ -24,8 +25,7 @@ private:
 public:
 	ProcessorImplDirectFs(ProcessorTypeEnum type);
 	~ProcessorImplDirectFs();
-	Response* process(Request *request, Response *response,
-			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
+	Response* process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor, ProcessorAndLocationToProcessor *nextProcessorAndLocationToProcessor);
 	void setConfig(Config *conf);
 	virtual std::string toString();
 	virtual void addProperty(std::string name, std::string value);
@@ -34,4 +34,7 @@ public:
 	virtual bool isBypassingExclusif();
 	virtual std::string getProperty(std::string name, std::string defaultVal);
 	virtual Config* getConfig();
+	virtual bool isRedirect();
+	virtual bool isCgi();
+	virtual bool isUriDirectoryValidationRequired();
 };

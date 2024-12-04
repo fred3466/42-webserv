@@ -5,17 +5,15 @@
 #include <fstream>
 #include "HttpError.h"
 
-class HttpErrorFactory
-{
+class HttpErrorFactory {
 private:
-	std::vector<HttpError*> errorList;
-	void loadErrorList();
-	//	Config *config;
 
 public:
+	void loadErrorList();
+	static std::vector<HttpError*> errorList;
 	HttpErrorFactory();
 	~HttpErrorFactory();
-	//	void initialize(Config *config);
 	HttpError* build(int errorCode);
+	void clearList();
 };
 

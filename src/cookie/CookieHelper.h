@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Cookie.h"
+#include "../util/StringUtil.h"
 #include <list>
 
-class CookieHelper
-{
+class CookieHelper {
 private:
-public:
+	public:
 	CookieHelper();
 	~CookieHelper();
 	Cookie getCookie(const std::list<Cookie> &cookies, const std::string &cookieName);

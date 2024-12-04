@@ -9,8 +9,7 @@
 #include "../cookie/CookieHelper.h"
 #include "../util/StringUtil.h"
 
-class ResponseHttpHeader: public ResponseHeader
-{
+class ResponseHttpHeader: public ResponseHeader {
 private:
 	std::string statusLine;
 	std::map<std::string, std::string> fields;
@@ -31,6 +30,7 @@ public:
 	virtual bool addCookie(const Cookie &cookie);
 	virtual bool removeCookie(const std::string &cookieName);
 	virtual std::string getCookieString();
+	virtual std::list<Cookie> getCookiesList();
 	int getFieldAsInt(std::string param, int intDefault);
 	std::string getFieldAsStr(std::string param, std::string stringDefault);
 	virtual void setErrorCodeTmp(int errorCode);

@@ -3,69 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <style>
-        /* The same styles as in your index.html */
-        body {
-            color: white;
-            background-image: url('page.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            border-radius: 16px;
-        }
-        nav ul li a, .nav-link {
-            color: #7ce3eb;
-        }
-        nav ul li a:hover, .nav-link:hover {
-            color: #5e2dbb;
-        }
-        .header-image {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-        }
-        .site-navigation-title {
-            color: #f2f7f3;
-        }
-        /* Styles for titles with easy color customization */
-        h2.title-color, h3.title-color {
-            color: #08f2f2;
-        }
-        p.paragraph-color {
-            color: #a4e7f0;
-        }
-
-    </style>
-    <title>About - Simple Website</title>
+    <link rel="stylesheet" href="/pico.min.css">
+    <link rel="stylesheet" href="/local.css">
+    <script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/jcookie-min.js"></script>
+    <title>Webserv</title>
 </head>
 <body>
-    <img class="header-image" src="header.jpg" alt="Header Image">
-    <nav class="container-fluid">
-        <ul>
-            <li><strong class="site-navigation-title">Site Navigation</strong></li>
+    <img class="header-image" src="images/header.jpg" alt="Header Image">
+         <ul class="menu">
+            <li><a href="/index.html" class="nav-link">Home</a></li>
+            <li><a href="/about.html" class="nav-link">About</a></li>
+            <li><a href="/r42" class="nav-link">Redirect</a></li>
+            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form .pl</a>
+            <li><a href="/cgi-sh/form-submit.sh" class="nav-link">Form .sh</a> </li>
+            <li><a href="/images.html" class="nav-link">Images</a></li>
+            <li><a href="/upload.html" class="nav-link">Upload</a></li>
+            <li><a href="/YoupiBanane" class="nav-link">Dir listing</a></li>
         </ul>
-        <ul>
-            <li><a href="index.html" class="nav-link">Home</a></li>
-            <li><a href="/r42" class="nav-link">Who I Am</a></li>
-            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form</a></li>
-            <li><a href="about.html" class="nav-link">About</a></li>
-            <li><a href="images.html" class="nav-link">Images</a></li>
-        </ul>
-    </nav>
+   
     <main class="container">
         <div class="grid">
             <section>
-                <!-- Customize your About page content here -->
                 <h2 class="title-color">About Project</h2>
                 <p class="paragraph-color">This project consists in having you set up a small infrastructure composed of different services under specific rules. The whole project has to be done in a virtual machine. You have to use docker compose.</p>
-            </section>
+            
+            
+                 <form action="/">
+	            	<input type="text" name="cook_name" id="cook_name" value="webserv_cook">
+	            	<input type="text" name="cook_val" id="cook_val" value="toto">
+	            	<input type="text" name="cook_maxage" id="cook_maxage" value="15">
+	            </form>
+	            <button onclick="addCookie()">Add Cookie</button>
+	            <button onclick="location.reload(true)">Refresh Page</button>
+
+	        	<p>Cookies :</p>	
+	            <p id="out_js"></p>
+	       </section>
+	            
+         <script>
+         
+    //  $(document).ready(function(){       
+	        function getCookies() {
+	            let cookieDoc = document.cookie; 
+	            let cookies = cookieDoc.split(';');
+	            let ret = '';
+	            
+	            for (let i = 1; i <= cookies.length; i++) {
+	                ret += i + ' - ' + cookies[i - 1] + "\r\n";
+	            }
+	
+	            return ret;
+	        }
+	        	
+	        $("#out_js").text(getCookies());
+	        	
+	        let addCookie=()=>{
+	        	nom=$("#cook_name").val();
+	        	val=$("#cook_val").val();
+	        	maxage=$("#cook_maxage").val();
+	        	
+	        	cookStr=nom+'='+val+'; SameSite=Lax; expires=' + new Date(Date.now() + maxage* 1000).toUTCString();
+				document.cookie = cookStr;
+	        	getCookies() ;
+	        }
+     // });
+        </script>
+ 
         </div>
     </main>
+    
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Use</a></small>
     </footer>

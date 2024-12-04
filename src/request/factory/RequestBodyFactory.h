@@ -4,11 +4,10 @@
 #include "../../config.h"
 #include REQUEST_BODY_IMPL_INC
 
-class RequestBodyFactory
-{
+class RequestBodyFactory {
 public:
 	RequestBodyFactory();
 	~RequestBodyFactory();
-	RequestBody* build(char *rawRequest, int rawRequestLen, RequestHeader *reqHeader);
+	RequestBody* build(char *rawRequest, int rawRequestLen, int bodyLen, RequestHeader *reqHeader);
 };
 

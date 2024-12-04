@@ -1,44 +1,33 @@
 #include "StringUtil.h"
 
-StringUtil::StringUtil()
-{
+StringUtil::StringUtil() {
 }
 
-StringUtil::~StringUtil()
-{
+StringUtil::~StringUtil() {
 }
 
-std::string StringUtil::strUpperCase(std::string s)
-{
+std::string StringUtil::strUpperCase(std::string s) {
 	std::string ret = s;
-	for (std::string::iterator ite = ret.begin(); ite != ret.end(); ite++)
-	{
+	for (std::string::iterator ite = ret.begin(); ite != ret.end(); ite++) {
 		*ite = toupper(*ite);
 	}
 	return ret;
 }
 
-std::string StringUtil::fromListToString(std::list<std::string> *l, std::string endLine)
-{
+std::string StringUtil::fromListToString(std::list<std::string> *l, std::string endLine) {
 	std::string ret;
-	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end();
-			ite++)
-	{
+	for (std::list<std::string>::iterator ite = l->begin(); ite != l->end(); ite++) {
 		ret += *ite + endLine;
 	}
 	return ret;
 }
-std::string StringUtil::fromCArrayToString(const char *a[])
-{
+std::string StringUtil::fromCArrayToString(const char *a[]) {
 	std::string ret;
 	bool bIsFirst = true;
-	while (*a)
-	{
-		if (!bIsFirst)
-		{
+	while (*a) {
+		if (!bIsFirst) {
 			ret += " ";
-		} else
-		{
+		} else {
 			bIsFirst = false;
 		}
 		ret += *a;
@@ -48,8 +37,7 @@ std::string StringUtil::fromCArrayToString(const char *a[])
 }
 
 // supprime les espaces en fin de chaine
-std::string StringUtil::rtrim(std::string &s)
-{
+std::string StringUtil::rtrim(std::string s) {
 	if (s.empty())
 		return "";
 	;
@@ -67,8 +55,7 @@ std::string StringUtil::rtrim(std::string &s)
 }
 
 // supprime les espaces en début de chaine
-std::string StringUtil::ltrim(std::string &s)
-{
+std::string StringUtil::ltrim(std::string s) {
 	if (s.empty())
 		return "";
 
@@ -86,23 +73,19 @@ std::string StringUtil::ltrim(std::string &s)
 }
 
 // supprime les espaces en début et fin de chaine
-std::string StringUtil::trim(std::string &s)
-{
+std::string StringUtil::trim(std::string s) {
 	std::string rtrimmed = rtrim(s);
 	return ltrim(rtrimmed);
 }
 
-bool StringUtil::isSpace(char c)
-{
+bool StringUtil::isSpace(char c) {
 	return std::isspace(c);
 }
 
-bool StringUtil::isCommented(std::string s)
-{
+bool StringUtil::isCommented(std::string s) {
 	bool bMoreSpaces = true;
 	int i;
-	for (i = 0; bMoreSpaces && (i < (int) s.length()); i++)
-	{
+	for (i = 0; bMoreSpaces && (i < (int) s.length()); i++) {
 		bMoreSpaces = isSpace(s[i]);
 	}
 	if (i > 0 && s[i - 1] == '#')
@@ -110,8 +93,7 @@ bool StringUtil::isCommented(std::string s)
 	return false;
 }
 
-bool StringUtil::isalnum(std::string s)
-{
+bool StringUtil::isalnum(std::string s) {
 	bool ret = true;
 	int i = 0;
 	const char *cstr = s.c_str();
@@ -120,23 +102,19 @@ bool StringUtil::isalnum(std::string s)
 	return i == (int) s.length();
 }
 
-std::string StringUtil::dedoublonne(std::string s, std::string cherche)
-{
+std::string StringUtil::dedoublonne(std::string s, std::string cherche) {
 	int chercheLen = cherche.length();
-	for (size_t ite = s.find(cherche + cherche); ite != std::string::npos; ite++)
-	{
+	for (size_t ite = s.find(cherche + cherche); ite != std::string::npos; ite++) {
 		s.erase(ite, chercheLen);
 	}
 	return s;
 }
-std::string StringUtil::normalizeSpaces(std::string s)
-{
+std::string StringUtil::normalizeSpaces(std::string s) {
 	std::string ret;
 	char *cstrWithNoTab = new char[s.length()];
 	memccpy(cstrWithNoTab, s.c_str(), 0, s.length());
 
-	for (int i = 0; i < (int) s.length(); i++)
-	{
+	for (int i = 0; i < (int) s.length(); i++) {
 		bool bIsSpaces = isSpace(cstrWithNoTab[i]) && cstrWithNoTab[i] != ' ';
 		if (bIsSpaces)
 			cstrWithNoTab[i] = ' ';
@@ -144,8 +122,7 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	if (isSpace(cstrWithNoTab[s.length() - 1]) && cstrWithNoTab[s.length() - 1] != ' ')
 		cstrWithNoTab[s.length() - 1] = ' ';
 
-	for (int i = 0; i < (int) s.length(); i++)
-	{
+	for (int i = 0; i < (int) s.length(); i++) {
 		bool bTwosSpaces = isSpace(cstrWithNoTab[i]) && i > 0 && isSpace(cstrWithNoTab[i - 1]);
 		if (!bTwosSpaces && i > 0)
 			ret += cstrWithNoTab[i - 1];
@@ -156,41 +133,32 @@ std::string StringUtil::normalizeSpaces(std::string s)
 	return ret;
 }
 
-std::vector<std::string> StringUtil::tokenize(std::string s)
-{
+std::vector<std::string> StringUtil::tokenize(std::string s) {
 	std::vector<std::string> ret = std::vector<std::string>();
 	std::stringstream ss(s);
 	std::string word;
-	while (ss >> word)
-	{
+	while (ss >> word) {
 		ret.push_back(word);
 	}
 	return ret;
 }
 
-std::vector<std::string> StringUtil::tokenize(std::string s, char sep)
-{
+std::vector<std::string> StringUtil::tokenize(std::string s, char sep) {
 	return tokenize(s, sep, -1);
 }
 
-std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSeparatorsToProcessParam)
-{
+std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSeparatorsToProcessParam) {
 	std::vector<std::string> ret = std::vector<std::string>();
 	std::stringstream ss(s);
 	std::string word;
-	if (nbSeparatorsToProcessParam < 1)
-	{
-		while (!ss.eof())
-		{
+	if (nbSeparatorsToProcessParam < 1) {
+		while (!ss.eof()) {
 			getline(ss, word, sep);
 			ret.push_back(word);
 		}
-	}
-	else
-	{
+	} else {
 		int nbSeparatorsToProcess = nbSeparatorsToProcessParam;
-		while (!ss.eof() && nbSeparatorsToProcess--)
-		{
+		while (!ss.eof() && nbSeparatorsToProcess--) {
 			getline(ss, word, sep);
 			ret.push_back(word);
 		}
@@ -201,23 +169,19 @@ std::vector<std::string> StringUtil::tokenize(std::string s, char sep, int nbSep
 	return ret;
 }
 
-const std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v, int index, std::string defaultValue)
-{
+const std::string StringUtil::getNthTokenIfExists(std::vector<std::string> v, int index, std::string defaultValue) {
 	std::string ret = defaultValue;
-	if (index < (int) v.size())
-	{
+	if (index < (int) v.size()) {
 		ret = (v.at(index));
 	}
 	return ret;
 }
 
-bool StringUtil::isStrictlyEqual(std::string s1, std::string s2)
-{
+bool StringUtil::isStrictlyEqual(std::string s1, std::string s2) {
 	return strUpperCase(s1) == strUpperCase(s2);
 }
 
-std::string StringUtil::strFromInt(int i)
-{
+std::string StringUtil::strFromInt(int i) {
 	std::string ret;
 	std::stringstream ss;
 	ss << i;
@@ -225,11 +189,9 @@ std::string StringUtil::strFromInt(int i)
 
 	return ret;
 }
-int StringUtil::intFromStr(std::string s)
-{
+int StringUtil::intFromStr(std::string s) {
 	std::string trimmed = trim(s);
-	if (trimmed == "")
-	{
+	if (trimmed == "") {
 		return 0;
 	}
 
@@ -240,8 +202,7 @@ int StringUtil::intFromStr(std::string s)
 	return resInt;
 }
 
-std::string StringUtil::formatDate(time_t mtime, std::string strFormat)
-{
+std::string StringUtil::formatDate(time_t mtime, std::string strFormat) {
 	char buf[1000];
 	struct tm tmm = *gmtime(&mtime);
 	strftime(buf, sizeof buf, strFormat.c_str(), &tmm);
@@ -249,8 +210,7 @@ std::string StringUtil::formatDate(time_t mtime, std::string strFormat)
 	return ret;
 }
 
-std::string StringUtil::toHexa(int i)
-{
+std::string StringUtil::toHexa(int i) {
 	std::string ret = "";
 	std::stringstream stream;
 	stream << std::hex << i;
@@ -259,16 +219,14 @@ std::string StringUtil::toHexa(int i)
 	return ret;
 }
 
-std::string StringUtil::replace_all(std::string &s, std::string const &toReplace, std::string const &replaceWith)
-{
+std::string StringUtil::replace_all(std::string &s, std::string const &toReplace, std::string const &replaceWith) {
 	std::string buf;
 	std::size_t pos = 0;
 	std::size_t prevPos;
 
 	buf.reserve(s.size());
 
-	while (true)
-	{
+	while (true) {
 		prevPos = pos;
 		pos = s.find(toReplace, pos);
 		if (pos == std::string::npos)
@@ -283,31 +241,24 @@ std::string StringUtil::replace_all(std::string &s, std::string const &toReplace
 	return s;
 }
 
-std::string StringUtil::getAliasFromVal(const std::string &val)
-{
+std::string StringUtil::getAliasFromVal(const std::string &val) {
 	std::vector<std::string> tokens = tokenize(val, ' ');
-	if (tokens.size() >= 2)
-	{
+	if (tokens.size() >= 2) {
 		return tokens[1];
 	}
 	return "";
 }
 
-size_t StringUtil::findStringInCString(char *cString, int cStringLen, std::string toFind, int offset)
-{
+size_t StringUtil::findStringInCString(char *cString, int cStringLen, std::string toFind, int offset) {
 	const char *toFindCString = toFind.c_str();
 	char *cStringOfsset = cString + offset;
 	int i = 0;
-	for (i = 0; i < cStringLen; i++)
-	{
+	for (i = 0; i < cStringLen; i++) {
 		bool found = false;
-		if (cStringOfsset[i] == toFindCString[0])
-		{
+		if (cStringOfsset[i] == toFindCString[0]) {
 			found = true;
-			for (size_t j = 1; j < toFind.length(); j++)
-			{
-				if (cStringOfsset[i + j] != toFindCString[j])
-				{
+			for (size_t j = 1; j < toFind.length(); j++) {
+				if (cStringOfsset[i + j] != toFindCString[j]) {
 					found = false;
 					break;
 				}

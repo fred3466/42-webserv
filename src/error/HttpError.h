@@ -2,8 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-class HttpError
-{
+class HttpError {
 private:
 	int code;
 	std::string description;

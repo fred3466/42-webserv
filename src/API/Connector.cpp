@@ -1,10 +1,8 @@
-#include "../API/Connector.h"
+#include "Connector.h"
 
-Connector::Connector()
-{
+Connector::Connector() {
 }
 
-Connector::~Connector()
-{
+Connector::~Connector() {
 }
 

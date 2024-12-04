@@ -1,22 +1,21 @@
 #include "HttpErrorFactory.h"
 
-void HttpErrorFactory::loadErrorList()
-{
-	errorList.clear();
+std::vector<HttpError*> HttpErrorFactory::errorList = std::vector<HttpError*>();
+
+void HttpErrorFactory::loadErrorList() {
+	if (!errorList.empty())
+		return;
 
 	std::string fpath = "conf/errors.txt";
-	std::ifstream file(fpath.c_str(), std::ios::binary | std::ios::in);
+	std::ifstream file(fpath.c_str(), std::ios::in);
 	std::string line;
 
-	if (file.is_open())
-	{
-		while (std::getline(file, line))
-		{
+	if (file.is_open()) {
+		while (std::getline(file, line)) {
 			std::istringstream iss(line);
 			int code;
 			std::string message;
-			if (iss >> code && std::getline(iss >> std::ws, message))
-			{
+			if (iss >> code && std::getline(iss >> std::ws, message)) {
 				HttpError *error = new HttpError(code, message);
 				errorList.push_back(error);
 			}
@@ -25,122 +24,37 @@ void HttpErrorFactory::loadErrorList()
 	}
 }
 
-HttpError* HttpErrorFactory::build(int errorCode)
-{
-	for (std::vector<HttpError*>::iterator it = errorList.begin(); it != errorList.end(); ++it)
-	{
+HttpError* HttpErrorFactory::build(int errorCode) {
+	if (errorList.empty())
+		loadErrorList();
+
+	for (std::vector<HttpError*>::iterator it = errorList.begin(); it != errorList.end(); ++it) {
 		HttpError *httpError = *it;
-		if (httpError->getCode() == errorCode)
-		{
-			return new HttpError(httpError->getCode(), httpError->getDescription());
+		if (httpError->getCode() == errorCode) {
+			return httpError;
 		}
 	}
 	return new HttpError(errorCode, "Unknown Error");
 }
 
-HttpErrorFactory::HttpErrorFactory()
-{
-//	this->config = config;
-	loadErrorList();
+HttpErrorFactory::HttpErrorFactory() {
 
 }
 
-HttpErrorFactory::~HttpErrorFactory()
-{
-//	errorList.clear();
-//	for (std::vector<HttpError>::iterator it = errorList.begin(); it != errorList.end(); ++it)
-//	{
-//		HttpError httpError = *it;
-//		HttpError *httpErrorPTR = &httpError;
-//		delete httpErrorPTR;
-//	}
+void HttpErrorFactory::clearList() {
+	for (std::vector<HttpError*>::iterator it = errorList.begin(); it != errorList.end(); ++it) {
+		HttpError *httpError = *it;
+		if (!httpError) {
+			continue;
+		}
+		if (httpError)
+			delete httpError;
+	}
+	errorList.erase(errorList.begin(), errorList.end());
+	errorList.clear();
 }
 
-// Response *HttpErrorFactory::generateErrorResponse(int errorCode, const std::string &errorMessage)
-// {
-//     // Placeholder for the method to load and format the error page template
-//     std::string errorPageContent = "Error Page ........"; // Should load from a template file
+HttpErrorFactory::~HttpErrorFactory() {
+	clearList();
+}
 
-//     // Placeholder for replacing placeholders in the errorPageContent
-//     // replacePlaceholders(errorPageContent, errorCode, errorMessage);
-//     ResponseHeaderFactory factory = ResponseHeaderFactory();
-
-//     ResponseHeader *header = factory.build();
-//     std::ostringstream statusLine;
-//     statusLine << "HTTP/1.1 " << errorCode << " " << errorMessage << "\r\n";
-//     header->setStatusLine(statusLine.str());
-//     header->addField("Content-Type", "text/html");
-
-//     ResponseHttp *response = new ResponseHttp(header);
-//     char *bodyBin = new char[errorPageContent.length() + 1];
-//     std::copy(errorPageContent.begin(), errorPageContent.end(), bodyBin);
-//     bodyBin[errorPageContent.length()] = '\0';
-//     response->setBodyBin(bodyBin);
-//     response->setBodyLength(errorPageContent.length());
-
-//     return response;
-// }
-
-// HttpError *HttpErrorFactory::build(int errorCode)
-// {
-//     std::ifstream file("../../conf/errors.txt");
-//     std::string line;
-//     std::string errorMessage = "Unknown Error"; // Default error message
-
-//     if (!file.is_open())
-//     {
-//         return new HttpError(errorCode, errorMessage);
-//     }
-
-//     while (std::getline(file, line))
-//     {
-//         std::istringstream iss(line);
-//         int code;
-//         std::string message;
-//         if (!(iss >> code) || code != errorCode)
-//             continue; // Skip lines that don't match the errorCode
-
-//         // Extract the rest of the line as the error message
-//         std::getline(iss >> std::ws, message); // std::ws is a manipulator that eats up leading whitespaces
-//         errorMessage = message;
-//         break; // Found the matching error code, no need to continue
-//     }
-
-//     file.close(); // Don't forget to close the file
-//     return new HttpError(errorCode, errorMessage);
-// }
-
-// HttpError *HttpErrorFactory::build(int errorCode)
-// {
-//     std::string errorMessage;
-
-//     switch (errorCode)
-//     {
-//     case 400:
-//         errorMessage = "Bad Request";
-//         break;
-//     case 401:
-//         errorMessage = "Unauthorized";
-//         break;
-//     case 403:
-//         errorMessage = "Forbidden";
-//         break;
-//     case 404:
-//         errorMessage = "Not Found";
-//         break;
-//     case 500:
-//         errorMessage = "Internal Server Error";
-//         break;
-//     case 501:
-//         errorMessage = "Not Implemented";
-//         break;
-//     case 503:
-//         errorMessage = "Service Unavailable";
-//         break;
-//     default:
-//         errorMessage = "Unknown Error";
-//         break;
-//     }
-
-//     return new HttpError(errorCode, errorMessage);
-// }

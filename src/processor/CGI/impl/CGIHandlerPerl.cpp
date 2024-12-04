@@ -1,56 +1,49 @@
 #include "CGIHandlerPerl.h"
 #include <map>
 
-CGIHandlerPerl::CGIHandlerPerl() : harl(), responseBody(""), responseHeaders(), config(), cgiHelper()
-{
+CGIHandlerPerl::CGIHandlerPerl() : harl(), responseBody(""), responseHeaders(), config(), cgiHelper() {
 }
 
-CGIHandlerPerl::~CGIHandlerPerl()
-{
-//	delete config;
+CGIHandlerPerl::~CGIHandlerPerl() {
 }
 
-std::string CGIHandlerPerl::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request, Response *response)
-{
-	std::string ret = cgiHelper.executeCGIScript(this, interpreterPath, scriptPath, request, response);
-	return ret;
+std::string CGIHandlerPerl::executeCGIScript(std::string interpreterPath, std::string &scriptPath, Request *request, Response *response) {
+	cgiHelper.executeCGIScript(this, interpreterPath, scriptPath, request, response);
+	return CGIHelper::getContent();
 }
 
-void CGIHandlerPerl::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response)
-{
+void CGIHandlerPerl::setupEnvironmentVariables(std::map<std::string, std::string> *envMap, Request *request, Response *response) {
 	cgiHelper.setupEnvironmentVariables(envMap, request, response);
 }
 
-const char** CGIHandlerPerl::buildCommandLine(std::string interpreterPath, std::string &scriptPath)
-{
-	const char **argv = new const char*[4];
+const char** CGIHandlerPerl::buildCommandLine(Request *request, std::string interpreterPath, std::string &scriptPath) {
+	(void) request;
+	char **argv = new char*[4];
 	int i = 0;
-	argv[i++] = interpreterPath.c_str();
-	argv[i++] = "-U";
+
+	argv[i] = new char[interpreterPath.length() + 1]();
+	memcpy((char*) argv[i++], interpreterPath.c_str(), interpreterPath.length() + 1);
+
+	std::string tiretU = "-U";
+	argv[i] = new char[tiretU.length() + 1]();
+	memcpy((char*) argv[i++], tiretU.c_str(), tiretU.length() + 1);
+
 	std::string stp = scriptPath;
-	//			TODO leak
-	//			TODO BUG!!!!
 	argv[i] = new char[stp.length() + 1]();
 	memcpy((char*) argv[i++], stp.c_str(), stp.length() + 1);
 
-	//	TODO ne fonctionne plus ?
-//	argv[i++] = stp.c_str();
-	argv[i++] = NULL;
+	argv[i] = NULL;
 
-//	harl.debug("CGIHandlerPerl::executeCGIScript [%s %s] ???", interpreterPath.c_str(), cmdLine.c_str());
-	return argv;
+	return (const char**) argv;
 }
 
-std::string CGIHandlerPerl::toString()
-{
+std::string CGIHandlerPerl::toString() {
 	return "CGIHandlerPerl";
 }
 
-void CGIHandlerPerl::setConfig(Config *conf)
-{
+void CGIHandlerPerl::setConfig(Config *conf) {
 	config = conf;
 }
-Config* CGIHandlerPerl::getConfig()
-{
+Config* CGIHandlerPerl::getConfig() {
 	return config;
 }

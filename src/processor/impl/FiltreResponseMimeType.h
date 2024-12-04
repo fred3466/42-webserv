@@ -9,11 +9,9 @@
 #include "../../API/Processor.h"
 #include "../ProcessorHelper.h"
 
-class FiltreResponseMimeType: public Processor
-{
+class FiltreResponseMimeType: public Processor {
 private:
-	MimeTypeHelper mimeTypeHelper;
-	//	std::map<std::string, std::string> properties;
+	static MimeTypeHelper mimeTypeHelper;
 	Config *config;
 	ProcessorTypeEnum type;
 	ProcessorHelper processorHelper;
@@ -21,11 +19,8 @@ private:
 public:
 	FiltreResponseMimeType(ProcessorTypeEnum type);
 	virtual ~FiltreResponseMimeType();
-	//	FiltreResponseMimeType(MimeTypeHelper &mimeTypeHelper);
-	std::string getResponseMimeType(const std::string &filePath);
-
-	virtual Response* process(Request *request, Response *response,
-			ProcessorAndLocationToProcessor *processorAndLocationToProcessor);
+	virtual Response* process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor,
+			ProcessorAndLocationToProcessor *nextProcessorAndLocationToProcessor);
 	virtual void setConfig(Config *conf);
 	virtual std::string toString();
 	virtual void addProperty(std::string name, std::string value);
@@ -34,4 +29,7 @@ public:
 	virtual bool isBypassingExclusif();
 	virtual std::string getProperty(std::string name, std::string defaultVal);
 	virtual Config* getConfig();
+	virtual bool isRedirect();
+	virtual bool isUriDirectoryValidationRequired();
+	virtual bool isCgi();
 };

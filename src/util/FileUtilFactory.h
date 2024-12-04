@@ -3,8 +3,7 @@
 
 #include "FileUtil.h"
 
-class FileUtilFactory
-{
+class FileUtilFactory {
 public:
 	FileUtil* build();
 };

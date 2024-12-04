@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 
-class MimeType
-{
+class MimeType {
 private:
 	std::string extension; // Key
 	std::string mimeType;  // Value

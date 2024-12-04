@@ -3,8 +3,7 @@
 #include "../../config.h"
 #include RESPONSE_HEADER_IMPL_INC
 
-class ResponseHeaderFactory
-{
+class ResponseHeaderFactory {
 public:
 	ResponseHeaderFactory();
 	~ResponseHeaderFactory();

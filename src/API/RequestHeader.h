@@ -4,8 +4,7 @@
 #include "../cookie/Cookie.h"
 #include "../Uri/Uri.h"
 
-class RequestHeader
-{
+class RequestHeader {
 private:
 
 public:
@@ -30,4 +29,8 @@ public:
 	virtual const std::string getFileExtension() const =0;
 	virtual const std::string getFileName() const =0;
 	virtual const std::string& getPath() const =0;
+	virtual void clearCookies() =0;
+	virtual size_t getHeaderSize() const =0;
+	virtual void setHeaderSize(size_t headerSize)=0;
+
 };

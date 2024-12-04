@@ -1,21 +1,17 @@
 #include "ProcessorAndLocationToProcessor.h"
 
-LocationToProcessor* ProcessorAndLocationToProcessor::getLocationToProcessor()
-{
+LocationToProcessor* ProcessorAndLocationToProcessor::getLocationToProcessor() {
 	return locationToProcessor;
 }
 
-Processor* ProcessorAndLocationToProcessor::getProcessor()
-{
+Processor* ProcessorAndLocationToProcessor::getProcessor() {
 	return processor;
 }
 
-ProcessorAndLocationToProcessor::~ProcessorAndLocationToProcessor()
-{
+ProcessorAndLocationToProcessor::~ProcessorAndLocationToProcessor() {
 }
 
-ProcessorAndLocationToProcessor::ProcessorAndLocationToProcessor(Processor *proc, LocationToProcessor *lp)
-{
+ProcessorAndLocationToProcessor::ProcessorAndLocationToProcessor(Processor *proc, LocationToProcessor *lp) {
 	processor = proc;
 	locationToProcessor = lp;
 }

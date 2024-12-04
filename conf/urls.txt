@@ -1,0 +1,13 @@
+http://s2.org:8082/index.html
+http://s2.org:8082/about.html
+http://s2.org:8082/images.html
+http://s2.org:8082/upload.html
+http://s2.org:8082/YoupiBanane
+http://s2prime.org:8082/
+http://s2prime.org:8082/about.html
+http://s2prime.org:8082/images.html
+http://ext.org:8081/
+http://ext.org:8081/about.html
+http://ext.org:8081/images.html
+http://ext.org:8081/upload.html
+http://ext.org:8081/YoupiBanane

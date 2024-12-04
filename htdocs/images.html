@@ -3,77 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <style>
-        /* The same styles as in your index.html */
-        body {
-            color: white;
-            background-image: url('page.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            border-radius: 16px;
-        }
-        nav ul li a, .nav-link {
-            color: #7ce3eb;
-        }
-        nav ul li a:hover, .nav-link:hover {
-            color: #5e2dbb;
-        }
-        .header-image {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-        }
-        .site-navigation-title {
-            color: #f2f7f3;
-        }
-        /* Styles for titles with easy color customization */
-        h2.title-color, h3.title-color {
-            color: #08f2f2;
-        }
-        p.paragraph-color {
-            color: #a4e7f0;
-        }
-        /* Styles for the image blocks */
-        .image-block {
-            margin-bottom: 20px; /* Adds space between the images */
-        }
-
-        .image-block img {
-            width: 100%; /* Adjust this to manage the size of the images */
-            max-width: 200px; /* Example max-width to keep images from being too large */
-            height: auto; /* Maintains aspect ratio */
-            display: block; /* For centering if needed */
-            margin: 0 auto; /* Center the image */
-        }
-
-        .image-caption {
-            color: #a4e7f0; /* Styling for the caption */
-            text-align: center; /* Center the caption text */
-            margin-top: 10px; /* Space between the image and its caption */
-        }
-    </style>
-    <title>About - Simple Website</title>
+    <link rel="stylesheet" href="pico.min.css">
+    <link rel="stylesheet" href="local.css">
+    <script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/jcookie-min.js"></script>
+    <title>Webserv</title>
 </head>
 <body>
-    <img class="header-image" src="header.jpg" alt="Header Image">
-    <nav class="container-fluid">
-        <ul>
-            <li><strong class="site-navigation-title">Site Navigation</strong></li>
+    <img class="header-image" src="images/header.jpg" alt="Header Image">
+        <ul class="menu">
+            <li><a href="/index.html" class="nav-link">Home</a></li>
+            <li><a href="/about.html" class="nav-link">About</a></li>
+            <li><a href="/r42" class="nav-link">Redirect</a></li>
+            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form .pl</a>
+            <li><a href="/cgi-sh/form-submit.sh" class="nav-link">Form .sh</a> </li>
+            <li><a href="/images.html" class="nav-link">Images</a></li>
+            <li><a href="/upload.html" class="nav-link">Upload</a></li>
+            <li><a href="/YoupiBanane" class="nav-link">Dir listing</a></li>
         </ul>
-        <ul>
-            <li><a href="index.html" class="nav-link">Home</a></li>
-            <li><a href="/r42" class="nav-link">Who I Am</a></li>
-            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form</a></li>
-            <li><a href="about.html" class="nav-link">About</a></li>
-            <li><a href="images.html" class="nav-link">Images</a></li>
-        </ul>
-    </nav>
+    
     <main class="container">
         <div class="grid">
             <section>

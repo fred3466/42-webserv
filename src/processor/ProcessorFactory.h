@@ -6,7 +6,7 @@
 #include "../location/ProcessorLocator.h"
 #include "../location/ProcessorAndLocationToProcessor.h"
 #include "../util/StringUtil.h"
-#include REQUEST_HEADER_IMPL_INC_ERROR
+
 #include REQUEST_HEADER_IMPL_INC_POST
 #include REQUEST_HEADER_IMPL_INC_COMMON
 #include REQUEST_HEADER_IMPL_INC_MIMETYPE
@@ -16,13 +16,12 @@
 #include REQUEST_HEADER_IMPL_INC_DELETE
 #include REQUEST_HANDLER__IMPL_INC_REDIRECT
 #include REQUEST_HANDLER__IMPL_INC_DOWNLOAD
-#include "impl/ProcessorImplCgiBinGeneric.h"
+#include REQUEST_HANDLER__IMPL_INC_GENERIC_CGI
+#include REQUEST_HANDLER__IMPL_INC_COOKIE
 
-class ProcessorFactory
-{
+class ProcessorFactory {
 private:
 	ProcessorLocator *processorLocator;
-	//	Config *config;
 	ProcessorFactory();
 
 public:

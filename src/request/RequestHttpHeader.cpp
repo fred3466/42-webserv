@@ -1,16 +1,17 @@
 #include "RequestHttpHeader.h"
 
-RequestHttpHeader::~RequestHttpHeader()
-{
+RequestHttpHeader::~RequestHttpHeader() {
 }
 
-RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
-{
+RequestHttpHeader::RequestHttpHeader(char *rawRequest, int const rawRequestLen) : fields(), headerSize(0) {
 	std::stringstream lines;
 	if (!rawRequest)
 		return;
 
-	lines.str(rawRequest);
+	std::string requestStr = std::string(rawRequest, (size_t) rawRequestLen);
+
+	lines.str(requestStr);
+
 	if (!lines.good())
 		return;
 	char key[2048], val[2048], line[4096];
@@ -18,11 +19,9 @@ RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
 	memset(val, 0, 2048);
 	memset(line, 0, 4096);
 	bool firstLine = true;
-//	bool bHeaderMode = false;
-	StringUtil su = StringUtil();
+	StringUtil su;
 
-	while (lines)
-	{
+	while (lines) {
 		lines.getline(line, 4096, '\n');
 		std::string lineStr = std::string(line);
 		if (!lines.eof() && !lines.fail())
@@ -30,7 +29,6 @@ RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
 
 		std::stringstream lineSs;
 		lineSs.str(lineStr);
-//		std::string lineStr = lineSs.str();
 
 		if (firstLine) //!lineStr.compare(0, 3, "GET"))
 		{
@@ -42,41 +40,33 @@ RequestHttpHeader::RequestHttpHeader(char *rawRequest) : fields()
 			Uri uri = Uri(keyStr);
 			this->setUri(uri);
 			firstLine = false;
-//			bHeaderMode = true;
 			continue;
 		}
+		this->headerSize += lineStr.length();
 
 		lineSs.getline(val, 2048, '\n');
 		std::string valStr = std::string(val);
 		if (!lineSs.eof() && !lineSs.fail())
 			valStr += "\n";
 
-		if (valStr == "\r\n" || valStr == "")
-		{
-			//		deuxième ligne
-			return;
+		if (valStr == "\r\n" || valStr == "") {
+			//		 ligne vide
+			this->headerSize += 2;
+			return; // ==> constructeur renvoie NULL !
 		}
 
-//		if (bHeaderMode)
-//		{
 		valStr = su.trim(valStr);
 		this->addField(valStr);
-//		}
 
 	}
-//cookie set plusieurs fois ?
-//CookieFactory().build(this);
 }
 
-std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
-{
+std::string RequestHttpHeader::getFieldValue(std::string fieldName) const {
 	std::string ret = "";
 	StringUtil su = StringUtil();
 	std::string fieldNameUpper = su.strUpperCase(fieldName);
 
-	for (std::list<std::string>::const_iterator ite = fields.begin(); ite != fields.end();
-			ite++)
-	{
+	for (std::list<std::string>::const_iterator ite = fields.begin(); ite != fields.end(); ite++) {
 		std::string rawField = *ite;
 		int nbSeparatorsToProcess = 1;
 		std::vector<std::string> toks = su.tokenize(rawField, ':', nbSeparatorsToProcess);
@@ -90,8 +80,7 @@ std::string RequestHttpHeader::getFieldValue(std::string fieldName) const
 	return ret;
 }
 
-std::string RequestHttpHeader::toString()
-{
+std::string RequestHttpHeader::toString() {
 	std::string ret = "";
 	ret += "RequestHttpHeader : Method : [" + getMethod() + "]\t[" + getUri().getUri() + "]\t[" + getVersion() + "]\n";
 
@@ -99,44 +88,40 @@ std::string RequestHttpHeader::toString()
 	ret += su.fromListToString(&fields, "\n");
 	return ret;
 }
-void RequestHttpHeader::addField(std::string f)
-{
+void RequestHttpHeader::addField(std::string f) {
 	if (!f.empty())
 		fields.push_back(f);
 }
 
-const std::list<std::string>& RequestHttpHeader::getFields() const
-{
+const std::list<std::string>& RequestHttpHeader::getFields() const {
 	return fields;
 }
 
-const std::string& RequestHttpHeader::getMethod() const
-{
+const std::string& RequestHttpHeader::getMethod() const {
 	return method;
 }
 
-void RequestHttpHeader::setMethod(const std::string &m)
-{
+void RequestHttpHeader::setMethod(const std::string &m) {
 	method = m;
 }
 
-const std::string& RequestHttpHeader::getVersion() const
-{
+const std::string& RequestHttpHeader::getVersion() const {
 	return version;
 }
 
-void RequestHttpHeader::setVersion(const std::string &v)
-{
+void RequestHttpHeader::setVersion(const std::string &v) {
 	version = v;
 }
 
-Cookie RequestHttpHeader::getCookie(const std::string &cookieName)
-{
+Cookie RequestHttpHeader::getCookie(const std::string &cookieName) {
 	return cookieHelper.getCookie(cookies, cookieName);
 }
 
-bool RequestHttpHeader::addCookie(const Cookie &cookie)
-{
+void RequestHttpHeader::clearCookies() {
+	cookies.clear();
+}
+
+bool RequestHttpHeader::addCookie(const Cookie &cookie) {
 	bool ret = false;
 	int i = cookies.size();
 	cookies = cookieHelper.addCookie(cookies, cookie);
@@ -145,8 +130,7 @@ bool RequestHttpHeader::addCookie(const Cookie &cookie)
 	return ret;
 }
 
-bool RequestHttpHeader::removeCookie(const std::string &cookieName)
-{
+bool RequestHttpHeader::removeCookie(const std::string &cookieName) {
 	bool ret = false;
 	int i = (int) cookies.size();
 	cookies = cookieHelper.removeCookie(cookies, cookieName);
@@ -155,38 +139,41 @@ bool RequestHttpHeader::removeCookie(const std::string &cookieName)
 	return ret;
 }
 
-std::string RequestHttpHeader::getCookieString()
-{
+std::string RequestHttpHeader::getCookieString() {
 	return cookieHelper.getCookieString(cookies);
 }
 
-const Uri& RequestHttpHeader::getUri() const
-{
+const Uri& RequestHttpHeader::getUri() const {
 	return uri;
 }
 
-void RequestHttpHeader::setUri(const Uri &u)
-{
+void RequestHttpHeader::setUri(const Uri &u) {
 //	uri = Uri(u);
 	uri = u;
 }
 
-const std::string& RequestHttpHeader::getQueryString() const
-{
+const std::string& RequestHttpHeader::getQueryString() const {
 	return uri.getQuery();
 }
 
-const std::string RequestHttpHeader::getFileExtension() const
-{
+const std::string RequestHttpHeader::getFileExtension() const {
 	return uri.getFileExtension();
 }
 
-const std::string RequestHttpHeader::getFileName() const
-{
+const std::string RequestHttpHeader::getFileName() const {
 	return uri.getFileName();
 }
 
-const std::string& RequestHttpHeader::getPath() const
-{
+const std::string& RequestHttpHeader::getPath() const {
 	return uri.getPath();
+}
+
+size_t RequestHttpHeader::getHeaderSize() const
+{
+	return headerSize;
+}
+
+void RequestHttpHeader::setHeaderSize(size_t headerSize)
+		{
+	this->headerSize = headerSize;
 }

@@ -9,8 +9,7 @@
 #include "factory/RequestBodyFactory.h"
 #include "../Harl.h"
 
-class RequestHelper
-{
+class RequestHelper {
 private:
 	RequestHelper();
 	Harl harl;
@@ -19,12 +18,10 @@ private:
 	size_t requestBodyLen;
 	size_t bodyContent_Length;
 	bool bFragmentedMode;
-	bool bJustInitialized;
-
-//	std::string rawRequest;
-//	int rawRequestLen;
 
 public:
+	bool bJustInitialized;
+
 	RequestHelper(char *const rawRequest, int const rawRequestLen);
 	~RequestHelper();
 

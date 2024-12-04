@@ -24,10 +24,11 @@
 #include "API/Processor.h"
 #include "API/Request.h"
 #include "API/RequestHeader.h"
+#include "API/Server.h"
 #include "config/Config.h"
 #include "config/ConfigFactory.h"
-#include "connector/ConnectorEvent.h"
 #include "connector/ConnectorFactory.h"
+//#include "connector/RequestResponseParam.h"
 #include "Harl.h"
 #include "processor/ProcessorFactory.h"
 #include "request/RequestHelper.h"
@@ -37,76 +38,44 @@
 #include "location/ProcessorLocator.h"
 #include "parser/MultipartParser.h"
 #include "cookie/Cookie.h"
+#include "cookie/CookieHelper.h"
 #include "cookie/factory/CookieFactory.h"
 #include "error/HttpErrorFactory.h"
 #include "error/HttpReturnCodeHelper.h"
-#include "Server.h"
+#include "API/ResponseProducer.h"
 
-// class ResponseHeader;
-class HttpServer: public ConnectorListener, public Server
-{
+class FdPollfdServerTuple;
+class HttpServer: public Server {
 private:
-	//	std::list<Connector> consListenersList;
-
-	Harl harl;
+	std::string name;
+	static Harl harl;
 	Connector *connector;
 	Config *config;
-	ProcessorLocator *processorLocator;
-	StringUtil su;
+	static ProcessorLocator *processorLocator;
+	static StringUtil su;
 	HttpErrorFactory errorFactory;
 	RequestHelper *requestHelper;
-	Response* runProcessorChain(std::vector<ProcessorAndLocationToProcessor*> *processorList, Request *request, Response *resp);
+	bool bShareConnector;
+	static std::vector<ProcessorAndLocationToProcessor*> *processorList;
 
-	char* packageResponseAndGiveMeSomeBytes(Request *request, Response *resp);
-	int pushItIntoTheWire(int *fdSocket, Request *request, Response *resp);
-	void cleanUp(Request *request, Response *resp);
 	void instantiateProcessLocator();
-	void addUltimateHeaders(Response *resp);
-	bool _checkAccess(Request *request);
+	bool _checkAccess(Request *request, Processor *processor);
 	bool checkRequestBodySize(Request *request, Response *&response);
-	void freeProcessorList(std::vector<ProcessorAndLocationToProcessor*> *processorList);
-	void delResp(Response *resp);
 
 public:
 	HttpServer();
 	~HttpServer();
 
 	virtual void init(Config *conf);
-	virtual void onIncomming(ConnectorEvent *e);
-	virtual void onDataReceiving(ConnectorEvent *e);
+	virtual Response* createResponse(RequestResponseParam *requestResponseParam);
+	virtual void setConnector(Connector *connector);
 
-	Response* createErrorResponse(int errorCode);
-	Response* handleHttpError(int errorCode);
+	static void freeProcessorList();
 	Connector* getConnector();
-
-	//	ProcessorLocator getProcessorLocator();
-	//	void addLocationToProcessor(std::string ext, Processor *processor);
-
-	//	std::string readRequest(int clientFd);
-	//	void sendResponse(int clientFd, const std::string &response);
-	//	void closeClient(int clientFd);
-	//	int getListenFd();
-	//	bool isCGIRequest(const std::string &uri);
-	//	std::string getScriptPath(const std::string &uri);
-	//	std::string generateHttpResponse(const std::string &cgiOutput);
-	//	int getClientFd(int clientId);
+	Config*& getConfig();
+	std::string getName();
+	bool isBShareConnector() const;
+	static Response* runProcessorChain(Request *request, Response *resp,
+			ProcessorAndLocationToProcessor *nextProcessorAndLocationToProcessor);
+	static Response* createEmptyResponse();
 };
-
-// yes "This is a test. " | head -c 5000 | curl -X POST -H "Content-Type: plain/text" --data-binary @- http://s2.org:8082/cgi-bin_fred/anastasia.php
-
-// curl -X POST -H "Content-Type: plain/text" --data "BODY IS HERE write something shorter or longer than body limit" http://s2.org:8082/cgi-bin_fred/anastasia.php
-
-// - Create a string with exactly 100 bytes
-// data=$(printf '%*s' 100 | tr ' ' 'x')
-
-// - Send the request
-// curl -X POST -d "$data" http://127.0.0.2:8082/post_body
-
-// - Create a string with 101 bytes
-// data=$(printf '%*s' 101 | tr ' ' 'x')
-
-// - Send the request
-// curl -X POST -d "$data" http://127.0.0.2:8082/post_body
-
-// DELETE
-//  curl -X DELETE "http://127.0.0.2:8082/del?file=toto.txt"

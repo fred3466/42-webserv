@@ -1,14 +1,11 @@
 #include "Processor.h"
 
-Processor::Processor(ProcessorTypeEnum type)
-{
+Processor::Processor(ProcessorTypeEnum type) {
 	this->type = type;
 }
 
-Processor::Processor() : type(CONTENT_MODIFIER)
-{
+Processor::Processor() : type(CONTENT_MODIFIER) {
 }
 
-Processor::~Processor()
-{
+Processor::~Processor() {
 }

@@ -1,12 +1,10 @@
 #pragma once
 #include <string>
 
-#include "../API/ResponseHeader.h"
-#include "../error/HttpError.h"
-// #include "../../error/HttpErrorFactory.h"
+#include "ResponseHeader.h"
+#include "../FdPollfdServerTuple.h"
 
-class Response
-{
+class Response {
 public:
 	Response();
 	virtual ~Response();
@@ -21,9 +19,12 @@ public:
 	virtual bool isRedirect() = 0;
 	virtual void setCgi(bool cgi) = 0;
 	virtual void setIsRedirect(bool isRedirect) = 0;
-	virtual void setHttpError(HttpError *error) = 0;
-	virtual HttpError* getHttpError() = 0;
 	virtual void setErrorCodeTmp(int errorCode) = 0;
 	virtual int getErrorCodeTmp() = 0;
 	virtual void setStatusLine(std::string sline) = 0;
+	virtual bool isBNeedFurtherProcessing() = 0;
+	virtual void setBNeedFurtherProcessing(bool bNeedFurtherProcessing) = 0;
+	virtual int getFd()=0;
+	virtual void setFd(int fd)=0;
+
 };

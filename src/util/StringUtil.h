@@ -8,8 +8,7 @@
 #include <sstream>
 #include <cstdlib>
 
-class StringUtil
-{
+class StringUtil {
 public:
 	StringUtil();
 	~StringUtil();
@@ -21,14 +20,13 @@ public:
 	bool isalnum(std::string s);
 	std::string normalizeSpaces(std::string s);
 	bool isCommented(std::string s);
-	std::string rtrim(std::string &s);
-	std::string ltrim(std::string &s);
-	std::string trim(std::string &s);
+	std::string rtrim(std::string s);
+	std::string ltrim(std::string s);
+	std::string trim(std::string s);
 	std::vector<std::string> tokenize(std::string s);
 	std::vector<std::string> tokenize(std::string s, char sep);
 	std::vector<std::string> tokenize(std::string s, char sep, int nbSeparatorsToProcessParam);
-	const std::string getNthTokenIfExists(std::vector<std::string> v, int index,
-			std::string defaultValue);
+	const std::string getNthTokenIfExists(std::vector<std::string> v, int index, std::string defaultValue);
 	std::string dedoublonne(std::string s, std::string cherche);
 	bool isStrictlyEqual(std::string s1, std::string s2);
 	std::string strFromInt(int i);

@@ -1,0 +1,425 @@
+0	5859	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	6005	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	6005	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	6005	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+2	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd_for_REQUEST[1] fd=7
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=9 fd_for_RESPONSE[1]
+2	6015	WARNING	CGIHelper::_childProcess: 6015 close fd=8 fd_for_RESPONSE[0]
+2	6015	WARNING	CGIHelper::_childProcess: 6015 close fd=9 fd_for_RESPONSE[1]
+2	6015	WARNING	CGIHelper::_childProcess: 6015 close fd=6 fd_for_REQUEST[0]
+2	6015	WARNING	CGIHelper::_childProcess: 6015 close fd=7 fd_for_REQUEST[1]
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+2	6005	WARNING	CGIHelper::_parentProcess: 6005 read 22 bytes from fd=8 fd_for_RESPONSE[0]
+7	6016	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6016
+7	6014	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6015
+7	6014	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6014
+7	6013	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6013
+7	6013	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6013
+7	6013	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6013
+7	6005	WARNING	CGIHelper::_parentProcess: 6005 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+8	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=8 fd_for_RESPONSE[0]
+8	6005	WARNING	CGIHelper::_parentProcess: retour 6005 
+8	6005	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 6005
+78	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+78	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+78	6005	WARNING	CGIHelper::_parentProcess: 6005 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+78	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd_for_REQUEST[1] fd=7
+78	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=9 fd_for_RESPONSE[1]
+78	6217	WARNING	CGIHelper::_childProcess: 6217 close fd=8 fd_for_RESPONSE[0]
+78	6217	WARNING	CGIHelper::_childProcess: 6217 close fd=9 fd_for_RESPONSE[1]
+78	6217	WARNING	CGIHelper::_childProcess: 6217 close fd=6 fd_for_REQUEST[0]
+78	6217	WARNING	CGIHelper::_childProcess: 6217 close fd=7 fd_for_REQUEST[1]
+79	6005	WARNING	CGIHelper::_parentProcess: 6005 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+79	6005	WARNING	CGIHelper::_parentProcess: 6005 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+84	6218	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6218
+84	6215	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6217
+84	6215	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6215
+84	6214	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6214
+84	6214	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6214
+84	6214	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6214
+84	6005	WARNING	CGIHelper::_parentProcess: 6005 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+85	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=8 fd_for_RESPONSE[0]
+85	6005	WARNING	CGIHelper::_parentProcess: retour 6005 
+85	6005	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 6005
+119	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+119	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+119	6005	WARNING	CGIHelper::_parentProcess: 6005 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+119	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd_for_REQUEST[1] fd=7
+119	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=9 fd_for_RESPONSE[1]
+120	6226	WARNING	CGIHelper::_childProcess: 6226 close fd=8 fd_for_RESPONSE[0]
+120	6226	WARNING	CGIHelper::_childProcess: 6226 close fd=9 fd_for_RESPONSE[1]
+120	6226	WARNING	CGIHelper::_childProcess: 6226 close fd=6 fd_for_REQUEST[0]
+120	6226	WARNING	CGIHelper::_childProcess: 6226 close fd=7 fd_for_REQUEST[1]
+120	6005	WARNING	CGIHelper::_parentProcess: 6005 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+120	6005	WARNING	CGIHelper::_parentProcess: 6005 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+125	6228	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6228
+125	6225	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6226
+125	6225	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6225
+125	6224	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6224
+125	6224	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6224
+125	6224	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6224
+125	6005	WARNING	CGIHelper::_parentProcess: 6005 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+126	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=8 fd_for_RESPONSE[0]
+126	6005	WARNING	CGIHelper::_parentProcess: retour 6005 
+126	6005	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 6005
+288	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+288	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+288	6005	WARNING	CGIHelper::_parentProcess: 6005 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+288	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd_for_REQUEST[1] fd=7
+288	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=9 fd_for_RESPONSE[1]
+289	6300	WARNING	CGIHelper::_childProcess: 6300 close fd=8 fd_for_RESPONSE[0]
+289	6300	WARNING	CGIHelper::_childProcess: 6300 close fd=9 fd_for_RESPONSE[1]
+289	6300	WARNING	CGIHelper::_childProcess: 6300 close fd=6 fd_for_REQUEST[0]
+289	6300	WARNING	CGIHelper::_childProcess: 6300 close fd=7 fd_for_REQUEST[1]
+289	6005	WARNING	CGIHelper::_parentProcess: 6005 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+289	6005	WARNING	CGIHelper::_parentProcess: 6005 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+294	6302	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6302
+294	6299	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6300
+294	6299	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6299
+294	6298	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6298
+294	6298	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6298
+294	6298	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6298
+294	6005	WARNING	CGIHelper::_parentProcess: 6005 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+295	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=8 fd_for_RESPONSE[0]
+295	6005	WARNING	CGIHelper::_parentProcess: retour 6005 
+295	6005	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 6005
+295	6005	WARNING	MimeTypeHelper::MimeTypeHelper : feed with 113 mimetypes
+611	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+611	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+612	6555	WARNING	CGIHelper::_childProcess: 6555 close fd=8 fd_for_RESPONSE[0]
+612	6555	WARNING	CGIHelper::_childProcess: 6555 close fd=9 fd_for_RESPONSE[1]
+612	6555	WARNING	CGIHelper::_childProcess: 6555 close fd=6 fd_for_REQUEST[0]
+612	6555	WARNING	CGIHelper::_childProcess: 6555 close fd=7 fd_for_REQUEST[1]
+BEFORE read POST_DATA
+617	6556	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6556
+617	6550	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6555
+617	6550	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6550
+617	6548	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6548
+617	6548	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6548
+617	6548	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6548
+767	6005	WARNING	CGIHelper::_parentProcess: 6005 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+767	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd_for_REQUEST[1] fd=7
+767	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=9 fd_for_RESPONSE[1]
+767	6005	WARNING	CGIHelper::_parentProcess: 6005 read 1259 bytes from fd=8 fd_for_RESPONSE[0]
+767	6005	WARNING	CGIHelper::_parentProcess: 6005 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+768	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=8 fd_for_RESPONSE[0]
+768	6005	WARNING	CGIHelper::_parentProcess: retour 6005 
+768	6005	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 6005
+883	6005	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 6005
+884	6005	WARNING	CGIHelper::_parentProcess: 6005 close fd=6 fd_for_REQUEST[0]
+884	6683	WARNING	CGIHelper::_childProcess: 6683 close fd=8 fd_for_RESPONSE[0]
+884	6683	WARNING	CGIHelper::_childProcess: 6683 close fd=9 fd_for_RESPONSE[1]
+884	6683	WARNING	CGIHelper::_childProcess: 6683 close fd=6 fd_for_REQUEST[0]
+884	6683	WARNING	CGIHelper::_childProcess: 6683 close fd=7 fd_for_REQUEST[1]
+BEFORE read POST_DATA
+889	6684	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 6684
+889	6682	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=6683
+889	6682	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 6682
+889	6679	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 6679
+889	6679	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 6679
+889	6679	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 6679
+0	6729	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	6729	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	6729	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	6865	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	6865	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	6865	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	6956	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	6956	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	6956	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	7008	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7008	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7008	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+8	7008	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7008
+8	7008	WARNING	CGIHelper::_parentProcess: 7008 close fd=6 fd_for_REQUEST[0]
+8	7020	WARNING	CGIHelper::_childProcess: 7020 close fd=8 fd_for_RESPONSE[0]
+8	7020	WARNING	CGIHelper::_childProcess: 7020 close fd=9 fd_for_RESPONSE[1]
+8	7020	WARNING	CGIHelper::_childProcess: 7020 close fd=6 fd_for_REQUEST[0]
+8	7020	WARNING	CGIHelper::_childProcess: 7020 close fd=7 fd_for_REQUEST[1]
+BEFORE read POST_DATA
+13	7021	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7021
+13	7018	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7020
+13	7018	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7018
+13	7017	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7017
+13	7017	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7017
+13	7017	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7017
+0	7179	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7179	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7179	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+2	7179	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7179
+2	7179	WARNING	CGIHelper::_parentProcess: 7179 close fd=6 fd_for_REQUEST[0]
+2	7197	WARNING	CGIHelper::_childProcess: 7197 close fd=8 fd_for_RESPONSE[0]
+2	7197	WARNING	CGIHelper::_childProcess: 7197 close fd=9 fd_for_RESPONSE[1]
+2	7197	WARNING	CGIHelper::_childProcess: 7197 close fd=6 fd_for_REQUEST[0]
+2	7197	WARNING	CGIHelper::_childProcess: 7197 close fd=7 fd_for_REQUEST[1]
+BEFORE read POST_DATA
+7	7198	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7198
+7	7196	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7197
+7	7196	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7196
+7	7188	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7188
+7	7188	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7188
+7	7188	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7188
+0	7277	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7277	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7277	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+1	7277	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7277
+1	7277	WARNING	CGIHelper::_parentProcess: 7277 close fd=6 fd_for_REQUEST[0]
+2	7293	WARNING	CGIHelper::_childProcess: 7293 close fd=8 fd_for_RESPONSE[0]
+2	7293	WARNING	CGIHelper::_childProcess: 7293 close fd=9 fd_for_RESPONSE[1]
+2	7293	WARNING	CGIHelper::_childProcess: 7293 close fd=6 fd_for_REQUEST[0]
+2	7293	WARNING	CGIHelper::_childProcess: 7293 close fd=7 fd_for_REQUEST[1]
+BEFORE read POST_DATA
+7	7294	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7294
+7	7292	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7293
+7	7292	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7292
+7	7291	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7291
+7	7291	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7291
+7	7291	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7291
+0	7327	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7327	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7327	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	7448	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7448	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7448	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+0	7448	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7448
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=6 fd_for_REQUEST[0]
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 after write : 22 bytes on fd=7 fd_for_REQUEST[1]
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd_for_REQUEST[1] fd=7
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=9 fd_for_RESPONSE[1]
+1	7466	WARNING	CGIHelper::_childProcess: 7466 close fd=8 fd_for_RESPONSE[0]
+1	7466	WARNING	CGIHelper::_childProcess: 7466 close fd=9 fd_for_RESPONSE[1]
+1	7466	WARNING	CGIHelper::_childProcess: 7466 close fd=6 fd_for_REQUEST[0]
+1	7466	WARNING	CGIHelper::_childProcess: 7466 close fd=7 fd_for_REQUEST[1]
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+1	7448	WARNING	CGIHelper::_parentProcess: 7448 read 32 bytes from fd=8 fd_for_RESPONSE[0]
+2	7448	WARNING	CGIHelper::_parentProcess: 7448 read 35 bytes from fd=8 fd_for_RESPONSE[0]
+2	7448	WARNING	CGIHelper::_parentProcess: 7448 read 5 bytes from fd=8 fd_for_RESPONSE[0]
+2	7448	WARNING	CGIHelper::_parentProcess: 7448 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+2	7465	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7468
+2	7465	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7465
+2	7455	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7455
+2	7455	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7455
+2	7455	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7455
+2	7448	WARNING	CGIHelper::_parentProcess: 7448 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+3	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=8 fd_for_RESPONSE[0]
+3	7448	WARNING	CGIHelper::_parentProcess: retour 7448 
+3	7448	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7448
+3	7448	WARNING	MimeTypeHelper::MimeTypeHelper : feed with 113 mimetypes
+18	7448	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7448
+19	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=6 fd_for_REQUEST[0]
+19	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd_for_REQUEST[1] fd=7
+19	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=9 fd_for_RESPONSE[1]
+19	7491	WARNING	CGIHelper::_childProcess: 7491 close fd=8 fd_for_RESPONSE[0]
+19	7491	WARNING	CGIHelper::_childProcess: 7491 close fd=9 fd_for_RESPONSE[1]
+19	7491	WARNING	CGIHelper::_childProcess: 7491 close fd=6 fd_for_REQUEST[0]
+19	7491	WARNING	CGIHelper::_childProcess: 7491 close fd=7 fd_for_REQUEST[1]
+19	7448	WARNING	CGIHelper::_parentProcess: 7448 read 1894 bytes from fd=8 fd_for_RESPONSE[0]
+19	7490	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7492
+19	7490	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7490
+19	7488	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7488
+19	7488	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7488
+19	7488	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7488
+19	7448	WARNING	CGIHelper::_parentProcess: 7448 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+20	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=8 fd_for_RESPONSE[0]
+20	7448	WARNING	CGIHelper::_parentProcess: retour 7448 
+20	7448	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7448
+21	7448	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7448
+21	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=6 fd_for_REQUEST[0]
+21	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd_for_REQUEST[1] fd=7
+21	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=9 fd_for_RESPONSE[1]
+22	7496	WARNING	CGIHelper::_childProcess: 7496 close fd=8 fd_for_RESPONSE[0]
+22	7496	WARNING	CGIHelper::_childProcess: 7496 close fd=9 fd_for_RESPONSE[1]
+22	7496	WARNING	CGIHelper::_childProcess: 7496 close fd=6 fd_for_REQUEST[0]
+22	7496	WARNING	CGIHelper::_childProcess: 7496 close fd=7 fd_for_REQUEST[1]
+22	7448	WARNING	CGIHelper::_parentProcess: 7448 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+22	7448	WARNING	CGIHelper::_parentProcess: 7448 read 203 bytes from fd=8 fd_for_RESPONSE[0]
+22	7448	WARNING	CGIHelper::_parentProcess: 7448 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+22	7495	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7497
+22	7495	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7495
+22	7494	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7494
+22	7494	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7494
+22	7494	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7494
+22	7448	WARNING	CGIHelper::_parentProcess: 7448 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+23	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=8 fd_for_RESPONSE[0]
+23	7448	WARNING	CGIHelper::_parentProcess: retour 7448 
+23	7448	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7448
+25	7448	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7448
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=6 fd_for_REQUEST[0]
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 after write : 22 bytes on fd=7 fd_for_REQUEST[1]
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd_for_REQUEST[1] fd=7
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=9 fd_for_RESPONSE[1]
+25	7503	WARNING	CGIHelper::_childProcess: 7503 close fd=8 fd_for_RESPONSE[0]
+25	7503	WARNING	CGIHelper::_childProcess: 7503 close fd=9 fd_for_RESPONSE[1]
+25	7503	WARNING	CGIHelper::_childProcess: 7503 close fd=6 fd_for_REQUEST[0]
+25	7503	WARNING	CGIHelper::_childProcess: 7503 close fd=7 fd_for_REQUEST[1]
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+25	7448	WARNING	CGIHelper::_parentProcess: 7448 read 21 bytes from fd=8 fd_for_RESPONSE[0]
+26	7448	WARNING	CGIHelper::_parentProcess: 7448 read 40 bytes from fd=8 fd_for_RESPONSE[0]
+26	7448	WARNING	CGIHelper::_parentProcess: 7448 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+26	7502	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7504
+26	7502	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7502
+26	7501	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7501
+26	7501	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7501
+26	7501	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7501
+26	7448	WARNING	CGIHelper::_parentProcess: 7448 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+27	7448	WARNING	CGIHelper::_parentProcess: 7448 close fd=8 fd_for_RESPONSE[0]
+27	7448	WARNING	CGIHelper::_parentProcess: retour 7448 
+27	7448	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7448
+0	7579	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	7579	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	7579	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+2	7579	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7579
+2	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=6 fd_for_REQUEST[0]
+2	7579	WARNING	CGIHelper::_parentProcess: 7579 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+2	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd_for_REQUEST[1] fd=7
+2	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=9 fd_for_RESPONSE[1]
+2	7600	WARNING	CGIHelper::_childProcess: 7600 close fd=8 fd_for_RESPONSE[0]
+2	7600	WARNING	CGIHelper::_childProcess: 7600 close fd=9 fd_for_RESPONSE[1]
+2	7600	WARNING	CGIHelper::_childProcess: 7600 close fd=6 fd_for_REQUEST[0]
+2	7600	WARNING	CGIHelper::_childProcess: 7600 close fd=7 fd_for_REQUEST[1]
+3	7579	WARNING	CGIHelper::_parentProcess: 7579 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+3	7579	WARNING	CGIHelper::_parentProcess: 7579 read 40 bytes from fd=8 fd_for_RESPONSE[0]
+3	7579	WARNING	CGIHelper::_parentProcess: 7579 read 40 bytes from fd=8 fd_for_RESPONSE[0]
+3	7579	WARNING	CGIHelper::_parentProcess: 7579 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+3	7597	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7602
+3	7597	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7597
+3	7593	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7593
+3	7593	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7593
+3	7593	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7593
+3	7579	WARNING	CGIHelper::_parentProcess: 7579 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+4	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=8 fd_for_RESPONSE[0]
+4	7579	WARNING	CGIHelper::_parentProcess: retour 7579 
+4	7579	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7579
+4	7579	WARNING	MimeTypeHelper::MimeTypeHelper : feed with 113 mimetypes
+23	7579	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7579
+23	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=6 fd_for_REQUEST[0]
+23	7579	WARNING	CGIHelper::_parentProcess: 7579 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+23	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd_for_REQUEST[1] fd=7
+23	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=9 fd_for_RESPONSE[1]
+23	7625	WARNING	CGIHelper::_childProcess: 7625 close fd=8 fd_for_RESPONSE[0]
+23	7625	WARNING	CGIHelper::_childProcess: 7625 close fd=9 fd_for_RESPONSE[1]
+23	7625	WARNING	CGIHelper::_childProcess: 7625 close fd=6 fd_for_REQUEST[0]
+23	7625	WARNING	CGIHelper::_childProcess: 7625 close fd=7 fd_for_REQUEST[1]
+24	7579	WARNING	CGIHelper::_parentProcess: 7579 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+24	7579	WARNING	CGIHelper::_parentProcess: 7579 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+29	7626	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7626
+29	7624	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7625
+29	7624	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7624
+29	7623	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7623
+29	7623	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7623
+29	7623	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7623
+29	7579	WARNING	CGIHelper::_parentProcess: 7579 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+30	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=8 fd_for_RESPONSE[0]
+30	7579	WARNING	CGIHelper::_parentProcess: retour 7579 
+30	7579	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7579
+BEFORE read POST_DATA
+BEFORE read POST_DATA
+130	7579	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7579
+130	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=6 fd_for_REQUEST[0]
+130	7579	WARNING	CGIHelper::_parentProcess: 7579 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+130	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd_for_REQUEST[1] fd=7
+130	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=9 fd_for_RESPONSE[1]
+131	7703	WARNING	CGIHelper::_childProcess: 7703 close fd=8 fd_for_RESPONSE[0]
+131	7703	WARNING	CGIHelper::_childProcess: 7703 close fd=9 fd_for_RESPONSE[1]
+131	7703	WARNING	CGIHelper::_childProcess: 7703 close fd=6 fd_for_REQUEST[0]
+131	7703	WARNING	CGIHelper::_childProcess: 7703 close fd=7 fd_for_REQUEST[1]
+131	7579	WARNING	CGIHelper::_parentProcess: 7579 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+131	7579	WARNING	CGIHelper::_parentProcess: 7579 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+136	7704	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7704
+136	7701	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7703
+136	7701	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7701
+136	7700	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7700
+136	7700	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7700
+136	7700	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7700
+136	7579	WARNING	CGIHelper::_parentProcess: 7579 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+137	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=8 fd_for_RESPONSE[0]
+137	7579	WARNING	CGIHelper::_parentProcess: retour 7579 
+137	7579	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7579
+144	7579	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7579
+144	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=6 fd_for_REQUEST[0]
+144	7579	WARNING	CGIHelper::_parentProcess: 7579 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+144	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd_for_REQUEST[1] fd=7
+144	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=9 fd_for_RESPONSE[1]
+145	7716	WARNING	CGIHelper::_childProcess: 7716 close fd=8 fd_for_RESPONSE[0]
+145	7716	WARNING	CGIHelper::_childProcess: 7716 close fd=9 fd_for_RESPONSE[1]
+145	7716	WARNING	CGIHelper::_childProcess: 7716 close fd=6 fd_for_REQUEST[0]
+145	7716	WARNING	CGIHelper::_childProcess: 7716 close fd=7 fd_for_REQUEST[1]
+145	7579	WARNING	CGIHelper::_parentProcess: 7579 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+145	7579	WARNING	CGIHelper::_parentProcess: 7579 read 40 bytes from fd=8 fd_for_RESPONSE[0]
+145	7579	WARNING	CGIHelper::_parentProcess: 7579 read 40 bytes from fd=8 fd_for_RESPONSE[0]
+145	7579	WARNING	CGIHelper::_parentProcess: 7579 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+145	7715	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=7717
+145	7715	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7715
+145	7714	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7714
+145	7714	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7714
+145	7714	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7714
+145	7579	WARNING	CGIHelper::_parentProcess: 7579 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+146	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=8 fd_for_RESPONSE[0]
+146	7579	WARNING	CGIHelper::_parentProcess: retour 7579 
+146	7579	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7579
+184	7579	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 7579
+184	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=6 fd_for_REQUEST[0]
+184	7579	WARNING	CGIHelper::_parentProcess: 7579 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+184	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd_for_REQUEST[1] fd=7
+184	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=9 fd_for_RESPONSE[1]
+184	7742	WARNING	CGIHelper::_childProcess: 7742 close fd=8 fd_for_RESPONSE[0]
+184	7742	WARNING	CGIHelper::_childProcess: 7742 close fd=9 fd_for_RESPONSE[1]
+184	7742	WARNING	CGIHelper::_childProcess: 7742 close fd=6 fd_for_REQUEST[0]
+184	7742	WARNING	CGIHelper::_childProcess: 7742 close fd=7 fd_for_REQUEST[1]
+185	7579	WARNING	CGIHelper::_parentProcess: 7579 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+185	7579	WARNING	CGIHelper::_parentProcess: 7579 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+190	7743	WARNING	CGIHelper::timedOutChildrenRun: TIMEOUT ATTEINT 7743
+190	7741	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL worker_pid=7742
+190	7741	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 7741
+190	7738	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 7738
+190	7738	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 7738
+190	7738	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 7738
+190	7579	WARNING	CGIHelper::_parentProcess: 7579 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+191	7579	WARNING	CGIHelper::_parentProcess: 7579 close fd=8 fd_for_RESPONSE[0]
+191	7579	WARNING	CGIHelper::_parentProcess: retour 7579 
+191	7579	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 7579
+0	9493	WARNING	+++ HttpServer::init: Starting server [s2.org] on [192.168.1.238:8082] base_path : htdocsdefault
+0	9493	WARNING	+++ HttpServer::init: Starting server [s2prime.org] on [192.168.1.238:8082] base_path : htdocs
+0	9493	WARNING	+++ HttpServer::init: Starting server [ext.org] on [192.168.1.238:8081] base_path : htdocsdefault
+7	9493	WARNING	CGIHelper::executeCGIScript: PID PRINCIPAL 9493
+7	9493	WARNING	CGIHelper::_parentProcess: 9493 close fd=6 fd_for_REQUEST[0]
+7	9493	WARNING	CGIHelper::_parentProcess: 9493 after write : 21 bytes on fd=7 fd_for_REQUEST[1]
+7	9493	WARNING	CGIHelper::_parentProcess: 9493 close fd_for_REQUEST[1] fd=7
+7	9493	WARNING	CGIHelper::_parentProcess: 9493 close fd=9 fd_for_RESPONSE[1]
+8	9516	WARNING	CGIHelper::_childProcess: 9516 close fd=8 fd_for_RESPONSE[0]
+8	9516	WARNING	CGIHelper::_childProcess: 9516 close fd=9 fd_for_RESPONSE[1]
+8	9516	WARNING	CGIHelper::_childProcess: 9516 close fd=6 fd_for_REQUEST[0]
+8	9516	WARNING	CGIHelper::_childProcess: 9516 close fd=7 fd_for_REQUEST[1]
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 1248 bytes from fd=8 fd_for_RESPONSE[0]
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 11 bytes from fd=8 fd_for_RESPONSE[0]
+BEFORE read POST_DATA
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 18 bytes from fd=8 fd_for_RESPONSE[0]
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 32 bytes from fd=8 fd_for_RESPONSE[0]
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 43 bytes from fd=8 fd_for_RESPONSE[0]
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 202 bytes from fd=8 fd_for_RESPONSE[0]
+8	9514	WARNING	CGIHelper::timedOutChildrenRun: KILL KILL KILL timeout_pid=9517
+8	9514	WARNING	CGIHelper::timedOutChildrenRun: fin EXIT 9514
+8	9505	WARNING	CGIHelper::timedOutChildrenRun: apres waitpid 9505
+8	9505	WARNING	CGIHelper::executeCGIScript: AVANT timedOutChildrenRun 9505
+8	9505	WARNING	CGIHelper::executeCGIScript: APRES timedOutChildrenRun 9505
+8	9493	WARNING	CGIHelper::_parentProcess: 9493 read 0 bytes from fd=8 fd_for_RESPONSE[0]
+9	9493	WARNING	CGIHelper::_parentProcess: 9493 close fd=8 fd_for_RESPONSE[0]
+9	9493	WARNING	CGIHelper::_parentProcess: retour 9493 
+9	9493	WARNING	CGIHelper::executeCGIScript: apres _parentProcess 9493
+9	9493	WARNING	MimeTypeHelper::MimeTypeHelper : feed with 113 mimetypes
+BEFORE read POST_DATA

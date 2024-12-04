@@ -1,10 +1,8 @@
 #pragma once
-#include <string>
 
-class RequestBody
-{
+class RequestBody {
 public:
-	RequestBody(char *rawRequest, int rawRequestLen);
+	RequestBody(char *rawRequest, int rawRequestLen, int bodyLen);
 	RequestBody();
 	virtual ~RequestBody();
 	RequestBody(const RequestBody &other);

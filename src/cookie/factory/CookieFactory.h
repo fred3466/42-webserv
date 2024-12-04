@@ -3,10 +3,9 @@
 #include "../Cookie.h"
 #include "../../API/RequestHeader.h"
 
-class CookieFactory
-{
+class CookieFactory {
 private:
-	public:
+public:
 	CookieFactory();
 	~CookieFactory();
 	void build(RequestHeader *header);

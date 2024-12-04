@@ -3,8 +3,7 @@
 #include "config/Config.h"
 #include "API/Processor.h"
 
-class HttpServerHelper
-{
+class HttpServerHelper {
 public:
 	HttpServerHelper();
 	~HttpServerHelper();

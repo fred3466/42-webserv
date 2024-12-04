@@ -9,19 +9,18 @@
 #include "../API/Request.h"
 #include "../API/RequestHeader.h"
 
-class RequestHttpHeader: public RequestHeader
-{
+class RequestHttpHeader: public RequestHeader {
 private:
-	//	std::string statusLine;
 	std::list<std::string> fields;
 	std::list<Cookie> cookies;
 	CookieHelper cookieHelper;
 	std::string method;
 	Uri uri;
 	std::string version;
+	int headerSize;
 
 public:
-	RequestHttpHeader(char *rawRequest);
+	RequestHttpHeader(char *rawRequest, int const rawRequestLen);
 	virtual ~RequestHttpHeader();
 
 	virtual void addField(std::string f);
@@ -37,9 +36,12 @@ public:
 	virtual Cookie getCookie(const std::string &cookieName);
 	virtual bool addCookie(const Cookie &cookie);
 	virtual bool removeCookie(const std::string &cookieName);
+	virtual void clearCookies();
 	virtual std::string getCookieString();
 	virtual const std::string& getQueryString() const;
 	virtual const std::string getFileExtension() const;
 	virtual const std::string getFileName() const;
 	virtual const std::string& getPath() const;
+	virtual size_t getHeaderSize() const;
+	virtual void setHeaderSize(size_t headerSize);
 };

@@ -1,5 +1,6 @@
 text/html                             html htm shtml php
 text/css                              css
+text/css                              min.css
 text/xml                              xml
 image/gif                             gif
 image/jpeg                            jpeg jpg
@@ -8,7 +9,7 @@ application/atom+xml                  atom
 application/rss+xml                   rss
 
 text/mathml                           mml
-text/plain                            txt
+text/plain                            txt bad_extension bla
 text/vnd.sun.j2me.app-descriptor      jad
 text/vnd.wap.wml                      wml
 text/x-component                      htc

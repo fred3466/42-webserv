@@ -5,8 +5,7 @@
 
 class Processor;
 
-class ProcessorAndLocationToProcessor
-{
+class ProcessorAndLocationToProcessor {
 private:
 	Processor *processor;
 	LocationToProcessor *locationToProcessor;

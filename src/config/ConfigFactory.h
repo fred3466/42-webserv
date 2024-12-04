@@ -1,10 +1,9 @@
 #pragma once
 #include "Config.h"
 
-class ConfigFactory
-{
+class ConfigFactory {
 public:
 	ConfigFactory();
 	~ConfigFactory();
-	Config *build();
+	Config* build();
 };

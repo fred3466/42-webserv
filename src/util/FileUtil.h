@@ -11,9 +11,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include "../Harl.h"
+#include "../config/Config.h"
 
-class FileUtil
-{
+class FileUtil {
 public:
 	FileUtil();
 	~FileUtil();
@@ -25,4 +26,5 @@ public:
 	std::string getLastModification(std::string fpath, std::string strFormat);
 	bool isDirectory(std::string path);
 	std::string realPathFile(std::string path);
+	std::string readTextFile(std::string path);
 };

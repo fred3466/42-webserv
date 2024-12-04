@@ -1,11 +1,14 @@
 200	OK
+301 Moved Permanently
+307 Temporary Redirect
 400 Bad Request
 204 Successfully deleted
 401 Unauthorized
 403 Forbidden
 404 Not Found
+405 Method Not Allowed
 408 Time Out
-413 Payload Too Large
+413 Request Entity Too Large
 500 Internal Server Error
 501 Not Implemented
 503 Service Unavailable

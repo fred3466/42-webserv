@@ -1,85 +1,75 @@
 #include "Cookie.h"
 
-Cookie::Cookie()
-{
+Cookie::Cookie() {
+	_maxAge = "";
+	_path = "";
+	_domain = "";
+	_secure = "";
+	_httponly = "";
+	_name = "";
+	_value = "";
 }
 
-Cookie::~Cookie()
-{
+Cookie::~Cookie() {
 }
 
-long Cookie::getMaxAge() const
-{
+std::string Cookie::getMaxAge() const {
 	return _maxAge;
 }
 
-std::string Cookie::getPath() const
-{
+std::string Cookie::getPath() const {
 	return _path;
 }
 
-std::string Cookie::getDomain() const
-{
+std::string Cookie::getDomain() const {
 	return _domain;
 }
 
-std::string Cookie::getSecure() const
-{
+std::string Cookie::getSecure() const {
 	return _secure;
 }
 
-std::string Cookie::getHttponly() const
-{
+std::string Cookie::getHttponly() const {
 	return _httponly;
 }
 
-std::string Cookie::getName() const
-{
+std::string Cookie::getName() const {
 	return _name;
 }
 
-std::string Cookie::getValue() const
-{
+std::string Cookie::getValue() const {
 	return _value;
 }
 
-void Cookie::setMaxAge(long &max_age)
-{
+void Cookie::setMaxAge(std::string &max_age) {
 	_maxAge = max_age;
 }
 
-void Cookie::setPath(const std::string &path)	
-{
+void Cookie::setPath(const std::string &path) {
 	_path = path;
 }
 
-void Cookie::setDomain(const std::string &domain)
-{
+void Cookie::setDomain(const std::string &domain) {
 	_domain = domain;
 }
 
-void Cookie::setSecure()
-{
+void Cookie::setSecure() {
 	_secure = "Secure";
 }
 
-void Cookie::setHttponly()
-{
+void Cookie::setHttponly() {
 	_httponly = "HttpOnly";
 }
 
-void Cookie::setName(const std::string &name)
-{
+void Cookie::setName(const std::string &name) {
 	_name = name;
 }
 
-void Cookie::setValue(const std::string &value)
-{
+void Cookie::setValue(const std::string &value) {
 	_value = value;
 }
 
-void Cookie::dump() const
-{
+void Cookie::dump() const {
 	std::cout << "Cookie: " << std::endl;
 	std::cout << "	Name: " << _name << std::endl;
 	std::cout << "	Value: " << _value << std::endl;
@@ -90,17 +80,11 @@ void Cookie::dump() const
 	std::cout << "	Httponly: " << _httponly << std::endl;
 }
 
-std::string Cookie::getCookie() const
-{
-	std::stringstream ss;
-	ss << _name << "=" << _value << "; ";
-	ss << "Max-Age=" << _maxAge << "; ";
-	ss << "Path=" << _path << "; ";
-	ss << "Domain=" << _domain;
-	if (_secure != "")
-		ss << "; " << _secure;
-	if (_httponly != "")
-		ss << "; " << _httponly;
-	ss << std::endl;
-	return ss.str();
+std::string Cookie::getCookie() const {
+	std::string ret = "";
+	ret += _name + "=" + _value + "; ";
+	ret += "Max-Age=" + _maxAge + "; ";
+	ret += "Domain=" + _domain + "; ";
+	ret += "Path=" + _path;
+	return ret;
 }

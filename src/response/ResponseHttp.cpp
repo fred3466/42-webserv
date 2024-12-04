@@ -1,104 +1,95 @@
 #include "ResponseHttp.h"
+#include "../Harl.h"
 
-// TODO En faire une Coplien
-ResponseHttp::ResponseHttp(ResponseHeader *head) : bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagRedirect(false), error(), errorCodeTmp(200)
-{
+ResponseHttp::ResponseHttp(ResponseHeader *head) :
+		bodyBin(NULL), bodyLength(0), totalLength(0), flagCgi(false), flagRedirect(false),
+		errorCodeTmp(200), bNeedFurtherProcessing(false), fd(-1) {
 	header = head;
 }
 
-ResponseHttp::~ResponseHttp()
-{
+ResponseHttp::~ResponseHttp() {
+	if (header) {
+		Harl().debug("ResponseHttp::~ResponseHttp() xoxoxoxoxoxoxoxoxxoxoxoxoxoxoxoxoxoxoxo delete header");
+		delete header;
+		header = NULL;
+	}
+	if (bodyBin) {
+		Harl().debug("ResponseHttp::~ResponseHttp() xoxoxoxoxoxoxoxoxxoxoxoxoxoxoxoxoxoxoxo delete bodyBin");
+		delete[] bodyBin;
+		bodyBin = NULL;
+	}
 }
 
-void ResponseHttp::setStatusLine(std::string sline)
-{
+void ResponseHttp::setStatusLine(std::string sline) {
 	header->setStatusLine(sline);
 }
 
-// void ResponseHttp::setBody(std::string sline)
-//{
-//	body = sline;
-// }
-std::string ResponseHttp::getStatusLine()
-{
+std::string ResponseHttp::getStatusLine() {
 	return header->getStatusLine();
 }
-ResponseHeader* ResponseHttp::getHeader()
-{
+ResponseHeader* ResponseHttp::getHeader() {
 	return header;
 }
-// std::string ResponseHttp::getBody()
-//{
-//	return body;
-// }
-int ResponseHttp::getTotalLength()
-{
+int ResponseHttp::getTotalLength() {
 	return totalLength;
 }
-void ResponseHttp::setTotalLength(int len)
-{
+void ResponseHttp::setTotalLength(int len) {
 	totalLength = len;
 }
-int ResponseHttp::getBodyLength()
-{
+int ResponseHttp::getBodyLength() {
 	return bodyLength;
 }
-void ResponseHttp::setBodyLength(int len)
-{
+void ResponseHttp::setBodyLength(int len) {
 	bodyLength = len;
 }
-void ResponseHttp::setBodyBin(char *bytess)
-{
+void ResponseHttp::setBodyBin(char *bytess) {
 	this->bodyBin = bytess;
 }
 
-char* ResponseHttp::getBodyBin()
-{
+char* ResponseHttp::getBodyBin() {
 	return bodyBin;
 }
 
-bool ResponseHttp::isCgi()
-{
+bool ResponseHttp::isCgi() {
 	return flagCgi;
 }
 
-bool ResponseHttp::isRedirect()
-{
+bool ResponseHttp::isRedirect() {
 	return flagRedirect;
 }
 
-void ResponseHttp::setCgi(bool cgi)
-{
+void ResponseHttp::setCgi(bool cgi) {
 	flagCgi = cgi;
 }
 
-void ResponseHttp::setIsRedirect(bool isRedirect)
-{
+void ResponseHttp::setIsRedirect(bool isRedirect) {
 	this->flagRedirect = isRedirect;
 }
 
-void ResponseHttp::setHttpError(HttpError *error)
-{
-	this->error = error;
-	this->flagRedirect = error->getCode() != 200;
-
-	std::ostringstream statusLine;
-	statusLine << "HTTP/1.1 " << error->getCode() << " " << error->getDescription();
-	this->header->setStatusLine(statusLine.str());
-	setErrorCodeTmp(error->getCode());
-}
-
-HttpError* ResponseHttp::getHttpError()
-{
-	return error;
-}
-
-int ResponseHttp::getErrorCodeTmp()
-{
+int ResponseHttp::getErrorCodeTmp() {
 	return errorCodeTmp;
 }
 
-void ResponseHttp::setErrorCodeTmp(int errorCode)
+bool ResponseHttp::isBNeedFurtherProcessing()
 {
+	return bNeedFurtherProcessing;
+}
+
+int ResponseHttp::getFd()
+{
+	return fd;
+}
+
+void ResponseHttp::setFd(int fd)
+		{
+	this->fd = fd;
+}
+
+void ResponseHttp::setBNeedFurtherProcessing(bool bNeedFurtherProcessing)
+		{
+	this->bNeedFurtherProcessing = bNeedFurtherProcessing;
+}
+
+void ResponseHttp::setErrorCodeTmp(int errorCode) {
 	errorCodeTmp = errorCode;
 }

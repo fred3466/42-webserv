@@ -1,29 +1,54 @@
 #pragma once
 
 #include <sys/poll.h>
-#include "HttpServer.h"
 
-//class HttpServer;
+class Server;
 
-class FdPollfdServerTuple
-{
+enum FdPollfdServerTupleTypeEnum {
+	LISTENING_SOCKET_SERVER_TYPE, COMMON_SOCKET_SERVER_TYPE, PIPE_TYPE, NOT_SET_TYPE
+};
+
+class Request;
+class Response;
+
+class FdPollfdServerTuple {
 private:
-	int fd;
 	pollfd *_pollfd;
-	HttpServer *httpServer;
-	bool bServerListening;
+	Server *httpServer;
+	FdPollfdServerTupleTypeEnum typeEnum;
+	bool bSocketConnectionCloseRequired;
+	bool bSocketKeepAlive;
+	int nbWritten;
+	Response *response;
+	Request *request;
+	bool bTooBigError;
+
+	FdPollfdServerTuple();
 
 public:
-	FdPollfdServerTuple();
-	FdPollfdServerTuple(int fd, pollfd *_pollfd, HttpServer *httpServer, bool bServerListening);
+	FdPollfdServerTuple(pollfd *_pollfd, Server *httpServer, FdPollfdServerTupleTypeEnum typeEnum);
 	~FdPollfdServerTuple();
-	pollfd* getPollfd() const;
+	FdPollfdServerTuple(FdPollfdServerTuple &bis);
+	FdPollfdServerTuple& operator=(FdPollfdServerTuple &bis);
+	pollfd* getPollfd();
 	void setPollfd(pollfd *pollfd);
-	int getFd() const;
+	int getFd();
 	void setFd(int fd);
-	HttpServer* getHttpServer() const;
-	void setHttpServer(HttpServer *httpServer);
-	bool isBServerListening() const;
-	void setBServerListening(bool bServerListening);
+	Server* getHttpServer();
+	void setHttpServer(Server *httpServer);
+	bool isBConnectionCloseRequired();
+	void setBConnectionCloseRequired(bool bConnectionCloseRequired);
+	bool isBKeepAlive() const;
+	void setBKeepAlive(bool bKeepAlive);
+	int getNbWritten() const;
+	void setNbWritten(int nbWritten);
+	FdPollfdServerTupleTypeEnum getTypeEnum() const;
+	void setTypeEnum(FdPollfdServerTupleTypeEnum typeEnum);
+	Response* getResponse();
+	void setResponse(Response *response);
+	Request* getRequest();
+	void setRequest(Request *request);
+	bool isBTooBigError() const;
+	void setBTooBigError(bool bTooBigError);
 };
 

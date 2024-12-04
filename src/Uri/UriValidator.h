@@ -4,8 +4,7 @@
 #include <vector>
 #include <sstream>
 
-class UriValidator
-{
+class UriValidator {
 public:
 	std::string formatPath(const std::string &path);
 };

@@ -1,58 +1,142 @@
 #include "FdPollfdServerTuple.h"
 
-FdPollfdServerTuple::FdPollfdServerTuple()
-: fd(-1), _pollfd(), httpServer(), bServerListening(false)
-{
+FdPollfdServerTuple::FdPollfdServerTuple() :
+		_pollfd(), httpServer(), typeEnum(NOT_SET_TYPE), bSocketConnectionCloseRequired(true), bSocketKeepAlive(0), nbWritten(0),
+		response(0), request(0), bTooBigError(false) {
 }
 
-FdPollfdServerTuple::FdPollfdServerTuple(int fd, pollfd *_pollfd, HttpServer *httpServer, bool bServerListening)
-: fd(fd), _pollfd(_pollfd), httpServer(httpServer), bServerListening(bServerListening)
-{
+FdPollfdServerTuple::FdPollfdServerTuple(pollfd *_pollfd, Server *httpServer, FdPollfdServerTupleTypeEnum typeEnum)
+: bSocketConnectionCloseRequired(true), bSocketKeepAlive(0), nbWritten(0), response(0), request(0) {
+
+	this->_pollfd = _pollfd;
+	this->httpServer = httpServer;
+	this->typeEnum = typeEnum;
+	this->bSocketConnectionCloseRequired = true;
+	this->bSocketKeepAlive = false;
+	this->bTooBigError = false;
+	nbWritten = 0;
+
 }
 
-pollfd* FdPollfdServerTuple::getPollfd() const
-{
+FdPollfdServerTuple::FdPollfdServerTuple(FdPollfdServerTuple &bis) {
+	this->_pollfd = bis._pollfd;
+	this->httpServer = bis.httpServer;
+	this->typeEnum = bis.typeEnum;
+	this->bSocketConnectionCloseRequired = bis.bSocketConnectionCloseRequired;
+	this->bSocketKeepAlive = bis.bSocketKeepAlive;
+	this->nbWritten = bis.nbWritten;
+	this->response = bis.response;
+	this->request = bis.request;
+	this->bTooBigError = bis.bTooBigError;
+
+	if (this != &bis)
+		*this = bis;
+}
+
+FdPollfdServerTuple& FdPollfdServerTuple::operator=(FdPollfdServerTuple &bis) {
+	this->_pollfd = bis._pollfd;
+	this->httpServer = bis.httpServer;
+	this->typeEnum = bis.typeEnum;
+	this->bSocketConnectionCloseRequired = bis.bSocketConnectionCloseRequired;
+	this->bSocketKeepAlive = bis.bSocketKeepAlive;
+	this->nbWritten = bis.nbWritten;
+	this->response = bis.response;
+	this->request = bis.request;
+	this->bTooBigError = bis.bTooBigError;
+
+	return *this;
+}
+
+pollfd* FdPollfdServerTuple::getPollfd() {
 	return _pollfd;
 }
 
-void FdPollfdServerTuple::setPollfd(pollfd *pollfd)
-{
+void FdPollfdServerTuple::setPollfd(pollfd *pollfd) {
 	_pollfd = pollfd;
 }
 
-int FdPollfdServerTuple::getFd() const
-{
-	return fd;
+int FdPollfdServerTuple::getFd() {
+	if (_pollfd)
+		return _pollfd->fd;
+	return -1;
 }
 
-void FdPollfdServerTuple::setFd(int fd)
-{
-	this->fd = fd;
+void FdPollfdServerTuple::setFd(int fd) {
+	if (_pollfd)
+		_pollfd->fd = fd;
 }
 
-HttpServer* FdPollfdServerTuple::getHttpServer() const
-{
+Server* FdPollfdServerTuple::getHttpServer() {
 	return httpServer;
 }
 
-bool FdPollfdServerTuple::isBServerListening() const
-{
-	return bServerListening;
+bool FdPollfdServerTuple::isBConnectionCloseRequired() {
+	return bSocketConnectionCloseRequired;
 }
 
-void FdPollfdServerTuple::setBServerListening(bool bServerListening)
-{
-	this->bServerListening = bServerListening;
+bool FdPollfdServerTuple::isBKeepAlive() const {
+	return bSocketKeepAlive;
 }
 
-void FdPollfdServerTuple::setHttpServer(HttpServer *httpServer)
-{
+int FdPollfdServerTuple::getNbWritten() const {
+	return nbWritten;
+}
+
+void FdPollfdServerTuple::setNbWritten(int nbWritten) {
+	this->nbWritten = nbWritten;
+}
+
+void FdPollfdServerTuple::setBKeepAlive(bool bKeepAlive) {
+	this->bSocketKeepAlive = bKeepAlive;
+}
+
+void FdPollfdServerTuple::setBConnectionCloseRequired(bool bConnectionCloseRequired) {
+	this->bSocketConnectionCloseRequired = bConnectionCloseRequired;
+}
+
+void FdPollfdServerTuple::setHttpServer(Server *httpServer) {
 	this->httpServer = httpServer;
 }
 
-FdPollfdServerTuple::~FdPollfdServerTuple()
-{
-	delete httpServer;
-	delete _pollfd;
+FdPollfdServerTuple::~FdPollfdServerTuple() {
 }
 
+FdPollfdServerTupleTypeEnum FdPollfdServerTuple::getTypeEnum() const
+{
+	return typeEnum;
+}
+
+Response* FdPollfdServerTuple::getResponse()
+{
+	return response;
+}
+
+Request* FdPollfdServerTuple::getRequest()
+{
+	return request;
+}
+
+bool FdPollfdServerTuple::isBTooBigError() const
+{
+	return bTooBigError;
+}
+
+void FdPollfdServerTuple::setBTooBigError(bool bTooBigError)
+		{
+	this->bTooBigError = bTooBigError;
+}
+
+void FdPollfdServerTuple::setRequest(Request *request)
+		{
+	this->request = request;
+}
+
+void FdPollfdServerTuple::setResponse(Response *response)
+		{
+	this->response = response;
+}
+
+void FdPollfdServerTuple::setTypeEnum(FdPollfdServerTupleTypeEnum typeEnum)
+		{
+	this->typeEnum = typeEnum;
+}

@@ -1,42 +1,18 @@
 #include "ProcessorFactory.h"
 #include "../Harl.h"
 
-std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request)
-{
-	//	std::string ext = request->getFileExtension();
-	//	std::string uri = request->getUri();
-
+std::vector<ProcessorAndLocationToProcessor*>* ProcessorFactory::build(Request *request) {
 	std::vector<ProcessorAndLocationToProcessor*> *procs = processorLocator->listOrderedProcessorForUrlAndExt(request);
-	//	procs->insert(procs->begin(), new ProcessorImplDirectFs());
-
-	//	StringUtil stringUtil;
-	//	std::string uri = request->getUri();
-	//	std::string fileExt = uri.substr(uri.rfind(".", std::string::npos));
-	//	if (stringUtil.strUpper(fileExt) == ".PHP")
-	//	{
-	//		// TODO insérer ici l'implémentation pour CGI d'Anastasia
-	//		// return new ProcessorImplDirectFs();
-	//	}
-	//
-	//	processorLocator->listOrderedProcessorForUrlAndExt(urlPath, ext)
 	return procs;
 }
 
-ProcessorFactory::ProcessorFactory(ProcessorLocator *pl)
-{
+ProcessorFactory::ProcessorFactory(ProcessorLocator *pl) {
 	processorLocator = pl;
 }
 
-Processor* ProcessorFactory::build(std::string procName, Config *config)
-{
+Processor* ProcessorFactory::build(std::string procName, Config *config) {
 	ProcessorTypeEnum typeContentModifier = CONTENT_MODIFIER;
 	ProcessorTypeEnum typeHeaderModifier = HEADER_MODIFIER;
-	//	TODO new
-//	if (procName == "PHP_PROCESSOR")
-//	{
-//		Processor *proc = new REQUEST_HANDLER_IMPL_CLASS_PHP(typeContentModifier);
-//		return proc;
-//	}
 	Harl().debug("ProcessorFactory::build", "procName: " + procName);
 	Processor *ret = NULL;
 
@@ -52,29 +28,25 @@ Processor* ProcessorFactory::build(std::string procName, Config *config)
 		ret = new REQUEST_HANDLER_IMPL_CLASS_COMMON(typeHeaderModifier);
 	else if (procName == "POST_FILTER")
 		ret = new REQUEST_HANDLER_IMPL_CLASS_POST(typeHeaderModifier);
-	else if (procName == "ERROR_FILTER")
-		ret = new REQUEST_HANDLER_IMPL_CLASS_ERROR(typeHeaderModifier);
 	else if (procName == "DELETE_PROCESSOR")
 		ret = new REQUEST_HANDLER_IMPL_CLASS_DELETE(typeHeaderModifier);
 	else if (procName == "REDIRECT_PROCESSOR")
-		ret = new REQUEST_HANDLER_IMPL_CLASS_REDIRECT(typeContentModifier);
+		ret = new REQUEST_HANDLER_IMPL_CLASS_REDIRECT(typeHeaderModifier);
 	else if (procName == "DOWNLOAD_PROCESSOR")
 		ret = new REQUEST_HANDLER_IMPL_CLASS_DOWNLOAD(typeHeaderModifier);
-	else
-	{
+	else if (procName == "CGI_GENERIC_PROCESSOR")
+		ret = new REQUEST_HANDLER_IMPL_CLASS_GENERIC_CGI(typeContentModifier);
+	else if (procName == "COOKIE_PROCESSOR")
+		ret = new REQUEST_HANDLER_IMPL_CLASS_COOKIE(typeHeaderModifier);
+	else {
 		ret = new ProcessorImplCgiBinGeneric(typeContentModifier);
-
-//		std::string cgiExePath = config->getParamStr(procName, "")
-//		return cgiExePath;
 	}
 	ret->setConfig(config);
 	return ret;
 }
 
-ProcessorFactory::ProcessorFactory() : processorLocator()
-{
+ProcessorFactory::ProcessorFactory() : processorLocator() {
 }
 
-ProcessorFactory::~ProcessorFactory()
-{
+ProcessorFactory::~ProcessorFactory() {
 }

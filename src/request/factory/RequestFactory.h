@@ -6,8 +6,7 @@
 #include "../../config.h"
 #include "../RequestHttp.h"
 
-class RequestFactory
-{
+class RequestFactory {
 private:
 
 public:

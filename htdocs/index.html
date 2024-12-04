@@ -2,77 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <style>
-        body {
-            color: white;
-            background-image: url('page.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 2rem;
-            border-radius: 16px;
-        }
-        nav {
-            display: flex;
-            justify-content: space-between; /* Aligns nav items accordingly */
-            padding: 0 1rem; /* Provides padding on the sides */
-        }
-        nav .site-navigation-title {
-            flex-grow: 1; /* Allows the title to take necessary space */
-            color: #f2f7f3;
-        }
-        nav ul {
-            display: flex;
-            list-style: none; /* Removes list style */
-            padding: 0; /* Removes padding */
-            margin: 0; /* Aligns with the right side */
-        }
-        nav ul li {
-            margin-left: 20px; /* Spacing between links */
-        }
-        .nav-link {
-            color: #7ce3eb;
-            text-decoration: none; /* Removes underline */
-        }
-        .nav-link:hover {
-            color: #5e2dbb;
-        }
-        .header-image {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-        }
-        h2.title-color, h3.title-color {
-            color: #08f2f2;
-        }
-        p.paragraph-color {
-            color: #a4e7f0;
-        }
-
-    </style>
-    <title>Simple Website</title>
+    <meta name="viewport" content="width=667, initial-scale=1">
+    <link rel="stylesheet" href="/pico.min.css">
+    <link rel="stylesheet" href="/local.css">
+    <script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/jcookie-min.js"></script>
+    <title>Webserv</title>
 </head>
 <body>
-    <img class="header-image" src="header.jpg" alt="Header Image">
-    <nav>
-        <strong class="site-navigation-title">Site Navigation</strong>
-        <ul>
-            <li><a href="index.html" class="nav-link">Home</a></li>
-            <li><a href="/r42" class="nav-link">Who I Am</a></li>
-            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form</a></li>
-            <li><a href="about.html" class="nav-link">About</a></li>
-            <li><a href="images.html" class="nav-link">Images</a></li>
-            <li><a href="upload.html" class="nav-link">Upload</a></li>
+    <img class="header-image" src="images/header.jpg" alt="Header Image">
+    
+        <ul class="menu">
+            <li><a href="/index.html" class="nav-link">Home</a></li>
+            <li><a href="/about.html" class="nav-link">About</a></li>
+            <li><a href="/r42" class="nav-link">Redirect</a></li>
+            <li><a href="/cgi-perl/form-submit.pl/path/info?q=fred&titi=toto" class="nav-link">Form .pl</a>
+            <li><a href="/cgi-sh/form-submit.sh" class="nav-link">Form .sh</a> </li>
+            <li><a href="/images.html" class="nav-link">Images</a></li>
+            <li><a href="/upload.html" class="nav-link">Upload</a></li>
+            <li><a href="/YoupiBanane" class="nav-link">Dir listing</a></li>
         </ul>
-    </nav>
     
-    
-
     <!-- Main content -->
     <main class="container">
         <div class="grid">
@@ -83,39 +33,16 @@
                 </hgroup>
                 <p class="paragraph-color">This is when you finally understand why a URL starts with HTTP.</p>
                 <figure>
-                    <img src="ws.jpg" alt="Virtualization">
+                    <img src="images/ws.jpg" alt="Virtualization">
                     <figcaption>Virtualization Concept</figcaption>
                 </figure>
                 <h3 class="title-color">General guidelines</h3>
                 <p class="paragraph-color">Your server should not crash in any circumstances.</p>
-            </section>
+
+ 			</section>
         </div>
     </main>
     
-    <!-- Subscription section -->
-    <section aria-label="Subscribe example">
-        <div class="container">
-            <article>
-                <hgroup>
-                    <h2 class="title-color">Subscribe</h2>
-                    <h3 class="title-color">Join our mailing list</h3>
-                </hgroup>
-                <form class="grid">
-                    <input type="text" id="firstname" name="firstname" placeholder="First Name" aria-label="First Name" required>
-                    <input type="email" id="email" name="email" placeholder="Email Address" aria-label="Email Address" required>
-                    <!-- Subscription button with class for styling -->
-                    <button type="submit" class="subscribe-button" onclick="event.preventDefault()">Subscribe</button>
-                </form>
-            </article>
-        </div>
-    </section>
-    <!-- Subscription section -->
-    <section aria-label="Subscribe example" class="subscribe-section">
-        <div class="container">
-            <!-- ... -->
-        </div>
-    </section>
-    <!-- Footer -->
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Use</a></small>
     </footer>

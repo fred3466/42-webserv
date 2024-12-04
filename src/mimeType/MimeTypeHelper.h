@@ -1,18 +1,15 @@
 #pragma once
-#include <vector>
 #include <string>
 #include "MimeType.h"
+#include "../util/StringUtil.h"
+#include "../Harl.h"
+#include "MimeTypeList.h"
 
-class MimeTypeHelper
-{
+class MimeTypeHelper {
 private:
-	std::vector<MimeType*> mimeTypeList;
 
 public:
 	MimeTypeHelper();
 	~MimeTypeHelper();
-	void addMapping(std::string extension, std::string mimeType);
 	std::string findMimeType(std::string extension);
-	void reloadMappingsFromFile(const std::string &filePath);
-	size_t numberOfMappings() const;
 };

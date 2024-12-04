@@ -4,17 +4,18 @@
 #include "../API/Processor.h"
 
 class Processor;
-class LocationToProcessor
-{
+class LocationToProcessor {
 private:
 	std::string urlPath;
 	std::string extension;
 	Processor *processor;
 	std::string host;
+	std::string hostAsIpPort;
+	std::string method;
 
 public:
 	LocationToProcessor();
-	LocationToProcessor(std::string urlPath, std::string ext, Processor *proc, std::string host);
+	LocationToProcessor(std::string urlPath, std::string ext, Processor *proc, std::string host, std::string hostAsIpPort, std::string method);
 	LocationToProcessor(LocationToProcessor &bis);
 	LocationToProcessor& operator=(LocationToProcessor &bis);
 
@@ -27,6 +28,10 @@ public:
 	void setUrlPath(std::string urlPath);
 	std::string toString();
 	std::string getHost();
-	void setHost(std::string &host);
+	void setHost(std::string host);
+	std::string getMethod();
+	void setMethod(std::string method);
+	std::string getHostAsIpPort();
+	void setHostAsIpPort(std::string hostAsIpPort);
 };
 

@@ -8,13 +8,14 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Config.h"
+#include "../util/FileUtil.h"
 #include "../util/StringUtil.h"
+#include "../Harl.h"
 #include "ConfigValidator.h"
 #include "ConfigFactory.h"
 #include "unistd.h"
 
-class ConfigReader
-{
+class ConfigReader {
 public:
 	ConfigReader();
 	virtual ~ConfigReader();
@@ -22,5 +23,4 @@ public:
 	bool buildConfigVector(std::vector<Config*> *ret, std::string path);
 
 private:
-//	Config read(std::string path);
 };

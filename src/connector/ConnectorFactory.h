@@ -5,10 +5,9 @@
 #include "../config/Config.h"
 #include "impl/HttpConnector.h"
 
-class ConnectorFactory
-{
+class ConnectorFactory {
 private:
-	public:
+public:
 	ConnectorFactory();
 	~ConnectorFactory();
 	Connector* build(std::string ip, int port, Config *c);

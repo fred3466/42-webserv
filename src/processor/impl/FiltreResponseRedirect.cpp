@@ -1,42 +1,35 @@
 #include "FiltreResponseRedirect.h"
 
-FiltreResponseRedirect::FiltreResponseRedirect(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper()
-{
+FiltreResponseRedirect::FiltreResponseRedirect(ProcessorTypeEnum type) : harl(), config(), fileUtil(), stringUtil(), processorHelper() {
 	this->type = type;
 }
 
-FiltreResponseRedirect::~FiltreResponseRedirect()
-{
+FiltreResponseRedirect::~FiltreResponseRedirect() {
 	delete config;
 }
 
-void FiltreResponseRedirect::setConfig(Config *conf)
-{
+void FiltreResponseRedirect::setConfig(Config *conf) {
 	config = conf;
 }
 
-ProcessorTypeEnum FiltreResponseRedirect::getType()
-{
+ProcessorTypeEnum FiltreResponseRedirect::getType() {
 	return type;
 }
 
-std::string FiltreResponseRedirect::toString()
-{
+std::string FiltreResponseRedirect::toString() {
 	return "FiltreResponseRedirect";
 }
 
-Response* FiltreResponseRedirect::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor)
-{
+Response* FiltreResponseRedirect::process(Request *request, Response *response, ProcessorAndLocationToProcessor *processorAndLocationToProcessor,
+		ProcessorAndLocationToProcessor *nextProcessorAndLocationToProcessor) {
 	(void) request;
 	(void) processorAndLocationToProcessor;
+	(void) nextProcessorAndLocationToProcessor;
 	ResponseHeader *header = response->getHeader();
 	std::string reqPath = request->getPath();
 	reqPath = StringUtil().trim(reqPath);
 
 	std::string target = config->getParamStr("target", "");
-//	HttpError *error = HttpErrorFactory().build(errorCode);
-//	response->setHttpError(error);
-//	response->setStatusLine(error->getStatusLine());
 
 	header->setStatusLine("HTTP/1.1 307 Temporary Redirect\r\n");
 	header->addField("Location", target);
@@ -47,28 +40,34 @@ Response* FiltreResponseRedirect::process(Request *request, Response *response, 
 	return response;
 }
 
-void FiltreResponseRedirect::addProperty(std::string name, std::string value)
-{
+bool FiltreResponseRedirect::isRedirect() {
+	return true;
+}
+
+void FiltreResponseRedirect::addProperty(std::string name, std::string value) {
 	config->addOrReplaceParam(name, value);
 }
 
-bool FiltreResponseRedirect::isExclusif()
-{
+bool FiltreResponseRedirect::isExclusif() {
 	return true;
 }
 
-bool FiltreResponseRedirect::isBypassingExclusif()
-{
+bool FiltreResponseRedirect::isBypassingExclusif() {
 	return true;
 }
 
-std::string FiltreResponseRedirect::getProperty(std::string name, std::string defaultVal)
-{
+bool FiltreResponseRedirect::isUriDirectoryValidationRequired() {
+	return false;
+}
+bool FiltreResponseRedirect::isCgi() {
+	return false;
+}
+
+std::string FiltreResponseRedirect::getProperty(std::string name, std::string defaultVal) {
 	std::string val = config->getParamStr(name, defaultVal);
 	return val;
 }
 
-Config* FiltreResponseRedirect::getConfig()
-{
+Config* FiltreResponseRedirect::getConfig() {
 	return config;
 }

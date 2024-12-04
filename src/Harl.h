@@ -4,11 +4,14 @@
 #include <string>
 #include <cstdarg>
 #include <cstdio>
+#include <ctime>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-class Harl
-{
+class Harl {
 private:
-	void _write(std::string level, std::string msg);
+	void _write(int level, std::string levelStr, std::string msg);
 	public:
 	Harl();
 	~Harl();
@@ -20,4 +23,5 @@ private:
 	void error(std::string msg, ...);
 	void except(std::string msg, ...);
 
+	static std::time_t _timeStart;
 };

@@ -19,51 +19,36 @@
 #include <sys/time.h>
 #include <netinet/in.h>
 
-#include "../../API/ConnectorListener.h"
+#include "../../API/ResponseProducer.h"
 #include "../../API/Connector.h"
 #include "../../Harl.h"
 #include "../../config/Config.h"
 
-struct netStruct
-{
-
-	int portServer;
-	std::string ipServer;
-};
-
-class HttpConnector: public Connector
-{
+class HttpConnector: public Connector {
 private:
 	Harl harl;
 	netStruct ns;
 	int _soListen;
-	ConnectorListener *connectorListener;
+	std::list<ResponseProducer*> connectorListenerList;
 	Config *config;
 	struct pollfd *_pollfd;
 
-//	void _acceptIncomingCon(int new_sd, int &_soListen, struct pollfd fds[],
-//			int &end_server, int &nfds);
-//	bool _onDataReceiving(struct pollfd *curentPollFd, int &close_conn);
-//	void _listen(int _soListen, netStruct ns);
-//	void reorganiseFdTab(pollfd **fdTab, int *fdTabSize);
-//	void dumpFdTab(pollfd **fdTab, int fdTabSize);
-//	void signalHandler(int signum);
+protected:
+	void init(ResponseProducer &l);
 
 public:
 	HttpConnector();
 	~HttpConnector();
 	HttpConnector(std::string stIp, int port, Config *c);
+	HttpConnector(HttpConnector &bis);
+	HttpConnector& operator=(HttpConnector &bis);
 
-	//	virtual void closeConnection(int *fd);
-
-protected:
-	void init(ConnectorListener &l);
-	//	void doPoll();
-
-	virtual void registerIt(ConnectorListener *l);
-	virtual void unregisterIt(ConnectorListener *l);
-	virtual void publishAccepting(ConnectorEvent *e);
-	virtual void publishDataReceiving(ConnectorEvent *e);
-	virtual pollfd* getPollFd();
-//	virtual int getFdTabSize();
+	virtual int start();
+	virtual void registerIt(ResponseProducer *l);
+	virtual void unregisterIt(ResponseProducer *l);
+	virtual std::list<ResponseProducer*> getResponseProducer();
+	virtual pollfd* getListeningPollFd();
+	virtual void setListeningPollFd(struct pollfd *pollfd);
+	virtual netStruct getInternalNetStruct();
+	virtual int getSoListen() const;
 };

@@ -9,8 +9,7 @@
 #include "../util/StringUtil.h"
 #include "../util/FileUtil.h"
 
-class MultipartParser
-{
+class MultipartParser {
 private:
 	std::string boundary;
 	Harl harl;
